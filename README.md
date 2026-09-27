@@ -6,9 +6,7 @@ These files provide a shared baseline of working expectations, whether you use o
 
 The idea borrows two things from a CSS reset: reducing recurring inconsistencies and adding safe defaults. For coding agents, that means addressing recurring unwanted behaviour, such as unrelated edits or unclear completion reports, and setting defaults for scope, approvals, and verification. Your project still chooses its stack, architecture, conventions, and testing approach.
 
-Each rule applies only when relevant. A small task should not trigger a project-wide audit, and mentioning a tool or workflow is not a reason to introduce it. The rules are written without depending on a particular coding agent or LLM model.
-
-The comparison has a limit: CSS rules are executed by browsers; these instructions are interpreted by agents. They cannot guarantee the same behaviour across models. Judge them by whether they reduce rework without adding friction in your own projects.
+Each rule applies only when relevant. A small task should not trigger a project-wide audit, and mentioning a tool or workflow is not a reason to introduce it.
 
 ## Choose your rules
 
@@ -26,7 +24,7 @@ It adds web development defaults for native browser behaviour, layouts, accessib
 
 **For web projects, use both `coding-agent-global-rules.md` and `web-development-rules.md` together.** Copy the contents of both into one agent instruction file. The web rules add to the global rules; the source files stay separate here only for maintenance.
 
-You can still adapt or take selected sections to suit your workflow. Neither file replaces project-specific coding standards or specialist procedures; their scope is software-project work, not general-purpose assistant use.
+Neither file replaces project-specific coding standards or specialist procedures; their scope is software-project work, not general-purpose assistant use.
 
 Rules for additional operating systems and application runtime environments are planned.
 
@@ -45,8 +43,8 @@ Web project:
 
 1. **Choose where to use them.** Add them to your agent's user-level instructions for use across software projects, or to a project's instruction file for that project only. Here, "global" means reusable across software projects, not every task the agent handles. For teams, keep shared instructions in version control so developers can use the same rules.
 2. **Copy the content into one instruction file your agent reads.** This could be `AGENTS.md`, `CLAUDE.md`, or a Cursor rule. For a web project, paste the contents of both source files into that same file, in either order. Keep headings, scope conditions, nested lists, and attached safety and approval conditions with the content.
-3. **Merge with your existing rules.** Remove duplicates and resolve conflicts while preserving project requirements and safety boundaries. In mixed projects, apply the web rules only to web content and its supporting endpoints.
-4. **Confirm the rules are loaded, then try them on a task.** Use your agent's available loading diagnostics to check that the complete content is included. Cloning this repository or copying these files into an arbitrary folder does not activate them. Adjust the selection if a rule adds friction without helping your work; use project checks to enforce mechanical requirements.
+3. **Merge with your existing rules.** Follow the [selection and conflict guidance in the FAQ](#do-i-need-every-rule). In mixed projects, apply the web rules only to web content and its supporting endpoints.
+4. **Confirm the rules are loaded, then try them on a task.** Check your agent's instruction-loading limits, including any combined limit across files. If your selected rules and existing instructions do not fit, use fewer relevant sections, supported conditional loading, or adjust the limit where supported. Use available loading diagnostics to confirm the intended content loads in full. Cloning this repository or copying these files into an arbitrary folder does not activate them.
 
 For placement details, see the official instructions for [Cursor](https://cursor.com/docs/rules), [Codex](https://developers.openai.com/codex/guides/agents-md), [Claude Code](https://code.claude.com/docs/en/memory), or your chosen agent.
 
@@ -60,7 +58,25 @@ When adapting these rules, distinguish guidance needed across tasks from guidanc
 
 If the same agent also handles non-software tasks, user-level placement may load these coding rules for those tasks too. Scope headings limit when the rules apply; they do not prevent the loaded text from using context. Use conditional loading where available or project instructions if you want to avoid that overhead. Do not move essential safety or approval boundaries solely into optional references.
 
-Rules and skills can overlap; a different file type does not justify repeating the same instruction. Use relevant skills only when available and compatible with the project; otherwise consult official documentation. Using a skill does not authorise installations, upgrades, or unrelated changes.
+Use relevant skills only when available and compatible with the project; otherwise consult official documentation. Using a skill does not authorise installations, upgrades, or unrelated changes.
+
+## FAQ
+
+### Will these rules save tokens?
+
+Only if avoided mistakes and repeated prompting outweigh the extra instructions and checks; savings are not guaranteed. Compare representative tasks with and without your selected rules, including rework, time, and token use.
+
+### Do I need every rule?
+
+No; keep relevant sections and adapt them if they add friction without helping your work. Remove duplicates and resolve conflicts with existing instructions and skills while preserving project requirements and safety boundaries; a different file type does not justify repeating the same instruction.
+
+### Will they make the agent ask permission more often?
+
+They may: the defaults require explicit approval for actions such as downloads, installations, and publishing unless those actions are already authorised within the current scope. Review whether this policy fits your workflow before adopting it; ordinary in-scope work and actions already explicitly approved should not trigger repeated approval requests.
+
+### Are they proven to improve every agent and model?
+
+No universal improvement has been established, although the rules are written without depending on a particular coding agent or LLM model. Unlike CSS rules executed by browsers, these instructions are interpreted by agents and cannot guarantee the same behaviour across models; use project checks and permission controls to enforce requirements.
 
 ## Contributing
 
