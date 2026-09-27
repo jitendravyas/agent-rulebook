@@ -2,7 +2,13 @@
 
 Reusable instructions you can copy into your coding agent for everyday software development. They aim to reduce repeated prompting, avoidable mistakes, and time and tokens spent on rework.
 
-Think of them as a reset for coding agents: safe defaults for doing the requested work, while your project still chooses its stack, architecture, conventions, and testing approach. They are written without depending on a particular coding agent or LLM model.
+These files provide a shared baseline of working expectations, whether you use one agent or several. They supplement each agent's built-in guidance without assuming those defaults are fully visible or identical across agents and models.
+
+The idea borrows two things from a CSS reset: reducing recurring inconsistencies and adding safe defaults. For coding agents, that means addressing recurring unwanted behaviour, such as unrelated edits or unclear completion reports, and setting defaults for scope, approvals, and verification. Your project still chooses its stack, architecture, conventions, and testing approach.
+
+Each rule applies only when relevant. A small task should not trigger a project-wide audit, and mentioning a tool or workflow is not a reason to introduce it. The rules are written without depending on a particular coding agent or LLM model.
+
+The comparison has a limit: CSS rules are executed by browsers; these instructions are interpreted by agents. They cannot guarantee the same behaviour across models. Judge them by whether they reduce rework without adding friction in your own projects.
 
 ## Choose your rules
 
