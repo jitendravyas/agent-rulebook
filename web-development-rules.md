@@ -4,7 +4,7 @@
 
   * Apply these rules only to authorised work on browser-delivered content, behaviour, and supporting web endpoints, including embedded browsers, regardless of rendering architecture.
   * Treat the project's browser and device support, accessibility and performance targets, SEO needs, rendering architecture, design system, and product behaviour as constraints.
-  * Before using a browser feature with uncertain support or removing a fallback, find supported browsers and embedded runtimes in project instructions, configuration, or usage data. Check current compatibility; Baseline does not replace project policy. If no policy exists and support matters, propose a target for approval.
+  * Before using a browser feature with uncertain support or removing a fallback, find supported browsers and embedded runtimes in project instructions, configuration, or usage data. Check current compatibility; general compatibility summaries do not replace project policy. If no policy exists and support matters, propose a target for approval.
 
 ## Browser behaviour, layout, and accessibility
 
