@@ -1,6 +1,6 @@
 # Internationalization and localization rules
 
-Use when a project supports more than one language or locale, or when work adds, changes, or prepares that support. Do not introduce translation infrastructure, locales, or translated copy merely because this file is loaded. Use Modern Web Guidance for browser API choices.
+Do not introduce translation infrastructure, locales, or translated copy unless the task requires it. Use Modern Web Guidance for browser API choices.
 
 ## Decide the product contract first
 
