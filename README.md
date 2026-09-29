@@ -4,11 +4,11 @@ Reusable instructions you can copy into AI coding agents for everyday software d
 
 Use them to give one or several agents the same working expectations. They supplement each agent's built-in guidance, which may differ between agents and models and may not be fully visible.
 
-The rules are technology-, framework-, vendor-, and agent-agnostic. Optional files scope an activity such as accessibility evaluation or localization work; they do not prescribe a stack, library, or service.
+The rules are technology-, framework-, vendor-, and agent-agnostic. Optional files add guidance for specific activities; they do not prescribe a stack, library, or service.
 
 The idea borrows two things from a CSS reset: reducing recurring inconsistencies and adding safe defaults. For coding agents, that means addressing recurring unwanted behaviour, such as unrelated edits or unclear completion reports, and setting defaults for scope, approvals, and verification. Your project still chooses its stack, architecture, conventions, and testing approach.
 
-Each rule applies only when relevant. A small task should not trigger a project-wide audit, and mentioning a tool or workflow is not a reason to introduce it.
+Once added to instructions your agent loads, these rules guide normal work without a separate command. Each rule applies only when relevant to the current task. A small task should not trigger a project-wide audit, and mentioning a tool or workflow is not a reason to introduce it.
 
 ## Choose your rules
 
@@ -56,7 +56,7 @@ When adapting these rules, distinguish guidance needed across tasks from guidanc
 
 - **Across tasks:** keep approval, privacy, work-preservation, verification, and communication boundaries in the instructions that are always loaded within your chosen scope.
 - **For a project:** keep its tools, commands, conventions, and compatibility requirements in project instructions. Scope web development guidance to web projects or web-related areas of mixed projects using your agent's supported loading controls.
-- **For an occasional task:** keep specialist procedures, such as full accessibility audits or performance profiling, in a task-specific reference or skill. Load them when relevant; keep basic safeguards and checks for affected behaviour in the baseline.
+- **For an occasional task:** keep detailed step-by-step procedures in a task-specific reference or skill and load them when relevant. Rules that guide decisions and limit scope can remain in your instructions without starting that task.
 
 If the same agent also handles non-software tasks, user-level placement may load these coding rules for those tasks too. Scope headings limit when the rules apply; they do not prevent the loaded text from using context. Use conditional loading where available or project instructions if you want to avoid that overhead. Do not move essential safety or approval boundaries solely into optional references.
 
@@ -64,14 +64,11 @@ Use relevant skills only when available and compatible with the project; otherwi
 
 ## Optional specialist rules
 
-Use an optional file only when its condition applies; it is not another always-loaded baseline. You do not need these files for the basic web setup above.
+"Optional" means optional to adopt, not something you must activate each time. Add useful files to the same instruction setup as the core rules. They can remain loaded; the agent should apply relevant instructions within the current task, without starting extra work merely because a file is present. You do not need these files for the basic web setup above.
 
 - [web-accessibility-rules.md](optional/web-accessibility-rules.md) — for accessibility reviews, conformance work, remediation, or changes with material accessibility risk. Defines review coverage and limits conformance claims.
 - [web-performance-rules.md](optional/web-performance-rules.md) — for performance work, regression investigations, or changes likely to affect a measured user path. Separates lab measurements, real-user data, and local-preview results.
 - [internationalization-localization-rules.md](optional/internationalization-localization-rules.md) — for work that prepares, adds, or updates translations or locale support. It keeps code and data localizable without requiring translation infrastructure in a single-language project.
-
-For agent authoring work, use:
-
 - [agent-workflow-authoring-rules.md](optional/agent-workflow-authoring-rules.md) — use when creating or changing agent rules, skills, subagents, or agent-tool workflows.
 
 ## FAQ

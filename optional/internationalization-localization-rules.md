@@ -2,9 +2,9 @@
 
 Do not introduce translation infrastructure, locales, or translated copy unless the task requires it.
 
-## Decide the product contract first
+## Project requirements
 
-  * Identify supported locales, default and fallback behaviour, locale selection, text ownership and approval, and affected surfaces such as UI, email, documents, APIs, storage, search, URLs, and support content. Ask only when a missing decision would materially change the implementation.
+  * Identify only the locale decisions and affected surfaces needed for the current change, such as supported locales, fallback behaviour, locale selection, text approval, UI, email, or stored data. Reuse established project choices. Ask only when a missing decision would materially change the implementation.
   * Follow the project's established localization system. Reuse its message format, locale identifiers, routing, resource layout, and build process. Do not add or replace an internationalization library or translation service without approval.
   * Keep locale preference explicit and separate from authentication, authorisation, region, and currency unless product requirements deliberately connect them. Do not infer a user's language or location from an unreliable signal such as IP address when a supported preference is available.
 
