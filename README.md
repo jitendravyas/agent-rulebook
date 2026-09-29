@@ -112,6 +112,18 @@ Alongside practical use and review, tools used include:
 
 Their output informs edits; it does not certify the rules. You do not need these tools to use the rule files.
 
+### Optional contributor check
+
+Cloning this repository includes `.vale.ini` and the `.vale/` vocabulary folder; neither needs a separate installation. To run the checks, [install Vale](https://docs.vale.sh/topics/installation) for your operating system. Vale is free and MIT-licensed. This configuration was tested with Vale **3.22.0**; use that version when reproducing results, since other versions may report different warnings.
+
+Run this manual check from the repository root to check only the core and optional rule files, not README.md or AGENTS.md:
+
+```sh
+vale --no-global coding-agent-global-rules.md web-development-rules.md optional/
+```
+
+The configuration uses Vale's built-in spelling, repeated-word, and term-capitalisation checks, with accepted names and technical terms in `.vale/styles/config/vocabularies/Rules/accept.txt`. It runs offline without extra style packages, `vale sync`, or `npm install`. Warnings are advisory: review them before changing instructions. There are no automatic hooks or rewrites, and a clean result does not prove an agent will understand or follow the rules.
+
 ## Influences
 
 These rules mainly reflect practical experience with coding agents. The sources below contributed specific guidance that remains in the files; other material reviewed during drafting is not listed.
