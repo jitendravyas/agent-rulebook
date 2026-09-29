@@ -22,7 +22,7 @@
   * For authorised parallel work, assign bounded, non-overlapping tasks with only needed context. Isolate edits when needed; review outputs or diffs and verify integration.
   * Set limits for open-ended research. Start with focused searches, excerpts, and checks; expand when evidence or risk calls for it. Reuse valid evidence and avoid repeated work. Necessary in-scope work needs no approval just for token use; other approval rules still apply.
   * When supported, request only relevant paths, matches, or structured fields instead of full files or logs. Keep exit status and relevant errors visible. Retrieve omitted details when needed to verify the result.
-  * When selecting, adding, or upgrading shared tools, check maintenance, licensing, and supported operating systems. Recheck these facts for established tools only when a relevant concern arises. Prefer suitable free-for-commercial-use options for commercial work. Do not assume teammates share tools, accounts, model access, or token budgets.
+  * When selecting, adding, or upgrading third-party tools, components, or services, check maintenance, compatibility with supported environments, and licence or service terms for the intended use and distribution. Recheck established choices only when a relevant concern arises. Prefer suitable free-for-commercial-use options for commercial work. Do not assume teammates share tools, accounts, model access, or token budgets.
 
 ## Required approval
 
@@ -114,7 +114,7 @@
   * If caching, propagation delay, or unreliable evidence could explain an unexpected result, confirm with fresh observation or an independent source before repeating the action. Clear test failures need no second source.
   * Verify user-relevant appearance, interaction, or behaviour through the UI, API, CLI, device, or external flow users depend on whenever you can operate it. For visual changes, inspect the running result in context and relevant states; a build or code review is not visual proof.
   * Before version-controlled handoff, compare task-owned changes with the starting state, including added, generated, renamed, and deleted paths; identify unrelated changes. Scope follows the request, not original authorship.
-  * In version-controlled projects, classify task-created files: retain deliverables; recommend narrow ignores for recurring local output, adding them only in scope. Never ignore files to hide them from review; ignores do not protect secrets or tracked files.
+  * In version-controlled projects, retain requested deliverables, but do not stage temporary or local-only output by default. Follow project conventions for generated files; ask only if the tracking decision remains unclear after inspection. Recommend narrow ignores for recurring local output, adding them only in scope. Never ignore files to hide them from review; ignores do not protect secrets or tracked files.
   * When asked to review a branch or proposed changes, or to submit changes for review or merging, check the comparison base and full diff of the proposed changes. Account separately for relevant uncommitted changes; the working-tree diff alone is insufficient.
   * Review final changes, using a diff when available, for bugs, regressions, security, and needless complexity. Fix required in-scope findings; report others with location, impact, and evidence, separate from optional improvements. Recheck after further edits when needed.
 
