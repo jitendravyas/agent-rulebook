@@ -6,10 +6,14 @@
   * Treat the project's browser and device support, accessibility and performance targets, SEO needs, rendering architecture, design system, and product behaviour as constraints.
   * Before using a browser feature with uncertain support or removing a fallback, find supported browsers and embedded runtimes in project instructions, configuration, or usage data. Check current compatibility; general compatibility summaries do not replace project policy. If no policy exists and support matters, propose a target for approval.
 
-## Modern web platform guidance
+## Content and identifiers
 
-  * Assume [Modern Web Guidance](https://github.com/googlechrome/modern-web-guidance) is available for web projects. Consult it when a task needs a non-trivial choice about browser APIs, semantic and accessible controls, layout, performance techniques, feature detection, or fallbacks. Do not load or search it for routine text, content, or straightforward markup edits, and do not repeat its feature-level guidance in these rules.
-  * The skill does not replace the project's browser-support policy, approvals, security boundaries, or verification. If it is unavailable or does not cover the task, use current authoritative platform documentation. Do not infer support or add a polyfill, dependency, or fallback solely because the skill mentions one.
+  * When creating or changing web content, use `translate="no"` for text explicitly designated as non-translatable by project requirements or conventions. Keep exclusions narrow and surrounding text translatable. Do not disable whole-page translation merely to protect a few names or terms.
+  * Identify application actions and data using stable identifiers or explicit state, not translated labels or formatted display text.
+  * When copying or repeating HTML or inline SVG, keep IDs unique within their DOM tree and keep references pointing to the intended elements.
+
+## Style changes
+
   * Before fixing styles, inspect source and, when available, computed styles or layout evidence to find the cause. If browser access is unavailable, report what remains visually unverified. Do not hide unexplained problems by increasing CSS selector specificity, adding `!important` or `z-index`, or hiding overflow. Scope selectors to their intended elements and verify representative affected components and pages after shared-style changes.
 
 ## Browser lifecycle and state recovery
@@ -28,9 +32,9 @@
 ## Browser verification
 
   * Test only dimensions the change can affect, such as routes, states, viewports, input methods, supported browsers, rendering modes, sessions, storage, caches, and network conditions. Choose representative combinations by risk and project support, not every combination.
-  * For consent-dependent features or third-party integrations, include denied consent, blocked resources, and unavailable storage where relevant. In those states, check that other functions remain usable and dependent features offer a clear recovery path where possible, without bypassing user choices.
+  * For changed features that depend on browser capabilities, storage, consent, or external resources, check relevant permission or consent denials, blocked resources, and unavailable or full storage. In those states, check that other functions remain usable and dependent features explain limitations or offer recovery where possible, without bypassing user choices or environment restrictions.
   * Use isolated, disposable browser state and controlled test data by default. When changed UI depends on variable content, check representative extremes within expected use, such as empty values, long labels, or large lists. Keep essential information distinguishable and controls usable. Use real accounts or persistent browser profiles only when required and authorised.
   * With parallel worktrees or local previews, confirm the preview's checkout before browser testing; a familiar host, port, or tab may serve another worktree.
-  * For changes affecting rendering or interaction, use available project-appropriate tools to check the affected entry point and state in the intended browser or embedded runtime. Inspect the rendered result, relevant console errors, failed requests, navigation, and whether expected state changes persist. If that environment is unavailable, state what was checked and what remains unverified.
+  * For changes affecting rendering or interaction, use available project-appropriate tools to check the affected entry point and state in the intended browser or embedded runtime. Inspect the rendered result, relevant console errors, failed requests, and whether expected state changes persist. When navigation changes, check affected paths through direct URL entry, reload, Back/Forward, and normal link opening where supported by that environment. If that environment is unavailable, state what was checked and what remains unverified.
   * Match browser actions and assertions to observable state. Use bounded waits, not arbitrary delays. Prefer structured page, console, and network evidence; capture screenshots or traces only when needed to prove a claim or failure.
   * Compare affected visual output when appearance can change. Verify settings the change can affect, such as reduced motion, `forced-colors` mode, text enlargement, and supported themes. Responsive layouts and one browser do not prove support across all environments.

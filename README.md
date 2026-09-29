@@ -22,7 +22,7 @@ It guides everyday work beyond writing code, including documentation, project re
 
 Add this for website and web application development, whether you work on a single HTML/CSS page, a server-rendered website, a multi-page application, or a JavaScript-rendered single-page application.
 
-It sets browser-specific scope, compatibility, lifecycle, security, and rendered-result verification. Modern Web Guidance supplies current feature-level guidance for browser behaviour, layout, accessibility, and performance. These rules apply to web content and its supporting endpoints, including web interfaces embedded in native applications, without requiring a particular framework or rendering architecture.
+It sets browser-specific scope, compatibility, lifecycle, security, and rendered-result verification. These rules apply to web content and its supporting endpoints, including web interfaces embedded in native applications, without requiring a particular framework or rendering architecture.
 
 **For web projects, use both `coding-agent-global-rules.md` and `web-development-rules.md` together.** Copy the contents of both into one agent instruction file. The web rules add to the global rules; the source files stay separate here only for maintenance.
 
@@ -32,7 +32,6 @@ Neither file replaces project-specific coding standards or specialist procedures
 
 Use an optional file only when its condition applies; it is not another always-loaded baseline.
 
-- [Modern Web Guidance](https://github.com/googlechrome/modern-web-guidance) is a task-specific skill assumed for web projects, not an instruction to run on every edit. Consult it for a relevant, non-trivial browser implementation choice. The next three files complement it with project-level decisions and verification; they deliberately do not repeat its browser-feature implementation guidance.
 - [web-accessibility-rules.md](optional/web-accessibility-rules.md) — add for an accessibility review, conformance work, remediation, or a change with material accessibility risk.
 - [web-performance-rules.md](optional/web-performance-rules.md) — add for performance work, regression investigation, or a change likely to affect a measured user path.
 - [internationalization-localization-rules.md](optional/internationalization-localization-rules.md) — add when a project supports multiple languages or locales, or when work prepares or changes that support. It keeps code and data localizable without requiring translation infrastructure in a single-language project.
@@ -52,9 +51,6 @@ Web project:
                                    +---------------> one agent instruction file
   web-development-rules.md --------+                  (AGENTS.md, CLAUDE.md,
                                                       or a Cursor rule)
-
-  Modern Web Guidance -------------> consult only for a relevant browser
-                                       feature or implementation choice
 ```
 
 1. **Choose where to use them.** Add them to your agent's user-level instructions for use across software projects, or to a project's instruction file for that project only. Here, "global" means reusable across software projects, not every task the agent handles. For teams, keep shared instructions in version control so developers can use the same rules.

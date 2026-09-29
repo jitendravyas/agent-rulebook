@@ -1,6 +1,6 @@
 # Internationalization and localization rules
 
-Do not introduce translation infrastructure, locales, or translated copy unless the task requires it. Use Modern Web Guidance for browser API choices.
+Do not introduce translation infrastructure, locales, or translated copy unless the task requires it.
 
 ## Decide the product contract first
 

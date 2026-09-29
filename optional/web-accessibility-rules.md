@@ -1,6 +1,6 @@
 # Accessibility evaluation rules
 
-Do not initiate an accessibility audit or claim conformance unless the task requests it. Use Modern Web Guidance for implementation choices.
+Do not initiate an accessibility audit or claim conformance unless the task requests it.
 
   * Establish the requested purpose, target standard and level, supported environments, included routes and states, and exclusions. Do not assume a universal legal or product target.
   * Treat automated checks, linters, and browser inspection as evidence only for the cases they cover. Use proportionate manual checks of the affected flow and relevant assistive technology when available.

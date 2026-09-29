@@ -1,6 +1,6 @@
 # Web performance rules
 
-Do not profile, gather metrics, or change performance tooling unless the task requires it. Use Modern Web Guidance for implementation choices.
+Do not profile, gather metrics, or change performance tooling unless the task requires it.
 
   * Identify the affected journey, metric or symptom, representative device, network, content, authentication, and cache state. Use project targets and field data when available; do not assume a generic score or device represents users.
   * Compare a representative baseline and result under equivalent conditions. Keep lab observations, field data, and local-preview results separate. A successful build, smaller bundle, or one fast local run does not prove a user-visible improvement.
