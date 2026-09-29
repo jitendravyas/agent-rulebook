@@ -66,8 +66,8 @@ Use relevant skills only when available and compatible with the project; otherwi
 
 "Optional" means optional to adopt, not something you must activate each time. Add useful files to the same instruction setup as the core rules. They can remain loaded; the agent should apply relevant instructions within the current task, without starting extra work merely because a file is present. You do not need these files for the basic web setup above.
 
-- [web-accessibility-rules.md](optional/web-accessibility-rules.md) — for accessibility reviews, conformance work, remediation, or changes with material accessibility risk. Defines review coverage and limits conformance claims.
-- [web-performance-rules.md](optional/web-performance-rules.md) — for performance work, regression investigations, or changes likely to affect a measured user path. Separates lab measurements, real-user data, and local-preview results.
+- [web-accessibility-rules.md](optional/web-accessibility-rules.md) — for accessibility-related development, fixes, and assessments. Keeps checks tied to affected behaviour and project requirements; broader assessment guidance applies only when the task or project requires it.
+- [web-performance-rules.md](optional/web-performance-rules.md) — for performance-related changes and investigations. Limits measurement to relevant work and separates lab measurements, real-user data, and local-preview results.
 - [internationalization-localization-rules.md](optional/internationalization-localization-rules.md) — for work that prepares, adds, or updates translations or locale support. It keeps code and data localizable without requiring translation infrastructure in a single-language project.
 - [agent-workflow-authoring-rules.md](optional/agent-workflow-authoring-rules.md) — use when creating or changing agent rules, skills, subagents, or agent-tool workflows.
 
