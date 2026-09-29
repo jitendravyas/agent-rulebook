@@ -18,7 +18,7 @@ Do not introduce translation infrastructure, locales, or translated copy unless 
 
 ## Translation, direction, and verification
 
-  * Translate copy only when required by the task. Treat translations you create as drafts until approved through the project's review process. Do not overwrite approved product copy without authorisation. Report missing or stale translations and use only documented fallback behaviour.
+  * Treat translations you create as drafts until approved through the project's review process. Do not overwrite approved product copy without authorisation. Report missing or stale translations and use only documented fallback behaviour.
   * Follow existing glossaries and do-not-translate terms. Preserve personal, place, organisation, brand, product, and official feature names unless project conventions specify an established localized form or approved transliteration. Do not invent literal translations of names. Translate ordinary interface labels and surrounding text unless explicitly protected.
   * When changing localized behaviour, verify the affected locales, plural forms, formatting, fallback, and language selection that the change can affect. Test representative translated text, including longer text, and right-to-left direction only when the product supports or adds it.
   * For browser-delivered interfaces, verify document language and direction, logical layout behaviour, focus order, and mixed-direction text where the change can affect them. Browser translation or language-detection APIs do not replace approved product translations, locale selection, or server-side support.

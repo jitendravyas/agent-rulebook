@@ -4,7 +4,7 @@ Reusable instructions you can copy into AI coding agents for everyday software d
 
 Use them to give one or several agents the same working expectations. They supplement each agent's built-in guidance, which may differ between agents and models and may not be fully visible.
 
-The rules are technology-, framework-, vendor-, and agent-agnostic. Optional files scope an activity such as accessibility evaluation or localization work; they do not prescribe a stack, library, service, or workflow.
+The rules are technology-, framework-, vendor-, and agent-agnostic. Optional files scope an activity such as accessibility evaluation or localization work; they do not prescribe a stack, library, or service.
 
 The idea borrows two things from a CSS reset: reducing recurring inconsistencies and adding safe defaults. For coding agents, that means addressing recurring unwanted behaviour, such as unrelated edits or unclear completion reports, and setting defaults for scope, approvals, and verification. Your project still chooses its stack, architecture, conventions, and testing approach.
 

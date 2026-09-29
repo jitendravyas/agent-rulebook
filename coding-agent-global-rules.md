@@ -47,7 +47,7 @@
 
 ## Implementation and maintenance
 
-  * Follow project conventions and tools; otherwise choose the smallest in-scope approach. Ask before hard-to-reverse choices. For names the project does not prescribe, use clear project terms, not vague abbreviations or sensitive data.
+  * Follow project conventions and tools. Ask before hard-to-reverse choices. For names the project does not prescribe, use clear project terms, not vague abbreviations or sensitive data.
   * Before version-sensitive commands or changes to architecture, dependencies, or tools, check project constraints and required or pinned versions in version files, wrappers, manifests, scripts, continuous integration configuration, or documentation. Use a compatible version, not just the default on `PATH`. If the project requires a version that is unavailable, or sources conflict, stop the affected operation and report it; do not substitute another version. If no version is specified, use the project's normal supported command or ask only when the choice could change the result. Match commands to the current operating system and shell; do not assume they match the build or target environment. Report important unknowns.
   * Keep machine- and deployment-specific values in established configuration, not shared code. Declare approved dependencies and compatible versions; do not rely on undeclared global installations. Preserve defaults unless the task requires changes; add configuration only for current requirements or deployment needs.
   * When changing configuration, verify that the affected tool or application uses the changed settings. Account for overrides and any required reload or rebuild. An edited file alone does not prove the setting took effect.
