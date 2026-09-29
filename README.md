@@ -46,7 +46,7 @@ Web project:
 1. **Choose where to use them.** Add them to your agent's user-level instructions for use across software projects, or to a project's instruction file for that project only. Here, "global" means reusable across software projects, not every task the agent handles. For shared projects, see the [team guidance below](#how-should-a-team-use-these-rules).
 2. **Copy the content into one instruction file your agent reads.** This could be `AGENTS.md`, `CLAUDE.md`, or a Cursor rule. For a web project, paste the contents of both source files into that same file, in either order. Keep headings, scope conditions, nested lists, and attached safety and approval conditions with the content.
 3. **Merge with your existing rules.** Follow the [selection and conflict guidance in the FAQ](#do-i-need-every-rule). In mixed projects, apply the web rules only to web content and its supporting endpoints.
-4. **Confirm the rules are loaded, then try them on a task.** Check your agent's instruction-loading limits, including any combined limit across files. If your selected rules and existing instructions do not fit, use fewer relevant sections, supported conditional loading, or adjust the limit where supported. Use available loading diagnostics to confirm the intended content loads in full. Cloning this repository or copying these files into an arbitrary folder does not activate them.
+4. **Check the size and confirm loading.** The two core files currently total about **37.4 KiB (38,295 bytes)**, before your existing instructions. Compare the full content with your agent's documented instruction-loading limit, including any combined limit across files. Splitting the same content across files does not avoid a combined limit. If the content does not fit, select fewer relevant sections, use supported conditional loading, or adjust the limit where supported. Use available loading diagnostics to confirm the intended content loads in full, then try it on a task. Cloning this repository or copying these files into an arbitrary folder does not activate them.
 
 For placement details, see the official instructions for [Cursor](https://cursor.com/docs/rules), [Codex](https://developers.openai.com/codex/guides/agents-md), [Claude Code](https://code.claude.com/docs/en/memory), or your chosen agent.
 
@@ -84,6 +84,8 @@ No; keep relevant sections and adapt them if they add friction without helping y
 ### How should a team use these rules?
 
 User-level rules affect your own agent setup, not your teammates' setups. Agree on a shared subset and keep it in the project's version-controlled instructions. Generic rules can live in a project file; they do not have to be installed at user level. Confirm that each agent used by the team loads the shared instructions. Keep personal preferences at user level without duplicating or conflicting with the shared rules.
+
+Record the source commit when adopting these rules, and agree who reviews updates to the shared copy. Review later changes before adopting them, preserving the team's project-specific adjustments.
 
 Shared instructions make the guidance reviewable, but do not guarantee that every agent follows it. For requirements that tools can enforce, use required automated checks, repository protections, and permission controls rather than relying on instructions alone.
 
