@@ -76,7 +76,7 @@
 
 ## Documentation and supporting files
 
-  * Keep unrequested plans, summaries, reports, and notes in chat. Explain why and ask before adding persistent documents, helper scripts, or saved evidence unless project workflow requires them. Avoid duplicate files.
+  * Keep unrequested plans, summaries, reports, and notes in chat. Explain why and ask before adding persistent documents, helper scripts, or saved evidence unless already authorised or required by project workflow. Avoid duplicate files.
   * Verify runnable instructions and examples you add or change when readers rely on them. Say which important examples remain unverified.
   * In research and documentation, support material factual claims with a verifiable source or project observation. Never invent citations.
 
