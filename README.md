@@ -68,7 +68,7 @@ Use an optional file only when its condition applies; it is not another always-l
 
 - [web-accessibility-rules.md](optional/web-accessibility-rules.md) — for accessibility reviews, conformance work, remediation, or changes with material accessibility risk. Defines review coverage and limits conformance claims.
 - [web-performance-rules.md](optional/web-performance-rules.md) — for performance work, regression investigations, or changes likely to affect a measured user path. Separates lab measurements, real-user data, and local-preview results.
-- [internationalization-localization-rules.md](optional/internationalization-localization-rules.md) — add when a project supports multiple languages or locales, or when work prepares or changes that support. It keeps code and data localizable without requiring translation infrastructure in a single-language project.
+- [internationalization-localization-rules.md](optional/internationalization-localization-rules.md) — for work that prepares, adds, or updates translations or locale support. It keeps code and data localizable without requiring translation infrastructure in a single-language project.
 
 For agent authoring work, use:
 
