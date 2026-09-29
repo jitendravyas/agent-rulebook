@@ -98,7 +98,11 @@ They may: the defaults require explicit approval for actions such as downloads, 
 
 No universal improvement has been established, although the rules are written without depending on a particular coding agent or LLM model. Unlike CSS rules executed by browsers, these instructions are interpreted by agents and cannot guarantee the same behaviour across models.
 
-### What tools have helped refine these rules?
+## Contributing
+
+Issues and pull requests are welcome, including feedback from trying the rules in your own projects. Explain the problem your suggestion solves and whether it belongs in the global rules, web development rules, or project instructions.
+
+## Tools used to refine these rules
 
 Alongside practical use and review, tools used include:
 
@@ -107,10 +111,6 @@ Alongside practical use and review, tools used include:
 - [Firecrawl](https://docs.firecrawl.dev/introduction) for researching public documentation and developer feedback.
 
 Their output informs edits; it does not certify the rules. You do not need these tools to use the rule files.
-
-## Contributing
-
-Issues and pull requests are welcome, including feedback from trying the rules in your own projects. Explain the problem your suggestion solves and whether it belongs in the global rules, web development rules, or project instructions.
 
 ## Influences
 
