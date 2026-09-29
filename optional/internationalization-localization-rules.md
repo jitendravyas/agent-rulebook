@@ -4,7 +4,7 @@ Do not introduce translation infrastructure, locales, or translated copy unless 
 
 ## Project requirements
 
-  * Identify only the locale decisions and affected surfaces needed for the current change, such as supported locales, fallback behaviour, locale selection, text approval, UI, email, or stored data. Reuse established project choices. Ask only when a missing decision would materially change the implementation.
+  * Identify only the locale decisions and affected surfaces needed for the current task, such as supported locales, fallback behaviour, locale selection, text approval, UI, email, or stored data. Reuse established project choices. Ask only when a missing decision would materially change the work.
   * Follow the project's established localization system. Reuse its message format, locale identifiers, routing, resource layout, and build process. Do not add or replace an internationalization library or translation service without approval.
   * Keep locale preference explicit and separate from authentication, authorisation, region, and currency unless product requirements deliberately connect them. Do not infer a user's language or location from an unreliable signal such as IP address when a supported preference is available.
 
@@ -20,5 +20,5 @@ Do not introduce translation infrastructure, locales, or translated copy unless 
 
   * Treat translations you create as drafts until approved through the project's review process. Do not overwrite approved product copy without authorisation. Report missing or stale translations and use only documented fallback behaviour.
   * Follow existing glossaries and do-not-translate terms. Preserve personal, place, organisation, brand, product, and official feature names unless project conventions specify an established localized form or approved transliteration. Do not invent literal translations of names. Translate ordinary interface labels and surrounding text unless explicitly protected.
-  * When changing localized behaviour, verify the affected locales, plural forms, formatting, fallback, and language selection that the change can affect. Test representative translated text, including longer text, and right-to-left direction only when the product supports or adds it.
-  * For browser-delivered interfaces, verify document language and direction, logical layout behaviour, focus order, and mixed-direction text where the change can affect them. Browser translation or language-detection APIs do not replace approved product translations, locale selection, or server-side support.
+  * When verifying localized behaviour, check the locales, plural forms, formatting, fallback, and language selection within the task's scope. This includes affected behaviour during implementation and existing behaviour requested for testing or review. Test representative translated text, including longer text, and right-to-left direction only when the product supports or adds it.
+  * For browser-delivered interfaces, verify document language and direction, logical layout behaviour, focus order, and mixed-direction text where relevant to that scope. Browser translation or language-detection APIs do not replace approved product translations, locale selection, or server-side support.
