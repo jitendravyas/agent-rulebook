@@ -38,7 +38,7 @@ Once loaded, these are standing instructions, not skills you need to invoke. The
 
 ## Optional specialist rules
 
-Add these to the same instruction setup if they fit your work. They are not required for the basic web setup.
+Choose only the specialist rules relevant to your work. Prefer project-level instructions or supported file- or task-specific loading, rather than adding all of them to every-session user instructions. They are not required for the basic web setup.
 
 - [Web accessibility](optional/web-accessibility-rules.md): keep accessibility work and checks tied to project requirements.
 - [Web performance](optional/web-performance-rules.md): investigate and measure relevant performance changes without treating a local result as proof for all users.
@@ -53,7 +53,7 @@ No. Keep what helps and adapt anything that adds friction without helping. If yo
 
 ### What if the rules are too large?
 
-The two core files total about **38.9 KiB (39,820 bytes)**, before your existing instructions. Compare the combined content with your agent's documented loading limit. Select fewer relevant sections, load sections conditionally where supported, or adjust the limit if your agent allows it. Splitting the same text across files does not avoid a combined limit. Keep essential safety and approval boundaries in the instructions that load for the relevant work.
+The two core files total about **38.5 KiB (39,415 bytes)**, before your existing instructions. Compare the combined content with your agent's documented loading limit. Select fewer relevant sections, load sections conditionally where supported, or adjust the limit if your agent allows it. Splitting the same text across files does not avoid a combined limit. Keep essential safety and approval boundaries in the instructions that load for the relevant work.
 
 ### What if they conflict with my project rules or skills?
 
