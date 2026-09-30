@@ -53,7 +53,7 @@ No. Keep what helps and adapt anything that adds friction without helping. If yo
 
 ### What if the rules are too large?
 
-The two core files total about **38.8 KiB (39,759 bytes)**, before your existing instructions. Compare the combined content with your agent's documented loading limit. Select fewer relevant sections, load sections conditionally where supported, or adjust the limit if your agent allows it. Splitting the same text across files does not avoid a combined limit. Keep essential safety and approval boundaries in the instructions that load for the relevant work.
+The two core files total about **38.9 KiB (39,820 bytes)**, before your existing instructions. Compare the combined content with your agent's documented loading limit. Select fewer relevant sections, load sections conditionally where supported, or adjust the limit if your agent allows it. Splitting the same text across files does not avoid a combined limit. Keep essential safety and approval boundaries in the instructions that load for the relevant work.
 
 ### What if they conflict with my project rules or skills?
 
@@ -71,7 +71,7 @@ Not necessarily. They add context and may add checks. Savings depend on whether 
 
 ### Will they make the agent ask permission more often?
 
-They may. Downloads, installations, and publishing need explicit approval unless already authorised for the task. Check that this policy fits your workflow. Routine work within scope and actions already approved should not trigger repeated questions.
+They may. Downloads, installations, and publishing need explicit approval unless already authorised for the task. Temporary reference copies of public documentation are an exception. Check that this policy fits your workflow. Routine work within scope and actions already approved should not trigger repeated questions.
 
 ## Influences
 
