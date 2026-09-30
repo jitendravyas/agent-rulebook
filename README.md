@@ -73,35 +73,18 @@ Not necessarily. They add context and may add checks. Savings depend on whether 
 
 They may. Downloads, installations, and publishing need explicit approval unless already authorised for the task. Check that this policy fits your workflow. Routine work within scope and actions already approved should not trigger repeated questions.
 
-## Contributing
+## Influences
 
-Issues and pull requests are welcome. Explain the problem your suggestion solves, ideally with an example from using the rules. Keep suggestions reusable across projects; project-specific requirements belong in that project's instructions.
-
-<details>
-<summary>Optional wording check for contributors</summary>
-
-The repository includes the Vale configuration and vocabulary. To run the check, [install Vale](https://docs.vale.sh/topics/installation), a free, MIT-licensed tool. The configuration was tested with **3.22.0**; use that version to reproduce results.
-
-From the repository root, run:
-
-```sh
-vale --no-global coding-agent-global-rules.md web-development-rules.md optional/
-```
-
-This checks only the core and optional rule files, not README.md or AGENTS.md. It runs offline without extra style packages or hooks. Review warnings before changing wording; a pass does not prove an agent will understand or follow the rules.
-
-</details>
+The rules combine practical experience, research, and ideas shared publicly by other developers. They are updated as useful ideas or unnecessary friction become clear.
 
 <details>
 <summary>Tools used to refine the rules</summary>
 
 [Vale](https://docs.vale.sh/) checks wording, [Promptfoo](https://www.promptfoo.dev/docs/intro/) has been used for small model-response comparisons, and [Firecrawl](https://docs.firecrawl.dev/introduction) supports research into public documentation and developer feedback. These tools help refine the rules but do not certify them. You do not need them to use the rules.
 
+The [Vale workflow](.github/workflows/vale.yml) checks the rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
+
 </details>
-
-## Influences
-
-The rules combine practical experience, research, and ideas shared publicly by other developers. They are updated as useful ideas or unnecessary friction become clear.
 
 <details>
 <summary>Sources behind specific guidance</summary>

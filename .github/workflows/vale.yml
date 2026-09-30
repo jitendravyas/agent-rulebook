@@ -1,0 +1,41 @@
+name: Vale
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - coding-agent-global-rules.md
+      - web-development-rules.md
+      - 'optional/**'
+      - .vale.ini
+      - '.vale/**'
+      - .github/workflows/vale.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vale:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the rules
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Check rule wording
+        uses: vale-cli/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # v3
+        with:
+          version: '3.22.0'
+          reviewdog_version: '0.21.0'
+          files: '["coding-agent-global-rules.md", "web-development-rules.md", "optional/"]'
+          vale_flags: --no-global
+          sync: false
+          reporter: local
+          filter_mode: nofilter
+          fail_level: error
