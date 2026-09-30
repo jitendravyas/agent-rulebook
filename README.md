@@ -82,7 +82,7 @@ The rules combine practical experience, research, and ideas shared publicly by o
 
 [Vale](https://docs.vale.sh/) checks wording, [Promptfoo](https://www.promptfoo.dev/docs/intro/) has been used for small model-response comparisons, and [Firecrawl](https://docs.firecrawl.dev/introduction) supports research into public documentation and developer feedback. These tools help refine the rules but do not certify them. You do not need them to use the rules.
 
-The [Vale workflow](.github/workflows/vale.yml) checks the rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
+The [Vale workflow](.github/workflows/vale.yml) checks the core and optional rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
 
 </details>
 
