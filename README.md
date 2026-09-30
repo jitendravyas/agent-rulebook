@@ -1,131 +1,112 @@
 # Coding agent rules
 
-Reusable instructions you can copy into AI coding agents for everyday software development, from throwaway experiments to established codebases. They aim to reduce repeated prompting, avoidable mistakes, and time and tokens spent on rework.
+Reusable instructions for AI coding agents, covering scope, approvals, protecting existing work, checking changes, and explaining results clearly. They aim to reduce repeated prompting and avoidable mistakes.
 
-Use them to give one or several agents the same working expectations. They supplement each agent's built-in guidance, which may differ between agents and models and may not be fully visible.
+Use them with one agent or several, for small experiments or established software projects. They do not prescribe a framework, platform, or coding agent. Your project still sets its own architecture, tools, and conventions.
 
-The rules are technology-, framework-, vendor-, and agent-agnostic. Optional files add guidance for specific activities; they do not prescribe a stack, library, or service.
-
-The idea borrows two things from a CSS reset: reducing recurring inconsistencies and adding safe defaults. For coding agents, that means addressing recurring unwanted behaviour, such as unrelated edits or unclear completion reports, and setting defaults for scope, approvals, and verification. Your project still chooses its stack, architecture, conventions, and testing approach.
-
-Once added to instructions your agent loads, these rules guide normal work without a separate command. Each rule applies only when relevant to the current task. A small task should not trigger a project-wide audit, and mentioning a tool or workflow is not a reason to introduce it.
+These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
 ## Choose your rules
 
-**For web projects, use both core files below together.** They stay separate in this repository for maintenance; copy their contents into one instruction file your agent reads. For other software projects, start with `coding-agent-global-rules.md`.
+- [coding-agent-global-rules.md](coding-agent-global-rules.md): the base for any software project, including native apps, backend services, libraries, and command-line tools. Covers development and related work such as documentation, research, and version control.
+- [web-development-rules.md](web-development-rules.md): add this to the global rules for browser-based work, from a single HTML page to a web app or embedded web interface. Covers browser behaviour, web security, and checking the rendered result.
 
-### [coding-agent-global-rules.md](coding-agent-global-rules.md)
-
-Start here for any kind of software development project: websites, backend services, native applications, libraries, or command-line tools. Use it when starting a project or working in an established codebase.
-
-It guides everyday work beyond writing code, including documentation, project research, tooling, and version control. The instructions ask the agent to stay within scope, protect existing work and sensitive data, get required approvals, check version-specific information, verify results, and explain blockers and next steps clearly.
-
-### [web-development-rules.md](web-development-rules.md)
-
-Add this for website and web application development, whether you work on a single HTML/CSS page, a server-rendered website, a multi-page application, or a JavaScript-rendered single-page application.
-
-It adds guidance on browser compatibility, content and identifiers, shared styles and third-party widgets, page state and lifecycle, web security, and checking the rendered result. It covers web content and its supporting endpoints, including web interfaces embedded in native applications, without requiring a particular framework or rendering architecture.
-
-Neither file replaces project-specific coding standards or specialist procedures; their scope is software-project work, not general-purpose assistant use.
+Here, "global" means reusable across software projects, not every task an assistant handles. In mixed projects, the web rules apply only to web content and its supporting endpoints.
 
 ## How to use
 
-Copy the contents of the rule files described above, not this repository's [AGENTS.md](AGENTS.md). That file tells agents how to maintain this repository; it is not the reusable rule set.
+1. **Choose the scope.** Use your agent's user-level instructions for your own work across projects, or a project's instruction file for that project and its contributors.
+2. **Copy the selected rules into your agent's instructions.** Depending on the agent, use an `AGENTS.md` or `CLAUDE.md` file, or paste them into Cursor's User Rules in settings. For web work, combine both core files in the same file or settings field. No package installation is needed.
+3. **Merge with your existing instructions.** Remove duplicates and resolve conflicts. Keep project requirements, safety boundaries, and the conditions and exceptions attached to each rule.
+4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available. Cloning this repository or saving files in an arbitrary folder does not activate them. Check the [size guidance below](#what-if-the-rules-are-too-large) before copying everything.
 
 ```text
 Non-web project:
-  coding-agent-global-rules.md ------------------> one agent instruction file
+  coding-agent-global-rules.md ------------------> one file or settings field
 
 Web project:
   coding-agent-global-rules.md ----+
-                                   +---------------> one agent instruction file
-  web-development-rules.md --------+                  (AGENTS.md, CLAUDE.md,
-                                                      or a Cursor rule)
+                                   +---------------> one file or settings field
+  web-development-rules.md --------+
 ```
 
-1. **Choose where to use them.** Add them to your agent's user-level instructions for use across software projects, or to a project's instruction file for that project only. Here, "global" means reusable across software projects, not every task the agent handles. For shared projects, see the [team guidance below](#how-should-a-team-use-these-rules).
-2. **Copy the content into one instruction file your agent reads.** This could be `AGENTS.md`, `CLAUDE.md`, or a Cursor rule. For a web project, paste the contents of both source files into that same file, in either order. Keep headings, scope conditions, nested lists, and attached safety and approval conditions with the content.
-3. **Merge with your existing rules.** Follow the [selection and conflict guidance in the FAQ](#do-i-need-every-rule). In mixed projects, apply the web rules only to web content and its supporting endpoints.
-4. **Check the size and confirm loading.** The two core files currently total about **38.8 KiB (39,759 bytes)**, before your existing instructions. Compare the full content with your agent's documented instruction-loading limit, including any combined limit across files. Splitting the same content across files does not avoid a combined limit. If the content does not fit, select fewer relevant sections, use supported conditional loading, or adjust the limit where supported. Use available loading diagnostics to confirm the intended content loads in full, then try it on a task. Cloning this repository or copying these files into an arbitrary folder does not activate them.
+Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That file is only for agents maintaining this repository.
 
 For placement details, see the official instructions for [Cursor](https://cursor.com/docs/rules), [Codex](https://developers.openai.com/codex/guides/agents-md), [Claude Code](https://code.claude.com/docs/en/memory), or your chosen agent.
 
-### Keep context relevant
-
-When adapting these rules, distinguish guidance needed across tasks from guidance needed only for a project or activity:
-
-- **Across tasks:** keep approval, privacy, work-preservation, verification, and communication boundaries in the instructions that are always loaded within your chosen scope.
-- **For a project:** keep its tools, commands, conventions, and compatibility requirements in project instructions. Scope web development guidance to web projects or web-related areas of mixed projects using your agent's supported loading controls.
-- **For an occasional task:** keep detailed step-by-step procedures in a task-specific reference or skill and load them when relevant. Rules that guide decisions and limit scope can remain in your instructions without starting that task.
-
-If the same agent also handles non-software tasks, user-level placement may load these coding rules for those tasks too. Scope headings limit when the rules apply; they do not prevent the loaded text from using context. Use conditional loading where available or project instructions if you want to avoid that overhead. Do not move essential safety or approval boundaries solely into optional references.
-
-Use relevant skills only when available and compatible with the project; otherwise consult official documentation. Using a skill does not authorise installations, upgrades, or unrelated changes.
+Once loaded, these are standing instructions, not skills you need to invoke. The agent should apply only what is relevant to your request, without starting extra audits, tests, or installations just because a rule mentions them.
 
 ## Optional specialist rules
 
-"Optional" means optional to adopt, not something you must activate each time. Add useful files to the same instruction setup as the core rules. They can remain loaded; the agent should apply relevant instructions within the current task, without starting extra work merely because a file is present. You do not need these files for the basic web setup above.
+Add these to the same instruction setup if they fit your work. They are not required for the basic web setup.
 
-- [web-accessibility-rules.md](optional/web-accessibility-rules.md) — for accessibility-related development, fixes, and assessments. Keeps checks tied to affected behaviour and project requirements; broader assessment guidance applies only when the task or project requires it.
-- [web-performance-rules.md](optional/web-performance-rules.md) — for performance-related changes and investigations. Limits measurement to relevant work and separates lab measurements, real-user data, and local-preview results.
-- [internationalization-localization-rules.md](optional/internationalization-localization-rules.md) — for work that prepares, adds, or updates translations or locale support. It keeps code and data localizable without requiring translation infrastructure in a single-language project.
-- [agent-workflow-authoring-rules.md](optional/agent-workflow-authoring-rules.md) — use when creating or changing agent rules, skills, subagents, or agent-tool workflows.
+- [Web accessibility](optional/web-accessibility-rules.md): keep accessibility work and checks tied to project requirements.
+- [Web performance](optional/web-performance-rules.md): investigate and measure relevant performance changes without treating a local result as proof for all users.
+- [Internationalization and localization](optional/internationalization-localization-rules.md): prepare code for different languages and regions, and handle translations and text direction without requiring translation infrastructure in every project.
+- [Agent workflow authoring](optional/agent-workflow-authoring-rules.md): write or maintain rules, skills, subagents, and tool workflows.
 
 ## FAQ
 
-### Will these rules save tokens?
-
-Only if avoided mistakes and repeated prompting outweigh the extra instructions and checks; savings are not guaranteed. Compare representative tasks with and without your selected rules, including rework, time, and token use.
-
 ### Do I need every rule?
 
-No; keep relevant sections and adapt them if they add friction without helping your work. Remove duplicates and resolve conflicts with existing instructions and skills while preserving project requirements and safety boundaries; a different file type does not justify repeating the same instruction.
+No. Keep what helps and adapt anything that adds friction without helping. If your agent also handles non-software tasks, project-level placement or supported conditional loading can avoid loading coding rules for unrelated work.
+
+### What if the rules are too large?
+
+The two core files total about **38.8 KiB (39,759 bytes)**, before your existing instructions. Compare the combined content with your agent's documented loading limit. Select fewer relevant sections, load sections conditionally where supported, or adjust the limit if your agent allows it. Splitting the same text across files does not avoid a combined limit. Keep essential safety and approval boundaries in the instructions that load for the relevant work.
+
+### What if they conflict with my project rules or skills?
+
+These are defaults, not a replacement for project requirements or your agent's instruction hierarchy. Resolve conflicts before adopting them. Keep project-specific tools, commands, and conventions in project instructions, and detailed procedures in skills or references. Project rules and skills cannot waive required approval, security, or privacy protections.
 
 ### How should a team use these rules?
 
-User-level rules affect your own agent setup, not your teammates' setups. Agree on a shared subset and keep it in the project's version-controlled instructions. Generic rules can live in a project file; they do not have to be installed at user level. Confirm that each agent used by the team loads the shared instructions. Keep personal preferences at user level without duplicating or conflicting with the shared rules.
+Your user-level rules do not affect teammates' agents. Agree on a shared subset, keep it in the project's version-controlled instructions, and confirm each agent loads it. Keep personal preferences at user level.
 
-Record the source commit when adopting these rules, and agree who reviews updates to the shared copy. Review later changes before adopting them, preserving the team's project-specific adjustments.
+Record the source commit and agree who reviews updates. Rules do not enforce behaviour; use automated checks and permission controls for requirements that need enforcement.
 
-Shared instructions make the guidance reviewable, but do not guarantee that every agent follows it. For requirements that tools can enforce, use required automated checks, repository protections, and permission controls rather than relying on instructions alone.
+### Will these rules save tokens?
+
+Not necessarily. They add context and may add checks. Savings depend on whether they prevent enough mistakes and repeated prompting to offset that cost. Compare similar tasks with and without your selected rules, including time and rework.
 
 ### Will they make the agent ask permission more often?
 
-They may: the defaults require explicit approval for actions such as downloads, installations, and publishing unless those actions are already authorised within the current scope. Review whether this policy fits your workflow before adopting it; ordinary in-scope work and actions already explicitly approved should not trigger repeated approval requests.
-
-### Are they proven to improve every agent and model?
-
-No universal improvement has been established, although the rules are written without depending on a particular coding agent or LLM model. Unlike CSS rules executed by browsers, these instructions are interpreted by agents and cannot guarantee the same behaviour across models.
+They may. Downloads, installations, and publishing need explicit approval unless already authorised for the task. Check that this policy fits your workflow. Routine work within scope and actions already approved should not trigger repeated questions.
 
 ## Contributing
 
-Issues and pull requests are welcome, including feedback from trying the rules in your own projects. Explain the problem your suggestion solves and whether it belongs in the global rules, web development rules, or project instructions.
+Issues and pull requests are welcome. Explain the problem your suggestion solves, ideally with an example from using the rules. Keep suggestions reusable across projects; project-specific requirements belong in that project's instructions.
 
-## Tools used to refine these rules
+<details>
+<summary>Optional wording check for contributors</summary>
 
-Alongside practical use and review, tools used include:
+The repository includes the Vale configuration and vocabulary. To run the check, [install Vale](https://docs.vale.sh/topics/installation), a free, MIT-licensed tool. The configuration was tested with **3.22.0**; use that version to reproduce results.
 
-- [Vale](https://docs.vale.sh/) for prose-style checks and consistent wording.
-- [Promptfoo](https://www.promptfoo.dev/docs/intro/) for small comparisons of model responses with and without the rules.
-- [Firecrawl](https://docs.firecrawl.dev/introduction) for researching public documentation and developer feedback.
-
-Their output informs edits; it does not certify the rules. You do not need these tools to use the rule files.
-
-### Optional contributor check
-
-Cloning this repository includes `.vale.ini` and the `.vale/` vocabulary folder; neither needs a separate installation. To run the checks, [install Vale](https://docs.vale.sh/topics/installation) for your operating system. Vale is free and MIT-licensed. This configuration was tested with Vale **3.22.0**; use that version when reproducing results, since other versions may report different warnings.
-
-Run this manual check from the repository root to check only the core and optional rule files, not README.md or AGENTS.md:
+From the repository root, run:
 
 ```sh
 vale --no-global coding-agent-global-rules.md web-development-rules.md optional/
 ```
 
-The configuration uses Vale's built-in spelling, repeated-word, and term-capitalisation checks, with accepted names and technical terms in `.vale/styles/config/vocabularies/Rules/accept.txt`. It runs offline without extra style packages, `vale sync`, or `npm install`. Warnings are advisory: review them before changing instructions. There are no automatic hooks or rewrites, and a clean result does not prove an agent will understand or follow the rules.
+This checks only the core and optional rule files, not README.md or AGENTS.md. It runs offline without extra style packages or hooks. Review warnings before changing wording; a pass does not prove an agent will understand or follow the rules.
+
+</details>
+
+<details>
+<summary>Tools used to refine the rules</summary>
+
+[Vale](https://docs.vale.sh/) checks wording, [Promptfoo](https://www.promptfoo.dev/docs/intro/) has been used for small model-response comparisons, and [Firecrawl](https://docs.firecrawl.dev/introduction) supports research into public documentation and developer feedback. These tools help refine the rules but do not certify them. You do not need them to use the rules.
+
+</details>
 
 ## Influences
 
-These rules mainly reflect practical experience with coding agents. The sources below contributed specific guidance that remains in the files; other material reviewed during drafting is not listed.
+The rules combine practical experience, research, and ideas shared publicly by other developers. They are updated as useful ideas or unnecessary friction become clear.
+
+<details>
+<summary>Sources behind specific guidance</summary>
+
+These sources contributed guidance that remains in the rules; this is not a list of everything reviewed.
 
 - Lauren Tan's [pstack article](https://x.com/poteto/article/2094457600259842065) and [verification-skill pattern](https://github.com/cursor/plugins/blob/main/pstack/skills/create-verification-skill/SKILL.md) shaped the emphasis on direct evidence and reusable verification for important recurring work.
 - Samuel Hu's [run-receipt suggestion](https://x.com/realSamHu/status/2103409341240119777) and Harsh Munjal's [execution-record feedback](https://x.com/Mr_Munjal/status/2103394763109966193) informed inspecting available execution evidence before retries and naming verification checks, results, and relevant errors in reports. Adapted with error redaction, without requiring automatic logging, spend tracking, or a receipt before each retry.
@@ -138,6 +119,8 @@ These rules mainly reflect practical experience with coding agents. The sources 
 - Jad Joubran's [Baseline article](https://www.smashingmagazine.com/2026/08/how-baseline-can-help-ship-less-javascript/) informed the browser-support decision rule without replacing project-specific compatibility requirements.
 - [Anthropic's customisation guidance](https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more) informed the distinction between instructions and enforceable controls.
 - [The Elements of Agent Style](https://github.com/yzhao062/agent-style/blob/99722a59e5ab654bafe68788f3bff7d1c8237f5a/RULES.md#L32-L42) informed writing for the intended reader, [consistent terminology](https://github.com/yzhao062/agent-style/blob/99722a59e5ab654bafe68788f3bff7d1c8237f5a/RULES.md#L681-L691), and [evidence-backed factual claims](https://github.com/yzhao062/agent-style/blob/99722a59e5ab654bafe68788f3bff7d1c8237f5a/RULES.md#L747-L757).
+
+</details>
 
 ## Licence
 
