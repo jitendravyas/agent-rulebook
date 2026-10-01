@@ -8,6 +8,7 @@
 
 ## Content and identifiers
 
+  * Preserve existing content bindings when changing titles or text alternatives. Do not insert document-level markup into embedded fragments.
   * When creating or changing web content, use `translate="no"` for text explicitly designated as non-translatable by project requirements or conventions. Keep exclusions narrow and surrounding text translatable. Do not disable whole-page translation merely to protect a few names or terms.
   * Identify application actions and data using stable identifiers or explicit state, not translated labels or formatted display text.
   * When copying or repeating HTML or inline SVG, keep IDs unique within their DOM tree and keep references pointing to the intended elements.
@@ -20,8 +21,16 @@
 
   * When changing client state, sessions, or lifecycle behaviour, handle refresh, restore, backgrounding, and expiry. Do not depend only on page-close events or uninterrupted background work to preserve required state. Revalidate restored state when freshness affects correctness or access.
 
+## Resource loading and responses
+
+  * When changing script loading, preserve dependency order and required startup behaviour. Do not remove code solely because it is unused during initial page load; other routes or interactions may need it.
+  * When changing delivery configuration stored in project files, use appropriate compression and caching for assets and avoid unnecessary redirects. Use long-lived caching only when the project has a reliable way to deliver updated assets.
+  * For responses controlled by project code or configuration, return HTTP status codes that reflect the response, including missing pages.
+
 ## Web security and privacy
 
+  * Request location, notification, or other browser permissions in the context of a feature the user wants to use, not merely because the page loaded. Explain the need and handle refusal without breaking unrelated features or repeatedly prompting.
+  * For pages served over HTTPS, use secure resource URLs and avoid mixed content.
   * Treat client-side validation as a usability aid, not proof that input is safe. When a server processes data, validate it there even if the browser checks it. Do not rely on client routing, hidden controls, or visibility for permissions. Do not send protected data and rely on client code or the UI to hide it.
   * For state-changing requests with cookies or other automatically attached credentials, enforce server-side protection against cross-site request forgery (CSRF). Set cross-origin access deliberately. Cross-Origin Resource Sharing (CORS) is not authentication or a complete CSRF defence. Preserve needed integrations and check that unintended origins cannot perform protected actions.
   * Keep secrets out of client-delivered code. Avoid unnecessary personal or sensitive data in URLs, browser storage, analytics, client-visible errors, or rendered markup.

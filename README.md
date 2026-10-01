@@ -9,7 +9,7 @@ These rules change over time and have not been tested with every agent, model, o
 ## Choose your rules
 
 - [coding-agent-global-rules.md](coding-agent-global-rules.md): the base for any software project, including native apps, backend services, libraries, and command-line tools. Covers development and related work such as documentation, research, and version control.
-- [web-development-rules.md](web-development-rules.md): add this to the global rules for browser-based work, from a single HTML page to a web app or embedded web interface. Covers browser behaviour, web security, and checking the rendered result.
+- [web-development-rules.md](web-development-rules.md): add this to the global rules for browser-based work, from a single HTML page to a web app or embedded web interface. Covers browser behaviour, resource loading, web security, and checking the rendered result.
 
 Here, "global" means reusable across software projects, not every task an assistant handles. In mixed projects, the web rules apply only to web content and its supporting endpoints.
 
@@ -53,7 +53,7 @@ No. Keep what helps and adapt anything that adds friction without helping. If yo
 
 ### What if the rules are too large?
 
-The two core files total about **38.5 KiB (39,415 bytes)**, before your existing instructions. Compare the combined content with your agent's documented loading limit. Select fewer relevant sections, load sections conditionally where supported, or adjust the limit if your agent allows it. Splitting the same text across files does not avoid a combined limit. Keep essential safety and approval boundaries in the instructions that load for the relevant work.
+The two core files total about **39.7 KiB (40,650 bytes)**, before your existing instructions. Compare the combined content with your agent's documented loading limit. Select fewer relevant sections, load sections conditionally where supported, or adjust the limit if your agent allows it. Splitting the same text across files does not avoid a combined limit. Keep essential safety and approval boundaries in the instructions that load for the relevant work.
 
 ### What if they conflict with my project rules or skills?
 
@@ -91,6 +91,7 @@ The [Vale workflow](.github/workflows/vale.yml) checks the core and optional rul
 
 These sources contributed guidance that remains in the rules; this is not a list of everything reviewed.
 
+- Google's [Lighthouse configuration](https://github.com/GoogleChrome/lighthouse/blob/v13.5.0/core/config/default-config.js) informed the web rules for browser permission requests, HTTPS resources, and HTTP response codes.
 - Lauren Tan's [pstack article](https://x.com/poteto/article/2094457600259842065) and [verification-skill pattern](https://github.com/cursor/plugins/blob/main/pstack/skills/create-verification-skill/SKILL.md) shaped the emphasis on direct evidence and reusable verification for important recurring work.
 - Samuel Hu's [run-receipt suggestion](https://x.com/realSamHu/status/2103409341240119777) and Harsh Munjal's [execution-record feedback](https://x.com/Mr_Munjal/status/2103394763109966193) informed inspecting available execution evidence before retries and naming verification checks, results, and relevant errors in reports. Adapted with error redaction, without requiring automatic logging, spend tracking, or a receipt before each retry.
 - [Ohans Emmanuel's process-cleanup post](https://x.com/OhansEmmanuel/status/2103885312787439850) informed checking for a suitable running instance before starting another long-running development process.
