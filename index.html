@@ -6,7 +6,7 @@
   <meta name="description" content="Choose the instructions your AI agent needs and combine them into one Markdown file.">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#101716">
-  <title>Rule builder · Agent Rulebase</title>
+  <title>Rule builder · Agent Rulebook</title>
   <link id="favicon" rel="icon" type="image/svg+xml" sizes="any" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%226%22%20fill%3D%22%23101a15%22%2F%3E%3Cpath%20d%3D%22M10%203v5m6-5v5m6-5v5M10%2024v5m6-5v5m6-5v5M3%2010h5m-5%206h5m-5%206h5M24%2010h5m-5%206h5m-5%206h5%22%20stroke%3D%22%23b59f64%22%20stroke-width%3D%222%22%2F%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%223%22%20fill%3D%22%23202a25%22%20stroke%3D%22%23879484%22%2F%3E%3Cpath%20d%3D%22m16%2011%205%203-5%203-5-3%205-3Zm-5%206%205%203%205-3m-10%203%205%203%205-3%22%20fill%3D%22none%22%20stroke%3D%22%23a5ed9a%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2224%22%20cy%3D%228%22%20r%3D%223%22%20fill%3D%22%23a5ed9a%22%20fill-opacity%3D%22.65%22%2F%3E%3C%2Fsvg%3E">
   <link rel="stylesheet" href="./site/styles.css">
   <script type="module" src="./site/app.js"></script>
@@ -16,21 +16,21 @@
     <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
     <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></symbol>
     <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></symbol>
-    <symbol id="icon-rulebase" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></symbol>
+    <symbol id="icon-rulebook" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></symbol>
   </svg>
   <a class="skip-link" href="#builder">Skip to rule builder</a>
   <div class="pc-case">
   <span class="case-screw screw-top-start" aria-hidden="true"></span><span class="case-screw screw-top-end" aria-hidden="true"></span>
   <span class="case-screw screw-bottom-start" aria-hidden="true"></span><span class="case-screw screw-bottom-end" aria-hidden="true"></span>
   <header class="site-header wrap">
-    <a class="brand" href="./" aria-label="Agent Rulebase home">
-      <span class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#icon-rulebase"/></svg></span>
-      <span>agent rulebase</span>
+    <a class="brand" href="./" aria-label="Agent Rulebook home">
+      <span class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#icon-rulebook"/></svg></span>
+      <span>agent rulebook</span>
     </a>
     <span class="system-label"><span class="status-led" aria-hidden="true"></span>Built in your browser</span>
     <nav aria-label="Main navigation">
-      <a href="https://github.com/jitendravyas/agent-rulebase#readme">Guide</a>
-      <a class="repo-link" href="https://github.com/jitendravyas/agent-rulebase">GitHub <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+      <a href="https://github.com/jitendravyas/agent-rulebook#readme">Guide</a>
+      <a class="repo-link" href="https://github.com/jitendravyas/agent-rulebook">GitHub <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
     </nav>
   </header>
 
@@ -40,7 +40,7 @@
         <h1 id="page-title">Assemble your<br>agent’s <span>rulebook.</span></h1>
         <p>Pick the rules that fit your work. Connect them in one Markdown file. Keep the parts you need, leave out the rest.</p>
       </div>
-      <figure class="hardware" aria-label="An assembled motherboard with a cooling fan, memory modules, circuit traces, and an Agent Rulebase processor.">
+      <figure class="hardware" aria-label="An assembled motherboard with a cooling fan, memory modules, circuit traces, and an Agent Rulebook processor.">
         <input class="motion-toggle" id="pause-motion" type="checkbox">
         <label class="motion-control" for="pause-motion">Pause animation</label>
         <svg viewBox="0 0 520 304" aria-hidden="true" focusable="false">
@@ -73,19 +73,19 @@
           <g class="slot-latches"><path d="M315 27h27v9h-27Zm0 152h27v9h-27ZM355 27h27v9h-27Zm0 152h27v9h-27ZM395 27h27v9h-27Zm0 152h27v9h-27Z"/></g>
           <rect x="334" y="207" width="96" height="53" fill="url(#chip-pins)"/>
           <rect class="board-chip" x="326" y="216" width="113" height="36" rx="2"/>
-          <text class="chip-label" x="382" y="238" text-anchor="middle">RULEBASE</text>
+          <text class="chip-label" x="382" y="238" text-anchor="middle">RULEBOOK</text>
           <path class="power-cable" d="M472 48v146q0 24-24 24h-5"/><path class="power-wire" d="M472 48v146q0 24-24 24h-5"/>
           <g class="board-leds"><circle cx="52" cy="267" r="3"/><circle cx="64" cy="267" r="3"/><circle cx="76" cy="267" r="3"/></g>
-          <text class="board-label" x="86" y="270">AGENT RULEBASE / MODULAR BY DESIGN</text>
+          <text class="board-label" x="86" y="270">AGENT RULEBOOK / MODULAR BY DESIGN</text>
         </svg>
       </figure>
     </section>
 
     <div id="startup-message" class="builder-loading">
       <h2>Preparing your rulebook…</h2>
-      <p>If the picker does not appear, check that JavaScript is enabled and open this page through a web server, not directly as a local file. You can also <a href="https://github.com/jitendravyas/agent-rulebase#choose-your-rules">read and copy the rules on GitHub</a>.</p>
+      <p>If the picker does not appear, check that JavaScript is enabled and open this page through a web server, not directly as a local file. You can also <a href="https://github.com/jitendravyas/agent-rulebook#choose-your-rules">read and copy the rules on GitHub</a>.</p>
     </div>
-    <noscript><p class="notice">This builder needs JavaScript. You can still <a href="https://github.com/jitendravyas/agent-rulebase#choose-your-rules">read and copy the rules on GitHub</a>.</p></noscript>
+    <noscript><p class="notice">This builder needs JavaScript. You can still <a href="https://github.com/jitendravyas/agent-rulebook#choose-your-rules">read and copy the rules on GitHub</a>.</p></noscript>
 
     <div id="builder" class="builder" tabindex="-1" hidden>
       <section class="choices" aria-labelledby="choose-title">
@@ -172,7 +172,7 @@
       <p>These rules evolve and have not been tested with every agent or model. Keep only what helps, check loading limits, and try your selection on a low-risk task first.</p>
     </section>
   </main>
-  <footer class="site-footer wrap"><span>Agent Rulebase · A little guidance. Your choice.</span><a href="https://github.com/jitendravyas/agent-rulebase/blob/main/LICENSE">MIT licence</a></footer>
+  <footer class="site-footer wrap"><span>Agent Rulebook · A little guidance. Your choice.</span><a href="https://github.com/jitendravyas/agent-rulebook/blob/main/LICENSE">MIT licence</a></footer>
   <div class="case-vent" aria-hidden="true"></div>
   </div>
   <nav id="mobile-review" class="mobile-review" aria-label="Rule builder shortcuts" hidden>

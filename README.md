@@ -1,4 +1,4 @@
-# AI agent rules
+# Agent Rulebook
 
 Reusable instructions to help AI agents stay within scope, protect existing work, check results, and explain them clearly. Use them with one agent or several, for everyday tasks, small experiments, or established software projects. They aim to reduce repeated prompting and avoidable mistakes without prescribing an operating system, framework, or agent.
 
@@ -18,7 +18,9 @@ These rules change over time and have not been tested with every agent, model, o
 
 ## Build a single rule file
 
-The repository includes a static [rule builder](index.html). Serve the repository root with an existing static web server, then open its root URL in your browser. No package installation or build step is required; opening the HTML file directly is not supported.
+Use the [online rule builder](https://jitendravyas.github.io/agent-rulebook/) to combine the rules you need into one file. The website updates when changes are pushed to `main` and reads the original Markdown files directly.
+
+For a local preview, serve the repository root with an existing static web server, then open its root URL in your browser. No package installation or build step is required; opening the HTML file directly is not supported.
 
 Choose a preset or individual rule sets, review the combined text and file size, then copy it or download one Markdown file. The builder reads the original rule files, preserves their text, and includes the MIT licence. Drafts, the helper-tool reference, and repository-maintenance instructions are not bundled.
 

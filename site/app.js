@@ -184,7 +184,7 @@ function renderChoices() {
       iconShape.setAttribute('href', '#icon-arrow');
       icon.append(iconShape);
       source.append(icon);
-      source.href = `https://github.com/jitendravyas/agent-rulebase/blob/main/${rule.path}`;
+      source.href = `https://github.com/jitendravyas/agent-rulebook/blob/main/${rule.path}`;
       source.target = '_blank';
       source.rel = 'noopener noreferrer';
       source.setAttribute('aria-label', `Read ${rule.title} source on GitHub`);
@@ -397,7 +397,7 @@ async function registerAgentTools() {
   try {
     await context.registerTool({
       name: 'list_rule_sets',
-      description: 'List available Agent Rulebase rule sets, presets, and the current builder selection. Does not return rule text or change anything.',
+      description: 'List available Agent Rulebook rule sets, presets, and the current builder selection. Does not return rule text or change anything.',
       inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       annotations: { readOnlyHint: true, consequentialHint: false },
       execute: (args) => {

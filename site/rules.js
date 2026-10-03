@@ -1,4 +1,4 @@
-const SOURCE_REPOSITORY_URL = 'https://github.com/jitendravyas/agent-rulebase';
+const SOURCE_REPOSITORY_URL = 'https://github.com/jitendravyas/agent-rulebook';
 
 const GENERAL_RULE = {
   id: 'general',
