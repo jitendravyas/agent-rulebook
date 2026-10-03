@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - agent-global-rules.md
       - coding-agent-global-rules.md
       - web-development-rules.md
       - 'optional/**'
@@ -33,7 +34,7 @@ jobs:
         with:
           version: '3.22.0'
           reviewdog_version: '0.21.0'
-          files: '["coding-agent-global-rules.md", "web-development-rules.md", "optional/"]'
+          files: '["agent-global-rules.md", "coding-agent-global-rules.md", "web-development-rules.md", "optional/"]'
           vale_flags: --no-global
           sync: false
           reporter: local

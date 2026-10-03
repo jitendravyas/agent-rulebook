@@ -1,59 +1,75 @@
-# Coding agent rules
+# AI agent rules
 
-Reusable instructions for AI coding agents, covering scope, approvals, protecting existing work, checking changes, and explaining results clearly. They aim to reduce repeated prompting and avoidable mistakes.
-
-Use them with one agent or several, for small experiments or established software projects. They do not prescribe a framework, platform, or coding agent. Your project still sets its own architecture, tools, and conventions.
-
-These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
+Reusable instructions to help AI agents stay within scope, protect existing work, check results, and explain them clearly. Use them with one agent or several, for everyday tasks, small experiments, or established software projects. They aim to reduce repeated prompting and avoidable mistakes without prescribing an operating system, framework, or agent.
 
 ## Choose your rules
 
-- [coding-agent-global-rules.md](coding-agent-global-rules.md): the base for any software project, including native apps, backend services, libraries, and command-line tools. Covers development and related work such as documentation, research, and version control.
-- [web-development-rules.md](web-development-rules.md): add this to the global rules for browser-based work, from a single HTML page to a web app or embedded web interface. Covers browser behaviour, resource loading, web security, and checking the rendered result.
+| Agent setup | Load these files | Covers |
+| --- | --- | --- |
+| General tasks | [General rules](agent-global-rules.md) | Research, files, documents, media, browser and device work. |
+| Software development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) | Software planning, implementation, maintenance, and testing. |
+| Web development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) + [web](web-development-rules.md) | Browser behaviour, resource loading, web security, and proportionate browser checks. |
 
-Here, "global" means reusable across software projects, not every task an assistant handles. In mixed projects, the web rules apply only to web content and its supporting endpoints.
+Load the files in the order shown. "Global" means reusable across tasks or projects; your task and project requirements still set the architecture, tools, and conventions.
+
+These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
 ## How to use
 
+**Check loading limits before copying.** The complete general + coding + web setup exceeds the [32 KiB default combined instruction limit documented for Codex](https://learn.chatgpt.com/docs/agent-configuration/agents-md). Content beyond a loading limit may be omitted. Compare your selected rules and existing instructions with your agent's current limit; see [what to do if the rules are too large](#what-if-the-rules-are-too-large).
+
 1. **Choose the scope.** Use your agent's user-level instructions for your own work across projects, or a project's instruction file for that project and its contributors.
-2. **Copy the selected rules into your agent's instructions.** Depending on the agent, use an `AGENTS.md` or `CLAUDE.md` file, or paste them into Cursor's User Rules in settings. For web work, combine both core files in the same file or settings field. No package installation is needed.
+2. **Copy your chosen rules.** Put the selected content in your agent's supported instruction location, such as an `AGENTS.md` or `CLAUDE.md`, or paste it into Cursor's User Rules in settings. The files do not automatically import one another. No package installation is needed.
 3. **Merge with your existing instructions.** Remove duplicates and resolve conflicts. Keep project requirements, safety boundaries, and the conditions and exceptions attached to each rule.
-4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available. Cloning this repository or saving files in an arbitrary folder does not activate them. Check the [size guidance below](#what-if-the-rules-are-too-large) before copying everything.
-
-```text
-Non-web project:
-  coding-agent-global-rules.md ------------------> one file or settings field
-
-Web project:
-  coding-agent-global-rules.md ----+
-                                   +---------------> one file or settings field
-  web-development-rules.md --------+
-```
+4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available. Cloning this repository or saving files in an arbitrary folder does not activate them.
 
 Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That file is only for agents maintaining this repository.
 
 For placement details, see the official instructions for [Cursor](https://cursor.com/docs/rules), [Codex](https://developers.openai.com/codex/guides/agents-md), [Claude Code](https://code.claude.com/docs/en/memory), or your chosen agent.
 
-Once loaded, these are standing instructions, not skills you need to invoke. The agent should apply only what is relevant to your request, without starting extra audits, tests, or installations just because a rule mentions them.
+Once loaded, these are standing instructions, not skills you need to invoke. The agent should apply only what is relevant to your request, without starting extra audits, tests, or installations just because a rule mentions them. Browser checks should match the requested work, risk, stage, and project requirements, not run a full audit for every web task.
 
-## Optional specialist rules
+<details>
+<summary>Optional rules and tools — skip unless needed</summary>
 
-Choose only the specialist rules relevant to your work. Prefer project-level instructions or supported file- or task-specific loading, rather than adding all of them to every-session user instructions. They are not required for the basic web setup.
+### Specialist rules
 
-- [Web accessibility](optional/web-accessibility-rules.md): keep accessibility work and checks tied to project requirements.
+These are not required for the basic web setup. OS-specific rules can accompany any setup, including general tasks without coding rules. Choose the add-on for the environment the agent operates in, including remote environments. For other specialities, prefer project-level instructions or supported file- or task-specific loading instead of loading every file in every session.
+
+- [Browser animations](optional/browser-animation-rules.md): preserve application state and animation lifecycles when creating or changing live web motion. Not needed for web work without animation or for video exports.
 - [Web performance](optional/web-performance-rules.md): investigate and measure relevant performance changes without treating a local result as proof for all users.
+- [Motion graphics videos](optional/motion-video-rules.md): keep composition, timeline, assets, and video export consistent. Use with the general rules for motion graphics intended for MP4 or other video output; a browser preview alone does not require the web-development setup.
 - [Internationalization and localization](optional/internationalization-localization-rules.md): prepare code for different languages and regions, and handle translations and text direction without requiring translation infrastructure in every project.
 - [Agent workflow authoring](optional/agent-workflow-authoring-rules.md): write or maintain rules, skills, subagents, and tool workflows.
+- [macOS agent rules](optional/macos-agent-rules.md): a compact safety add-on for agents that operate a Mac, including non-software tasks. Covers system protection, permissions, iCloud and Photos file handling, and local-processing boundaries. This safety layer can stay loaded; detailed tool guidance stays optional.
+- [Windows agent rules](optional/windows-agent-rules.md): protect managed system files, handle redirected and synced folders, and keep Windows and WSL operations distinct.
+- [Linux agent rules](optional/linux-agent-rules.md): respect distribution differences and protect system interfaces, permissions, and persistent application data.
+
+### Tool reference
+
+[Helper tools](optional/helper-tools.md) covers utilities, integrations, and operating-system capabilities for research, browser use, files, and other tasks. It includes Windows and Linux diagnostics, Spotlight, text recognition, Shortcuts, and Apple Intelligence, with version conditions where needed. These tools are optional, not assumed to be installed. Provide relevant entries for a task or use supported conditional loading; do not load the whole reference in every session. No rule file imports it automatically.
+
+</details>
 
 ## FAQ
 
-### Do I need every rule?
+### Do I need coding rules for non-development work?
 
-No. Keep what helps and adapt anything that adds friction without helping. If your agent also handles non-software tasks, project-level placement or supported conditional loading can avoid loading coding rules for unrelated work.
+No. The general rules work on their own or with OS-specific rules, including when the agent uses tools, helper scripts, or temporary browser output. Add coding or web rules when you want their specialised development guidance.
+
+The development rules also cover temporary and standalone work without a Git repository. No setup requires project structure, dependencies, test infrastructure, or version control that the task does not need.
+
+If one agent handles mixed work, your selected rules can stay loaded. Each applies only within its stated scope; use conditional loading where supported to reduce context use.
 
 ### What if the rules are too large?
 
-The two core files total about **39.7 KiB (40,650 bytes)**, before your existing instructions. Compare the combined content with your agent's documented loading limit. Select fewer relevant sections, load sections conditionally where supported, or adjust the limit if your agent allows it. Splitting the same text across files does not avoid a combined limit. Keep essential safety and approval boundaries in the instructions that load for the relevant work.
+Select fewer relevant sections, load sections conditionally where supported, or adjust a supported loading-limit setting. A condition inside a copied rule does not stop that text from using context. Splitting the same text across files does not avoid a combined limit, and increasing that limit does not reduce context use. Keep essential safety and approval boundaries in the instructions that load for the relevant work. Recheck the total when the rules or your existing instructions change.
+
+### How do I migrate from the coding rules?
+
+When replacing an earlier version of `coding-agent-global-rules.md`, add `agent-global-rules.md` at the same time. Shared safety, permissions, tool use, research, communication, and verification guidance have moved there. Keep the coding file for software development and add the web file for web development. Replace the old copied rules rather than appending duplicate versions, while preserving your own instructions.
+
+Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional browser-animation rules only when relevant. The former standalone accessibility file is no longer needed; scoped safeguards remain in the web rules.
 
 ### What if they conflict with my project rules or skills?
 
@@ -71,7 +87,7 @@ Not necessarily. They add context and may add checks. Savings depend on whether 
 
 ### Will they make the agent ask permission more often?
 
-They may. Downloads, installations, and publishing need explicit approval unless already authorised for the task. Temporary reference copies of public documentation are an exception. Check that this policy fits your workflow. Routine work within scope and actions already approved should not trigger repeated questions.
+They may. Downloads, installations, and publishing need approval unless already authorised. Exceptions cover temporary reference copies of public documentation and restoring a project's existing locked dependencies through its established workflow. These exceptions do not permit new tools, changed requirements, or wider access; see the [approval conditions](agent-global-rules.md#required-approval). Check that this policy fits your workflow. Routine in-scope work and already approved actions should not trigger repeated questions.
 
 ## Influences
 
@@ -82,7 +98,7 @@ The rules combine practical experience, research, and ideas shared publicly by o
 
 [Vale](https://docs.vale.sh/) checks wording, [Promptfoo](https://www.promptfoo.dev/docs/intro/) has been used for small model-response comparisons, and [Firecrawl](https://docs.firecrawl.dev/introduction) supports research into public documentation and developer feedback. These tools help refine the rules but do not certify them. You do not need them to use the rules.
 
-The [Vale workflow](.github/workflows/vale.yml) checks the core and optional rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
+The [Vale workflow](.github/workflows/vale.yml) checks the general, software, web, and optional rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
 
 </details>
 
@@ -91,12 +107,20 @@ The [Vale workflow](.github/workflows/vale.yml) checks the core and optional rul
 
 These sources contributed guidance that remains in the rules; this is not a list of everything reviewed.
 
+- MDN's guidance on [animation timing](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), [transition completion](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event), and [cancellation](https://developer.mozilla.org/en-US/docs/Web/API/Animation/cancel) informed the browser-animation safeguards.
+- Remotion's guidance on [frame-based animation](https://www.remotion.dev/docs/animating-properties), [asset readiness](https://www.remotion.dev/docs/delay-render), and [encoding](https://www.remotion.dev/docs/encoding) informed the video rules without requiring that tool. W3C's [flash-safety guidance](https://www.w3.org/WAI/WCAG22/Understanding/three-flashes-or-below-threshold.html) informs avoiding rapid, high-contrast flashing.
+- Apple's guidance on [command-line Shortcuts](https://support.apple.com/guide/shortcuts-mac/run-shortcuts-from-the-command-line-apd455c82f02/mac), [Script Editor and app scripting dictionaries](https://support.apple.com/en-ca/guide/script-editor/scpedt6935/mac), [app permissions](https://support.apple.com/guide/security/controlling-app-access-to-files-secddd1d86a6/web), [Gatekeeper](https://support.apple.com/en-us/102445), [System Integrity Protection](https://support.apple.com/en-us/102149), [Rosetta](https://support.apple.com/en-us/102527), [iCloud Drive files](https://support.apple.com/guide/mac-help/work-with-folders-and-files-in-icloud-drive-mchl1a02d711/mac), and [Photos libraries](https://support.apple.com/guide/photos/where-are-the-items-i-imported-pht12e7a8015/mac) informed the macOS safeguards and optional tool guidance.
+- Apple's guidance on [Spotlight indexing](https://support.apple.com/en-ie/102321), [document version history](https://support.apple.com/guide/mac-help/view-and-restore-past-versions-of-documents-mh40710/mac), and [Live Text in Preview](https://support.apple.com/guide/preview/interact-with-text-in-a-photo-prvw625a5b2c/mac), plus the installed `mdfind` and `mdls` manuals, informed the native discovery and recovery guidance. The [macOS Monterey release notes](https://www.apple.com/newsroom/2021/10/macos-monterey-is-now-available/) establish the macOS 12 minimum for Shortcuts and Live Text.
+- Apple's [Foundation Models CLI introduction](https://developer.apple.com/videos/play/wwdc2026/334/) and installed `fm` manual informed the conditional local-AI guidance. The [Container project](https://github.com/apple/container), [container machines](https://developer.apple.com/videos/play/wwdc2026/389/), and [macOS virtualization documentation](https://developer.apple.com/documentation/virtualization/virtualize-macos-on-a-mac) informed the distinction between isolated execution and shared resources.
+- Microsoft's guidance on [Windows Resource Protection](https://learn.microsoft.com/en-us/windows/win32/wfp/about-windows-file-protection), [PowerShell objects](https://learn.microsoft.com/en-us/powershell/scripting/learn/ps101/03-discovering-objects), [event-log queries](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent), [known folders](https://learn.microsoft.com/en-us/windows/win32/shell/known-folders), [exact-path handling](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/remove-item), [OneDrive Files On-Demand](https://support.microsoft.com/en-us/onedrive/save-disk-space-with-onedrive-files-on-demand-for-windows), and [WSL file systems](https://learn.microsoft.com/en-us/windows/wsl/filesystems) informed the Windows safeguards and optional tool guidance.
+- The Linux kernel's documentation for [process information](https://docs.kernel.org/filesystems/proc.html) and [system attributes](https://docs.kernel.org/filesystems/sysfs.html), the Filesystem Hierarchy Standard's [persistent application state guidance](https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch05s08.html), systemd's manuals for [OS identification](https://github.com/systemd/systemd/blob/main/man/os-release.xml) and [journal queries](https://github.com/systemd/systemd/blob/main/man/journalctl.xml), and guidance on [SELinux](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html-single/using_selinux/index) and [AppArmor](https://ubuntu.com/server/docs/how-to/security/apparmor/) informed the Linux safeguards and optional tool guidance without assuming every distribution uses those tools.
+- [samwho's agent instructions](https://github.com/samwho/pi/blob/main/agent/APPEND_SYSTEM.md) informed choosing direct URL retrieval, browser inspection, and isolated helper-script dependencies for their intended uses, without requiring specific tools.
+- [Task-status guidance by @kkurilyak](https://x.com/kkurilyak/status/2105068689087516783) informed carrying forward unfinished work and verification gaps within an active task, without a fixed report template.
 - Google's [Lighthouse configuration](https://github.com/GoogleChrome/lighthouse/blob/v13.5.0/core/config/default-config.js) informed the web rules for browser permission requests, HTTPS resources, and HTTP response codes.
 - Lauren Tan's [pstack article](https://x.com/poteto/article/2094457600259842065) and [verification-skill pattern](https://github.com/cursor/plugins/blob/main/pstack/skills/create-verification-skill/SKILL.md) shaped the emphasis on direct evidence and reusable verification for important recurring work.
 - Samuel Hu's [run-receipt suggestion](https://x.com/realSamHu/status/2103409341240119777) and Harsh Munjal's [execution-record feedback](https://x.com/Mr_Munjal/status/2103394763109966193) informed inspecting available execution evidence before retries and naming verification checks, results, and relevant errors in reports. Adapted with error redaction, without requiring automatic logging, spend tracking, or a receipt before each retry.
 - [Ohans Emmanuel's process-cleanup post](https://x.com/OhansEmmanuel/status/2103885312787439850) informed checking for a suitable running instance before starting another long-running development process.
 - Ansh Nanda's [testing discussion](https://x.com/anshnanda/status/2101627891721371971) informed the requirement for meaningful tests with expected results independent of the implementation, without adopting an E2E-only policy.
-- Emil Kowalski's [UI stress-testing thread](https://x.com/emilkowalski/status/2103516287452483885) and a [reply about misleading truncation](https://x.com/benmodev/status/2103518916752691506) informed checking changed UI with representative data extremes while keeping essential information distinguishable.
 - Matt Pocock's [tracer-bullet approach](https://www.aihero.dev/tracer-bullets) informed the small end-to-end path for unfamiliar multi-component features; his [small-change guidance](https://x.com/mattpocockuk/status/2103506709633466648) and [advice to pair direct evidence with a narrow, reversible change](https://x.com/mattpocockuk/status/2103601654113112276) informed keeping changes reviewable and recoverable.
 - Addy Osmani's [Brownfield Agentic Engineering](https://addyosmani.com/blog/brownfield-agentic-engineering/) informed the rules to establish existing behaviour before refactoring and preserve safeguards and consumer compatibility during replacement.
 - [AWS's secure agentic development guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-security/best-practices-dev-practices.html) and OWASP's [input-validation](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html), [injection-prevention](https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html), and [CSRF-prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html) guidance informed the trust-boundary and web-security rules.

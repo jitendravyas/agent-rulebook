@@ -1,7 +1,11 @@
 Android
 APIs?
+iCloud
 iOS
 iPadOS
+SELinux
+systemd
+Xcode
 (?i)automations?
 (?i)backgrounding
 (?i)deliverables?
