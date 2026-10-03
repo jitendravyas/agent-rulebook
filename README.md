@@ -2,6 +2,8 @@
 
 Reusable instructions to help AI agents stay within scope, protect existing work, check results, and explain them clearly. Use them with one agent or several, for everyday tasks, small experiments, or established software projects. They aim to reduce repeated prompting and avoidable mistakes without prescribing an operating system, framework, or agent.
 
+These rules are intended for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalisation fields. Reading or uploading a file does not by itself activate it as standing instructions.
+
 ## Choose your rules
 
 | Agent setup | Load these files | Covers |
@@ -14,12 +16,28 @@ Load the files in the order shown. "Global" means reusable across tasks or proje
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
+## Build a single rule file
+
+The repository includes a static [rule builder](index.html). Serve the repository root with an existing static web server, then open its root URL in your browser. No package installation or build step is required; opening the HTML file directly is not supported.
+
+Choose a preset or individual rule sets, review the combined text and file size, then copy it or download one Markdown file. The builder reads the original rule files, preserves their text, and includes the MIT licence. Drafts, the helper-tool reference, and repository-maintenance instructions are not bundled.
+
+Optionally choose Codex, Claude Code, Cursor, or Other agent, then personal or project use. The builder shows the download filename, where to place the rules, and how to check loading. These choices do not change the rule text.
+
+Your selection and setup choices stay in the page address. Bookmark it or use **Copy setup link**; shared links restore choices, not a frozen copy of the rules. Reopening or reloading reads the current rule files. Older links warn about unavailable choices. Local preview links work only on the machine serving them; share the hosted website’s address with others.
+
+Open **Included rules & sizes** to see each selected file’s contribution and the licence, attribution, and separator overhead. These UTF-8 byte counts are calculated from the actual exported text, not hard-coded sizes or token estimates.
+
+Downloading does not activate the rules or update existing agent settings. Merge the result with your current instructions and follow the setup guidance below. Selection happens in your browser; no account, analytics, or AI service is used by the builder.
+
+With a compatible browser and agent, the builder also offers optional [WebMCP](https://developer.chrome.com/docs/ai/webmcp/) tools to list rule sets and assemble a file. Agent selections appear in the same builder. These tools return the file content for review; they do not save it or change agent settings. WebMCP is experimental; the normal controls work without it.
+
 ## How to use
 
 **Check loading limits before copying.** The complete general + coding + web setup exceeds the [32 KiB default combined instruction limit documented for Codex](https://learn.chatgpt.com/docs/agent-configuration/agents-md). Content beyond a loading limit may be omitted. Compare your selected rules and existing instructions with your agent's current limit; see [what to do if the rules are too large](#what-if-the-rules-are-too-large).
 
 1. **Choose the scope.** Use your agent's user-level instructions for your own work across projects, or a project's instruction file for that project and its contributors.
-2. **Copy your chosen rules.** Put the selected content in your agent's supported instruction location, such as an `AGENTS.md` or `CLAUDE.md`, or paste it into Cursor's User Rules in settings. The files do not automatically import one another. No package installation is needed.
+2. **Copy your chosen rules.** Put the selected content in your agent's supported instruction file, such as an `AGENTS.md` or `CLAUDE.md`, or paste it into Cursor's User Rules under Customize → Rules. For files, use the filename, location, and format your agent requires. The files do not automatically import one another. No package installation is needed.
 3. **Merge with your existing instructions.** Remove duplicates and resolve conflicts. Keep project requirements, safety boundaries, and the conditions and exceptions attached to each rule.
 4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available. Cloning this repository or saving files in an arbitrary folder does not activate them.
 

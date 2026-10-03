@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Choose the instructions your AI agent needs and combine them into one Markdown file.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#101716">
+  <title>Rule builder · Agent Rulebase</title>
+  <link id="favicon" rel="icon" type="image/svg+xml" sizes="any" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%226%22%20fill%3D%22%23101a15%22%2F%3E%3Cpath%20d%3D%22M10%203v5m6-5v5m6-5v5M10%2024v5m6-5v5m6-5v5M3%2010h5m-5%206h5m-5%206h5M24%2010h5m-5%206h5m-5%206h5%22%20stroke%3D%22%23b59f64%22%20stroke-width%3D%222%22%2F%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%223%22%20fill%3D%22%23202a25%22%20stroke%3D%22%23879484%22%2F%3E%3Cpath%20d%3D%22m16%2011%205%203-5%203-5-3%205-3Zm-5%206%205%203%205-3m-10%203%205%203%205-3%22%20fill%3D%22none%22%20stroke%3D%22%23a5ed9a%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2224%22%20cy%3D%228%22%20r%3D%223%22%20fill%3D%22%23a5ed9a%22%20fill-opacity%3D%22.65%22%2F%3E%3C%2Fsvg%3E">
+  <link rel="stylesheet" href="./site/styles.css">
+  <script type="module" src="./site/app.js"></script>
+</head>
+<body>
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></symbol>
+    <symbol id="icon-rulebase" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></symbol>
+  </svg>
+  <a class="skip-link" href="#builder">Skip to rule builder</a>
+  <div class="pc-case">
+  <span class="case-screw screw-top-start" aria-hidden="true"></span><span class="case-screw screw-top-end" aria-hidden="true"></span>
+  <span class="case-screw screw-bottom-start" aria-hidden="true"></span><span class="case-screw screw-bottom-end" aria-hidden="true"></span>
+  <header class="site-header wrap">
+    <a class="brand" href="./" aria-label="Agent Rulebase home">
+      <span class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#icon-rulebase"/></svg></span>
+      <span>agent rulebase</span>
+    </a>
+    <span class="system-label"><span class="status-led" aria-hidden="true"></span>Built in your browser</span>
+    <nav aria-label="Main navigation">
+      <a href="https://github.com/jitendravyas/agent-rulebase#readme">Guide</a>
+      <a class="repo-link" href="https://github.com/jitendravyas/agent-rulebase">GitHub <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <h1 id="page-title">Assemble your<br>agent’s <span>rulebook.</span></h1>
+        <p>Pick the rules that fit your work. Connect them in one Markdown file. Keep the parts you need, leave out the rest.</p>
+      </div>
+      <figure class="hardware" aria-label="An assembled motherboard with a cooling fan, memory modules, circuit traces, and an Agent Rulebase processor.">
+        <input class="motion-toggle" id="pause-motion" type="checkbox">
+        <label class="motion-control" for="pause-motion">Pause animation</label>
+        <svg viewBox="0 0 520 304" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="metal" x2="0" y2="1"><stop stop-color="#566762"/><stop offset=".5" stop-color="#28332f"/><stop offset="1" stop-color="#101916"/></linearGradient>
+            <linearGradient id="fan-surface" x2="1" y2="1"><stop stop-color="#4d5f57"/><stop offset="1" stop-color="#1e2924"/></linearGradient>
+            <pattern id="chip-pins" width="9" height="8" patternUnits="userSpaceOnUse"><path d="M2 0v8" stroke="#96875a" stroke-width="3"/></pattern>
+            <pattern id="heat-fins" width="7" height="10" patternUnits="userSpaceOnUse"><path d="M1 0v10" stroke="#829289" stroke-opacity=".35"/></pattern>
+            <path id="fan-blade" d="M179 120c-6-27 4-64 22-70 29 9 46 34 48 59-22-11-37-9-52 9Z"/>
+          </defs>
+          <rect class="motherboard-edge" x="14" y="12" width="491" height="277" rx="5"/>
+          <g class="pcb-traces"><path d="M32 53h39l24 24h38M32 65h33l24 24h44M32 235h94l27-27h100l30 30h174M32 248h99l28-28h89l29 29h180M256 88h34l35-35h144M256 101h39l35-35h139M250 148h73l27 27v45M250 159h66l22 22v39M400 240v22h69M414 240v12h55"/></g>
+          <g class="board-mounts"><circle cx="27" cy="25" r="4"/><circle cx="492" cy="25" r="4"/><circle cx="27" cy="276" r="4"/><circle cx="492" cy="276" r="4"/></g>
+          <g class="capacitors"><circle cx="56" cy="113" r="8"/><circle cx="56" cy="139" r="8"/><circle cx="56" cy="165" r="8"/><path d="M51 113h10M51 139h10M51 165h10"/></g>
+          <rect class="cooler-frame" x="82" y="30" width="192" height="192" rx="11"/>
+          <rect x="88" y="36" width="180" height="180" rx="7" fill="url(#heat-fins)"/>
+          <circle class="fan-ring" cx="178" cy="126" r="85"/>
+          <g class="fan-rotor" fill="url(#fan-surface)" stroke="#62746b" stroke-width=".6">
+            <use href="#fan-blade"/><use href="#fan-blade" transform="rotate(51.43 178 126)"/>
+            <use href="#fan-blade" transform="rotate(102.86 178 126)"/><use href="#fan-blade" transform="rotate(154.29 178 126)"/>
+            <use href="#fan-blade" transform="rotate(205.72 178 126)"/><use href="#fan-blade" transform="rotate(257.15 178 126)"/>
+            <use href="#fan-blade" transform="rotate(308.58 178 126)"/>
+          </g>
+          <circle class="fan-hub" cx="178" cy="126" r="26"/>
+          <path d="m178 114 12 7-12 7-12-7Zm-12 14 12 7 12-7" class="hub-mark"/>
+          <g class="cooler-screws"><circle cx="96" cy="44" r="3"/><circle cx="260" cy="44" r="3"/><circle cx="96" cy="208" r="3"/><circle cx="260" cy="208" r="3"/></g>
+          <g class="memory-slots"><rect x="317" y="30" width="23" height="153" rx="2"/><rect x="357" y="30" width="23" height="153" rx="2"/><rect x="397" y="30" width="23" height="153" rx="2"/></g>
+          <g class="memory-boards"><path d="M321 39h15v135h-15ZM361 39h15v135h-15ZM401 39h15v135h-15Z"/></g>
+          <g class="memory-chips"><path d="M323 53h11v26h-11Zm0 39h11v26h-11Zm0 39h11v26h-11ZM363 53h11v26h-11Zm0 39h11v26h-11Zm0 39h11v26h-11ZM403 53h11v26h-11Zm0 39h11v26h-11Zm0 39h11v26h-11Z"/></g>
+          <g class="slot-latches"><path d="M315 27h27v9h-27Zm0 152h27v9h-27ZM355 27h27v9h-27Zm0 152h27v9h-27ZM395 27h27v9h-27Zm0 152h27v9h-27Z"/></g>
+          <rect x="334" y="207" width="96" height="53" fill="url(#chip-pins)"/>
+          <rect class="board-chip" x="326" y="216" width="113" height="36" rx="2"/>
+          <text class="chip-label" x="382" y="238" text-anchor="middle">RULEBASE</text>
+          <path class="power-cable" d="M472 48v146q0 24-24 24h-5"/><path class="power-wire" d="M472 48v146q0 24-24 24h-5"/>
+          <g class="board-leds"><circle cx="52" cy="267" r="3"/><circle cx="64" cy="267" r="3"/><circle cx="76" cy="267" r="3"/></g>
+          <text class="board-label" x="86" y="270">AGENT RULEBASE / MODULAR BY DESIGN</text>
+        </svg>
+      </figure>
+    </section>
+
+    <div id="startup-message" class="builder-loading">
+      <h2>Preparing your rulebook…</h2>
+      <p>If the picker does not appear, check that JavaScript is enabled and open this page through a web server, not directly as a local file. You can also <a href="https://github.com/jitendravyas/agent-rulebase#choose-your-rules">read and copy the rules on GitHub</a>.</p>
+    </div>
+    <noscript><p class="notice">This builder needs JavaScript. You can still <a href="https://github.com/jitendravyas/agent-rulebase#choose-your-rules">read and copy the rules on GitHub</a>.</p></noscript>
+
+    <div id="builder" class="builder" tabindex="-1" hidden>
+      <section class="choices" aria-labelledby="choose-title">
+        <div class="section-heading">
+          <h2 id="choose-title">Choose your modules</h2>
+          <button class="text-button" id="clear-selection" type="button">Clear selection</button>
+        </div>
+        <p class="section-description">Start with a preset. Add only the context you need.</p>
+        <div id="presets" class="presets" role="group" aria-label="Recommended starting points"></div>
+        <p id="link-warning" class="notice" role="status" hidden></p>
+        <form id="rule-form" aria-label="Rule selection">
+          <div id="rule-groups"></div>
+        </form>
+        <p class="selection-footnote">Only published rule sets are included. Drafts, helper-tool references, and repository-maintenance instructions stay out of your file.</p>
+      </section>
+
+      <section id="your-file" class="output" aria-labelledby="output-title" tabindex="-1">
+        <div class="socket-rail" aria-hidden="true"></div>
+        <div class="output-heading"><h2 id="output-title">Your assembled file</h2><span class="file-type">.md</span></div>
+        <p class="output-description">Nothing rewritten. Nothing installed.</p>
+        <div class="metrics">
+          <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
+          <span><strong id="file-size">—</strong> combined</span>
+        </div>
+        <p id="base-warning" class="notice" hidden></p>
+        <p id="size-warning" class="notice" hidden>This file exceeds 32 KiB. Some agents have instruction-loading limits. Check yours or select fewer rules; splitting the same text across files may not help.</p>
+        <p id="load-error" class="notice error" role="alert" hidden></p>
+        <button id="retry" class="text-button" type="button" hidden>Try loading again</button>
+        <div class="download-options">
+          <label for="agent-choice">Your agent (optional)</label>
+          <select id="agent-choice">
+            <option value="other">Other agent</option>
+            <option value="codex">Codex</option>
+            <option value="claude">Claude Code</option>
+            <option value="cursor">Cursor</option>
+          </select>
+        </div>
+        <div class="download-options">
+          <label for="rule-scope">Use rules for</label>
+          <select id="rule-scope">
+            <option value="personal">My work across projects</option>
+            <option value="project">This project</option>
+          </select>
+        </div>
+        <p class="download-name">Download filename: <code id="file-name">agent-rules.md</code></p>
+        <output id="setup-status" class="visually-hidden" aria-live="polite" aria-atomic="true"></output>
+        <div class="actions">
+          <button id="copy-rules" class="button primary" type="button" disabled>Copy rules <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
+          <button id="download-rules" class="button secondary" type="button" disabled>Download <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg></button>
+        </div>
+        <output id="action-status" class="action-status" aria-live="polite" aria-atomic="true"></output>
+        <details class="setup-sharing">
+          <summary>Save or share this setup</summary>
+          <p>Your choices stay in the address. Bookmark it or copy a link to this selection, agent, and usage scope.</p>
+          <button id="copy-setup-link" class="text-button" type="button">Copy setup link</button>
+          <label id="setup-link-label" for="setup-link" hidden>Setup link</label>
+          <input id="setup-link" class="setup-link" type="text" readonly hidden>
+          <output id="share-status" class="share-status" aria-live="polite" aria-atomic="true"></output>
+          <p>The link stores choices, not rule text. Reopen or reload it to read the current files.</p>
+          <p id="local-link-note" hidden>This is a local preview link. Other people need the hosted website’s address.</p>
+        </details>
+        <details class="next-step" open>
+          <summary>Where to use these rules</summary>
+          <p><strong>Put them here:</strong> <span id="setup-location"></span></p>
+          <p id="setup-home" hidden><code>~</code> means your home folder on the machine where the agent runs.</p>
+          <p><strong>Check loading:</strong> <span id="setup-check"></span></p>
+          <a id="setup-docs" class="setup-docs" target="_blank" rel="noopener noreferrer" hidden>Official setup guide</a>
+          <p>Merge with existing instructions; do not overwrite them. Downloading does not activate the rules.</p>
+        </details>
+        <div class="preview-heading"><label for="rule-preview">File preview</label><span>Exact download contents</span></div>
+        <textarea id="rule-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to build your file."></textarea>
+        <p id="preview-help" class="preview-help">Review before using. The complete MIT licence is included.</p>
+        <details class="included-rules">
+          <summary>Included rules &amp; sizes</summary>
+          <p id="selection-summary" class="selection-summary"></p>
+          <dl id="rule-size-breakdown" class="size-breakdown"></dl>
+          <p id="size-breakdown-help" class="preview-help" hidden>Sizes are calculated from the current exported text in UTF-8 bytes, not tokens. The total includes the licence, attribution, and separators.</p>
+        </details>
+        <a class="back-to-selection" href="#builder">Back to rule selection</a>
+      </section>
+    </div>
+    <section class="closing-note" aria-labelledby="before-use-title">
+      <h2 id="before-use-title">A starting point, not a guarantee.</h2>
+      <p>These rules evolve and have not been tested with every agent or model. Keep only what helps, check loading limits, and try your selection on a low-risk task first.</p>
+    </section>
+  </main>
+  <footer class="site-footer wrap"><span>Agent Rulebase · A little guidance. Your choice.</span><a href="https://github.com/jitendravyas/agent-rulebase/blob/main/LICENSE">MIT licence</a></footer>
+  <div class="case-vent" aria-hidden="true"></div>
+  </div>
+  <nav id="mobile-review" class="mobile-review" aria-label="Rule builder shortcuts" hidden>
+    <span><strong id="mobile-rule-count">0</strong> selected</span>
+    <a href="#your-file">Review &amp; download <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg></a>
+  </nav>
+</body>
+</html>
