@@ -1,5 +1,7 @@
 # Internationalization and localization rules
 
+Apply to internationalization and localization of software and its user-facing content, including right-to-left interfaces. Do not apply the software workflow to ordinary message or document translation.
+
 Do not introduce translation infrastructure, locales, or translated copy unless the task requires it.
 
 ## Project requirements

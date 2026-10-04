@@ -3,11 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Choose the instructions your AI agent needs and combine them into one Markdown file.">
+  <meta name="description" content="Build a reusable AI agent rulebook for Codex, Claude Code, Cursor, or other file-based agents. Choose rules for everyday tasks, software development, and creative work.">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#101716">
-  <title>Rule builder · Agent Rulebook</title>
-  <link id="favicon" rel="icon" type="image/svg+xml" sizes="any" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%226%22%20fill%3D%22%23101a15%22%2F%3E%3Cpath%20d%3D%22M10%203v5m6-5v5m6-5v5M10%2024v5m6-5v5m6-5v5M3%2010h5m-5%206h5m-5%206h5M24%2010h5m-5%206h5m-5%206h5%22%20stroke%3D%22%23b59f64%22%20stroke-width%3D%222%22%2F%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%223%22%20fill%3D%22%23202a25%22%20stroke%3D%22%23879484%22%2F%3E%3Cpath%20d%3D%22m16%2011%205%203-5%203-5-3%205-3Zm-5%206%205%203%205-3m-10%203%205%203%205-3%22%20fill%3D%22none%22%20stroke%3D%22%23a5ed9a%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2224%22%20cy%3D%228%22%20r%3D%223%22%20fill%3D%22%23a5ed9a%22%20fill-opacity%3D%22.65%22%2F%3E%3C%2Fsvg%3E">
+  <title>Agent Rulebook | AI Agent Rules Builder</title>
+  <link rel="canonical" href="https://jitendravyas.github.io/agent-rulebook/">
+  <link rel="help" type="text/markdown" href="./README.md" title="Agent Rulebook usage guide">
+  <link rel="license" href="./LICENSE">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Agent Rulebook">
+  <meta property="og:title" content="Agent Rulebook | AI Agent Rules Builder">
+  <meta property="og:description" content="Choose reusable rules for everyday tasks, software development, or creative work. Build one Markdown file for your AI agent. Free, with no account needed.">
+  <meta property="og:url" content="https://jitendravyas.github.io/agent-rulebook/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Agent Rulebook | AI Agent Rules Builder">
+  <meta name="twitter:description" content="Choose reusable rules for everyday tasks, software development, or creative work. Build one Markdown file for your AI agent. Free, with no account needed.">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "@id": "https://jitendravyas.github.io/agent-rulebook/#application",
+      "name": "Agent Rulebook",
+      "url": "https://jitendravyas.github.io/agent-rulebook/",
+      "description": "A free browser-based builder that combines selected AI agent rules into one Markdown file for review, copying, or download.",
+      "applicationCategory": "ProductivityApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "JavaScript is required to combine rules. Individual Markdown files can be read without JavaScript.",
+      "inLanguage": "en",
+      "isAccessibleForFree": true,
+      "license": "https://jitendravyas.github.io/agent-rulebook/LICENSE",
+      "sameAs": "https://github.com/jitendravyas/agent-rulebook"
+    }
+  </script>
+  <link id="favicon" rel="icon" type="image/svg+xml" sizes="any" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%23101a15%22%2F%3E%3Cpath%20d%3D%22M16%205v4M3%2015v7m26-7v7%22%20stroke%3D%22%2391a390%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%2220%22%20height%3D%2219%22%20rx%3D%226%22%20fill%3D%22%2346594d%22%20stroke%3D%22%2391a390%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%2211%22%20width%3D%2214%22%20height%3D%2212%22%20rx%3D%224%22%20fill%3D%22%23071610%22%2F%3E%3Cpath%20d%3D%22M12%2015v3m8-3v3%22%20stroke%3D%22%23a5ed9a%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%224%22%20r%3D%222%22%20fill%3D%22%23a5ed9a%22%20fill-opacity%3D%22.65%22%2F%3E%3C%2Fsvg%3E">
   <link rel="stylesheet" href="./site/styles.css">
   <script type="module" src="./site/app.js"></script>
 </head>
@@ -16,10 +44,10 @@
     <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
     <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></symbol>
     <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></symbol>
-    <symbol id="icon-rulebook" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></symbol>
+    <symbol id="icon-rulebook" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="14" rx="4"/><path d="M12 3v4M1 12v5m22-5v5M8 12v3m8-3v3m-7 3h6"/><circle cx="12" cy="2" r="1"/></symbol>
   </svg>
   <a class="skip-link" href="#builder">Skip to rule builder</a>
-  <div class="pc-case">
+  <div class="agent-shell">
   <span class="case-screw screw-top-start" aria-hidden="true"></span><span class="case-screw screw-top-end" aria-hidden="true"></span>
   <span class="case-screw screw-bottom-start" aria-hidden="true"></span><span class="case-screw screw-bottom-end" aria-hidden="true"></span>
   <header class="site-header wrap">
@@ -29,7 +57,7 @@
     </a>
     <span class="system-label"><span class="status-led" aria-hidden="true"></span>Built in your browser</span>
     <nav aria-label="Main navigation">
-      <a href="https://github.com/jitendravyas/agent-rulebook#readme">Guide</a>
+      <a href="https://github.com/jitendravyas/agent-rulebook#how-to-use">How to use</a>
       <a class="repo-link" href="https://github.com/jitendravyas/agent-rulebook">GitHub <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
     </nav>
   </header>
@@ -37,81 +65,90 @@
   <main class="wrap">
     <section class="intro" aria-labelledby="page-title">
       <div class="intro-copy">
-        <h1 id="page-title">Assemble your<br>agent’s <span>rulebook.</span></h1>
-        <p>Pick the rules that fit your work. Connect them in one Markdown file. Keep the parts you need, leave out the rest.</p>
+        <p class="eyebrow">Your agent. Your ground rules.</p>
+        <h1 id="page-title">Give your agent<br>a <span>clear brief.</span></h1>
+        <p>Build one Markdown file of reusable AI agent instructions for everyday tasks, software development, or creative work. Help your agent protect your work, stay on task, and be honest about what it checked.</p>
+        <div class="intro-actions">
+          <a class="button primary" href="#builder">Build your rulebook <span aria-hidden="true">↓</span></a>
+          <a class="intro-guide" href="https://github.com/jitendravyas/agent-rulebook#how-to-use">How to use the rules</a>
+        </div>
+        <p class="intro-note">For agents with file and tool access. Free. No account needed.</p>
       </div>
-      <figure class="hardware" aria-label="An assembled motherboard with a cooling fan, memory modules, circuit traces, and an Agent Rulebook processor.">
+      <figure class="agent-portrait" aria-label="A custom-built robot with attentive green eyes and a chest panel holding its rulebook.">
         <input class="motion-toggle" id="pause-motion" type="checkbox">
         <label class="motion-control" for="pause-motion">Pause animation</label>
-        <svg viewBox="0 0 520 304" aria-hidden="true" focusable="false">
+        <svg viewBox="0 0 520 400" aria-hidden="true" focusable="false">
           <defs>
-            <linearGradient id="metal" x2="0" y2="1"><stop stop-color="#566762"/><stop offset=".5" stop-color="#28332f"/><stop offset="1" stop-color="#101916"/></linearGradient>
-            <linearGradient id="fan-surface" x2="1" y2="1"><stop stop-color="#4d5f57"/><stop offset="1" stop-color="#1e2924"/></linearGradient>
-            <pattern id="chip-pins" width="9" height="8" patternUnits="userSpaceOnUse"><path d="M2 0v8" stroke="#96875a" stroke-width="3"/></pattern>
-            <pattern id="heat-fins" width="7" height="10" patternUnits="userSpaceOnUse"><path d="M1 0v10" stroke="#829289" stroke-opacity=".35"/></pattern>
-            <path id="fan-blade" d="M179 120c-6-27 4-64 22-70 29 9 46 34 48 59-22-11-37-9-52 9Z"/>
+            <linearGradient id="bot-metal" x2=".8" y2="1"><stop stop-color="#85958b"/><stop offset=".45" stop-color="#46594d"/><stop offset="1" stop-color="#283b31"/></linearGradient>
+            <linearGradient id="bot-face" x2="0" y2="1"><stop stop-color="#071610"/><stop offset="1" stop-color="#152b1d"/></linearGradient>
+            <pattern id="bot-grid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0v16" fill="none" stroke="#6a8a6d" stroke-opacity=".13"/></pattern>
           </defs>
-          <rect class="motherboard-edge" x="14" y="12" width="491" height="277" rx="5"/>
-          <g class="pcb-traces"><path d="M32 53h39l24 24h38M32 65h33l24 24h44M32 235h94l27-27h100l30 30h174M32 248h99l28-28h89l29 29h180M256 88h34l35-35h144M256 101h39l35-35h139M250 148h73l27 27v45M250 159h66l22 22v39M400 240v22h69M414 240v12h55"/></g>
-          <g class="board-mounts"><circle cx="27" cy="25" r="4"/><circle cx="492" cy="25" r="4"/><circle cx="27" cy="276" r="4"/><circle cx="492" cy="276" r="4"/></g>
-          <g class="capacitors"><circle cx="56" cy="113" r="8"/><circle cx="56" cy="139" r="8"/><circle cx="56" cy="165" r="8"/><path d="M51 113h10M51 139h10M51 165h10"/></g>
-          <rect class="cooler-frame" x="82" y="30" width="192" height="192" rx="11"/>
-          <rect x="88" y="36" width="180" height="180" rx="7" fill="url(#heat-fins)"/>
-          <circle class="fan-ring" cx="178" cy="126" r="85"/>
-          <g class="fan-rotor" fill="url(#fan-surface)" stroke="#62746b" stroke-width=".6">
-            <use href="#fan-blade"/><use href="#fan-blade" transform="rotate(51.43 178 126)"/>
-            <use href="#fan-blade" transform="rotate(102.86 178 126)"/><use href="#fan-blade" transform="rotate(154.29 178 126)"/>
-            <use href="#fan-blade" transform="rotate(205.72 178 126)"/><use href="#fan-blade" transform="rotate(257.15 178 126)"/>
-            <use href="#fan-blade" transform="rotate(308.58 178 126)"/>
+          <rect x="40" y="12" width="440" height="364" rx="28" fill="url(#bot-grid)"/>
+          <path class="bot-guide" d="M40 52V24h28m384 0h28v28M40 332v28h28m384 0h28v-28M64 214h60m272 0h60"/>
+          <ellipse cx="260" cy="377" rx="132" ry="10" fill="#07120c"/>
+          <g class="bot-frame">
+            <path d="M237 331v27h-38q-13 0-13 16h61v-43m36 0v27h38q13 0 13 16h-61v-43"/>
+            <path d="M155 250q-24 0-32 26l-15 49m257-75q24 0 32 26l15 49" fill="none" stroke-width="16"/>
+            <circle cx="124" cy="278" r="13"/><circle cx="396" cy="278" r="13"/>
+            <path d="M103 323q-18 8-16 25m16-25q15 10 12 27m302-27q18 8 16 25m-16-25q-15 10-12 27" fill="none" stroke-width="7" stroke-linecap="round"/>
+            <rect x="231" y="202" width="58" height="37" rx="9"/>
+            <rect x="150" y="227" width="220" height="116" rx="28" fill="url(#bot-metal)"/>
+            <rect x="124" y="105" width="27" height="60" rx="11"/>
+            <rect x="369" y="105" width="27" height="60" rx="11"/>
+            <path d="M260 61V35" stroke-width="6"/>
+            <rect x="142" y="57" width="236" height="156" rx="38" fill="url(#bot-metal)"/>
           </g>
-          <circle class="fan-hub" cx="178" cy="126" r="26"/>
-          <path d="m178 114 12 7-12 7-12-7Zm-12 14 12 7 12-7" class="hub-mark"/>
-          <g class="cooler-screws"><circle cx="96" cy="44" r="3"/><circle cx="260" cy="44" r="3"/><circle cx="96" cy="208" r="3"/><circle cx="260" cy="208" r="3"/></g>
-          <g class="memory-slots"><rect x="317" y="30" width="23" height="153" rx="2"/><rect x="357" y="30" width="23" height="153" rx="2"/><rect x="397" y="30" width="23" height="153" rx="2"/></g>
-          <g class="memory-boards"><path d="M321 39h15v135h-15ZM361 39h15v135h-15ZM401 39h15v135h-15Z"/></g>
-          <g class="memory-chips"><path d="M323 53h11v26h-11Zm0 39h11v26h-11Zm0 39h11v26h-11ZM363 53h11v26h-11Zm0 39h11v26h-11Zm0 39h11v26h-11ZM403 53h11v26h-11Zm0 39h11v26h-11Zm0 39h11v26h-11Z"/></g>
-          <g class="slot-latches"><path d="M315 27h27v9h-27Zm0 152h27v9h-27ZM355 27h27v9h-27Zm0 152h27v9h-27ZM395 27h27v9h-27Zm0 152h27v9h-27Z"/></g>
-          <rect x="334" y="207" width="96" height="53" fill="url(#chip-pins)"/>
-          <rect class="board-chip" x="326" y="216" width="113" height="36" rx="2"/>
-          <text class="chip-label" x="382" y="238" text-anchor="middle">RULEBOOK</text>
-          <path class="power-cable" d="M472 48v146q0 24-24 24h-5"/><path class="power-wire" d="M472 48v146q0 24-24 24h-5"/>
-          <g class="board-leds"><circle cx="52" cy="267" r="3"/><circle cx="64" cy="267" r="3"/><circle cx="76" cy="267" r="3"/></g>
-          <text class="board-label" x="86" y="270">AGENT RULEBOOK / MODULAR BY DESIGN</text>
+          <circle class="bot-signal" cx="260" cy="27" r="8"/>
+          <rect x="158" y="75" width="204" height="119" rx="28" fill="url(#bot-face)" stroke="#0b1b12" stroke-width="4"/>
+          <path d="M178 84h164" stroke="#b8c9b9" stroke-opacity=".28" stroke-linecap="round"/>
+          <g class="bot-eyes">
+            <rect x="192" y="105" width="42" height="43" rx="17"/>
+            <rect x="286" y="105" width="42" height="43" rx="17"/>
+          </g>
+          <path d="M244 164q16 12 32 0" fill="none" stroke="#b8efad" stroke-width="4" stroke-linecap="round"/>
+          <rect x="172" y="247" width="176" height="72" rx="9" fill="#101f16" stroke="#91a390"/>
+          <text class="bot-label" x="187" y="268">RULEBOOK</text>
+          <path d="M187 281h97m-97 10h119m-119 10h76" stroke="#718a76" stroke-width="3" stroke-linecap="round"/>
+          <circle class="bot-signal" cx="330" cy="264" r="4"/>
+          <g fill="#263a2e" stroke="#9dac9d"><circle cx="160" cy="79" r="3"/><circle cx="360" cy="79" r="3"/><circle cx="166" cy="329" r="3"/><circle cx="354" cy="329" r="3"/></g>
+          <text class="bot-caption" x="260" y="398" text-anchor="middle">BUILT TO FOLLOW YOUR LEAD</text>
         </svg>
       </figure>
     </section>
 
     <div id="startup-message" class="builder-loading">
       <h2>Preparing your rulebook…</h2>
-      <p>If the picker does not appear, check that JavaScript is enabled and open this page through a web server, not directly as a local file. You can also <a href="https://github.com/jitendravyas/agent-rulebook#choose-your-rules">read and copy the rules on GitHub</a>.</p>
+      <p>If the picker does not appear, check that JavaScript is enabled and open this page through a web server, not directly as a local file. You can also <a href="#source-rules">read the source rules below</a>.</p>
     </div>
-    <noscript><p class="notice">This builder needs JavaScript. You can still <a href="https://github.com/jitendravyas/agent-rulebook#choose-your-rules">read and copy the rules on GitHub</a>.</p></noscript>
+    <noscript><p class="notice">This builder needs JavaScript. You can still <a href="#source-rules">read the source rules below</a>.</p></noscript>
 
     <div id="builder" class="builder" tabindex="-1" hidden>
       <section class="choices" aria-labelledby="choose-title">
         <div class="section-heading">
-          <h2 id="choose-title">Choose your modules</h2>
+          <h2 id="choose-title">1. Choose your rules</h2>
           <button class="text-button" id="clear-selection" type="button">Clear selection</button>
         </div>
-        <p class="section-description">Start with a preset. Add only the context you need.</p>
-        <div id="presets" class="presets" role="group" aria-label="Recommended starting points"></div>
+        <p class="section-description">Choose individual rule sets from any group. Leave out what you do not need or already cover with your own instructions.</p>
         <p id="link-warning" class="notice" role="status" hidden></p>
         <form id="rule-form" aria-label="Rule selection">
           <div id="rule-groups"></div>
+          <a class="review-selection" href="#your-file">Review and get your file <span aria-hidden="true">→</span></a>
         </form>
         <p class="selection-footnote">Only published rule sets are included. Drafts, helper-tool references, and repository-maintenance instructions stay out of your file.</p>
       </section>
 
       <section id="your-file" class="output" aria-labelledby="output-title" tabindex="-1">
         <div class="socket-rail" aria-hidden="true"></div>
-        <div class="output-heading"><h2 id="output-title">Your assembled file</h2><span class="file-type">.md</span></div>
-        <p class="output-description">Nothing rewritten. Nothing installed.</p>
+        <div class="output-heading"><h2 id="output-title">2. Your rulebook</h2><span class="file-type">.md</span></div>
+        <p class="output-description">Original rule text. One file. Nothing installed.</p>
         <div class="metrics">
           <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
           <span><strong id="file-size">—</strong> combined</span>
         </div>
+        <p class="selection-caption">Your selection</p>
+        <ul id="selection-summary" class="selection-summary"></ul>
         <p id="base-warning" class="notice" hidden></p>
-        <p id="size-warning" class="notice" hidden>This file exceeds 32 KiB. Some agents have instruction-loading limits. Check yours or select fewer rules; splitting the same text across files may not help.</p>
+        <p id="size-warning" class="notice" hidden>This file exceeds 32 KiB. That is not a universal limit or a rejection of your selection. See the <a href="https://github.com/jitendravyas/agent-rulebook#what-if-the-rules-are-too-large">README's size and loading guidance</a> and check your agent's documentation.</p>
         <p id="load-error" class="notice error" role="alert" hidden></p>
         <button id="retry" class="text-button" type="button" hidden>Try loading again</button>
         <div class="download-options">
@@ -147,26 +184,73 @@
           <p>The link stores choices, not rule text. Reopen or reload it to read the current files.</p>
           <p id="local-link-note" hidden>This is a local preview link. Other people need the hosted website’s address.</p>
         </details>
-        <details class="next-step" open>
-          <summary>Where to use these rules</summary>
+        <section class="next-step" aria-labelledby="use-rules-title">
+          <h3 id="use-rules-title">3. Add to your agent</h3>
           <p><strong>Put them here:</strong> <span id="setup-location"></span></p>
           <p id="setup-home" hidden><code>~</code> means your home folder on the machine where the agent runs.</p>
-          <p><strong>Check loading:</strong> <span id="setup-check"></span></p>
-          <a id="setup-docs" class="setup-docs" target="_blank" rel="noopener noreferrer" hidden>Official setup guide</a>
           <p>Merge with existing instructions; do not overwrite them. Downloading does not activate the rules.</p>
+          <details class="loading-help">
+            <summary>How to check they loaded</summary>
+            <p id="setup-check"></p>
+            <a id="setup-docs" class="setup-docs" target="_blank" rel="noopener noreferrer" hidden>Official setup guide</a>
+          </details>
+        </section>
+        <details id="preview-details" class="preview-details">
+          <summary>Review exact rule text</summary>
+          <div class="preview-heading"><label for="rule-preview">File preview</label><span>Exact download contents</span></div>
+          <textarea id="rule-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to build your file."></textarea>
+          <p id="preview-help" class="preview-help">Review before using. The complete MIT licence is included.</p>
         </details>
-        <div class="preview-heading"><label for="rule-preview">File preview</label><span>Exact download contents</span></div>
-        <textarea id="rule-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to build your file."></textarea>
-        <p id="preview-help" class="preview-help">Review before using. The complete MIT licence is included.</p>
         <details class="included-rules">
           <summary>Included rules &amp; sizes</summary>
-          <p id="selection-summary" class="selection-summary"></p>
           <dl id="rule-size-breakdown" class="size-breakdown"></dl>
           <p id="size-breakdown-help" class="preview-help" hidden>Sizes are calculated from the current exported text in UTF-8 bytes, not tokens. The total includes the licence, attribution, and separators.</p>
         </details>
         <a class="back-to-selection" href="#builder">Back to rule selection</a>
       </section>
     </div>
+    <section id="source-rules" class="source-rules" aria-labelledby="source-rules-title">
+      <h2 id="source-rules-title">Read the source rules</h2>
+      <p>People and agents can read the original Markdown files directly, without JavaScript or browser automation. These links serve the same files used by the builder, not separate copies.</p>
+      <details>
+        <summary>Browse individual Markdown files</summary>
+        <!-- Keep these categories and links aligned with site/rules.js. -->
+        <h3>Operating systems</h3>
+        <ul>
+          <li><a data-rule-id="mac" href="./optional/macos-agent-rules.md" type="text/markdown">macOS agent rules</a></li>
+          <li><a data-rule-id="windows" href="./optional/windows-agent-rules.md" type="text/markdown">Windows agent rules</a></li>
+          <li><a data-rule-id="linux" href="./optional/linux-agent-rules.md" type="text/markdown">Linux agent rules</a></li>
+        </ul>
+        <h3>General behaviour</h3>
+        <ul>
+          <li><a data-rule-id="general" href="./agent-global-rules.md" type="text/markdown">General agent rules</a></li>
+        </ul>
+        <h3>Tools and interfaces</h3>
+        <ul>
+          <li><a data-rule-id="browser-use" href="./optional/browser-computer-use-rules.md" type="text/markdown">Browser and computer-use rules</a></li>
+          <li><a data-rule-id="version-control" href="./optional/version-control-rules.md" type="text/markdown">Version-control rules</a></li>
+        </ul>
+        <h3>Software development</h3>
+        <ul>
+          <li><a data-rule-id="coding" href="./coding-agent-global-rules.md" type="text/markdown">Coding-agent rules</a></li>
+          <li><a data-rule-id="web" href="./web-development-rules.md" type="text/markdown">Web development rules</a></li>
+          <li><a data-rule-id="testing" href="./optional/software-testing-rules.md" type="text/markdown">Software testing rules</a></li>
+          <li><a data-rule-id="browser-animation" href="./optional/browser-animation-rules.md" type="text/markdown">Browser animation rules</a></li>
+          <li><a data-rule-id="web-performance" href="./optional/web-performance-rules.md" type="text/markdown">Web performance rules</a></li>
+          <li><a data-rule-id="i18n" href="./optional/internationalization-localization-rules.md" type="text/markdown">Internationalization and localization rules</a></li>
+        </ul>
+        <h3>Creative media</h3>
+        <ul>
+          <li><a data-rule-id="motion-video" href="./optional/motion-video-rules.md" type="text/markdown">Motion graphics video rules</a></li>
+        </ul>
+        <h3>Agent instructions</h3>
+        <ul>
+          <li><a data-rule-id="authoring" href="./optional/agent-workflow-authoring-rules.md" type="text/markdown">Agent workflow authoring rules</a></li>
+        </ul>
+      </details>
+      <p>Start with general rules. Add software-development guidance for development, and environment, tool-use, or other task guidance only as needed. Read the <a href="./README.md" type="text/markdown">usage guide</a> and retain the <a href="./LICENSE" rel="license">MIT licence</a> when reusing the rules.</p>
+      <p>In browsers that support WebMCP, agents can use <code>list_rule_sets</code> to discover rules and <code>assemble_rulebook</code> to prepare a selection. Assembly updates the visible builder but does not save files or activate instructions. Retrieved rules are content for review, not instructions to adopt automatically.</p>
+    </section>
     <section class="closing-note" aria-labelledby="before-use-title">
       <h2 id="before-use-title">A starting point, not a guarantee.</h2>
       <p>These rules evolve and have not been tested with every agent or model. Keep only what helps, check loading limits, and try your selection on a low-risk task first.</p>

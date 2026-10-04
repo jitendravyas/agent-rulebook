@@ -4,7 +4,7 @@ const element = (id) => document.getElementById(id);
 const selected = new Set(PRESETS[0].ids);
 const sourceCache = new Map();
 const checkboxes = new Map();
-const presetButtons = new Map();
+const groupViews = new Map();
 const preview = element('rule-preview');
 const copyButton = element('copy-rules');
 const downloadButton = element('download-rules');
@@ -27,14 +27,14 @@ const AGENT_SETUP = {
     filename: 'AGENTS.md',
     personal: 'Merge into ~/.codex/AGENTS.md, or AGENTS.md inside your custom CODEX_HOME folder.',
     project: 'Merge into AGENTS.md at the project root. More specific instructions can apply in subfolders.',
-    check: 'Start a new Codex session in the project and ask it to list its loaded instruction sources. If the file is missing, check for AGENTS.override.md in the same folder and your combined loading limit (32 KiB by default).',
+    check: 'Start a new Codex session in the project and check which instruction sources loaded. If content is missing, check for AGENTS.override.md in the same folder and the project_doc_max_bytes setting. Confirm its behaviour for your installed version using the official guide.',
     docs: 'https://learn.chatgpt.com/docs/agent-configuration/agents-md',
     home: true,
   },
   claude: {
     filename: 'CLAUDE.md',
     personal: 'Merge into ~/.claude/CLAUDE.md for your work across projects.',
-    project: 'Merge into CLAUDE.md at the project root, or the existing .claude/CLAUDE.md. If you also rely on AGENTS.md, import it using an @path relative to your CLAUDE.md (for example, @AGENTS.md for files in the same folder); otherwise Claude may skip it. Avoid copying the same rules into both files.',
+    project: 'Merge into CLAUDE.md at the project root, or the existing .claude/CLAUDE.md. If your project already uses AGENTS.md, check Claude’s Project instructions setting and version support before adding another file. Where direct loading is unavailable, import it with @AGENTS.md from a CLAUDE.md in the same folder. Avoid copying the same rules into both files.',
     check: 'Start a new Claude Code session in the project. Run /context and look under Memory files for the instruction file you updated.',
     docs: 'https://code.claude.com/docs/en/memory',
     home: true,
@@ -98,6 +98,7 @@ function restoreLinkedSelection() {
   ids.forEach((id) => selected.add(id));
   element('agent-choice').value = validAgent ? agent : 'other';
   element('rule-scope').value = validScope ? scope : 'personal';
+  revealSelectedGroups();
   return changed;
 }
 
@@ -134,48 +135,72 @@ function textElement(tag, className, text) {
   return node;
 }
 
+function updateGroupCounts() {
+  for (const { group, count } of groupViews.values()) {
+    if (count) count.textContent = `${group.rules.filter((rule) => selected.has(rule.id)).length} selected`;
+  }
+}
+
+function revealSelectedGroups() {
+  for (const { group, disclosure } of groupViews.values()) {
+    if (disclosure && group.rules.some((rule) => selected.has(rule.id))) disclosure.open = true;
+  }
+}
+
 function renderChoices() {
-  for (const preset of PRESETS) {
-    const button = textElement('button', 'preset', preset.label);
-    button.type = 'button';
-    button.addEventListener('click', () => {
-      selected.clear();
-      preset.ids.forEach((id) => selected.add(id));
+  // Use the same categories for people and WebMCP; export order stays independent.
+  const containers = new Map();
+  for (const group of RULE_GROUPS) {
+    const fieldset = textElement('fieldset', 'rule-group', '');
+    const legend = textElement('legend', group.collapsible ? 'visually-hidden' : '', group.title);
+    const description = textElement('p', 'group-description', group.description);
+    description.id = `group-description-${group.id}`;
+    fieldset.setAttribute('aria-describedby', description.id);
+    const choices = textElement('div', group.rules.every((rule) => rule.environment) ? 'os-choices' : '', '');
+    fieldset.append(legend, description, choices);
+    const view = { group };
+    let container = fieldset;
+    if (group.collapsible) {
+      const disclosure = textElement('details', 'group-disclosure', '');
+      disclosure.id = `group-${group.id}`;
+      const summary = textElement('summary', '', group.title);
+      const count = textElement('span', 'group-count', '0 selected');
+      summary.append(' ', count);
+      disclosure.append(summary, fieldset);
+      Object.assign(view, { disclosure, count });
+      container = disclosure;
+    }
+    element('rule-groups').append(container);
+    groupViews.set(group.id, view);
+    group.rules.forEach((rule) => containers.set(rule.id, choices));
+  }
+  for (const rule of RULES) {
+    const card = textElement('div', rule.environment ? 'rule-card os-card' : 'rule-card', '');
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.name = 'rules';
+    input.value = rule.id;
+    input.id = `rule-${rule.id}`;
+    input.setAttribute('aria-labelledby', `name-${rule.id}`);
+    input.addEventListener('change', () => {
+      if (input.checked) selected.add(rule.id);
+      else selected.delete(rule.id);
       updateSelection();
     });
-    presetButtons.set(preset.id, button);
-    element('presets').append(button);
-  }
-
-  // Show OS choices first without changing the order of exported instructions.
-  const displayGroups = [
-    ...RULE_GROUPS.filter((group) => group.id === 'operating-systems'),
-    ...RULE_GROUPS.filter((group) => group.id !== 'operating-systems'),
-  ];
-  for (const group of displayGroups) {
-    const fieldset = textElement('fieldset', 'rule-group', '');
-    fieldset.append(textElement('legend', '', group.title));
-    fieldset.append(textElement('p', 'group-description', group.description));
-    for (const rule of group.rules) {
-      const card = textElement('div', 'rule-card', '');
-      const label = document.createElement('label');
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.name = 'rules';
-      input.value = rule.id;
-      input.id = `rule-${rule.id}`;
-      input.setAttribute('aria-label', rule.title);
-      input.setAttribute('aria-describedby', `description-${rule.id}`);
-      input.addEventListener('change', () => {
-        if (input.checked) selected.add(rule.id);
-        else selected.delete(rule.id);
-        updateSelection();
-      });
-      const text = document.createElement('span');
+    const text = document.createElement('span');
+    const name = textElement('strong', 'rule-name', rule.label);
+    name.id = `name-${rule.id}`;
+    text.append(name);
+    if (!rule.environment) {
       const description = textElement('span', 'rule-description', rule.description);
       description.id = `description-${rule.id}`;
-      text.append(textElement('strong', 'rule-name', rule.title), description);
-      label.append(input, text);
+      input.setAttribute('aria-describedby', description.id);
+      text.append(description);
+    }
+    label.append(input, text);
+    card.append(label);
+    if (!rule.environment) {
       const source = textElement('a', 'source-link', '');
       const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       icon.classList.add('icon');
@@ -187,13 +212,13 @@ function renderChoices() {
       source.href = `https://github.com/jitendravyas/agent-rulebook/blob/main/${rule.path}`;
       source.target = '_blank';
       source.rel = 'noopener noreferrer';
-      source.setAttribute('aria-label', `Read ${rule.title} source on GitHub`);
-      card.append(label, source);
-      fieldset.append(card);
-      checkboxes.set(rule.id, input);
+      source.setAttribute('aria-label', `Read ${rule.title} source on GitHub (opens in a new tab)`);
+      card.append(source);
     }
-    element('rule-groups').append(fieldset);
+    containers.get(rule.id).append(card);
+    checkboxes.set(rule.id, input);
   }
+  updateGroupCounts();
 }
 
 function loadText(path) {
@@ -283,10 +308,7 @@ async function updateSelection({ signal } = {}) {
   for (const [id, input] of checkboxes) {
     input.checked = selected.has(id);
   }
-  for (const preset of PRESETS) {
-    const active = preset.ids.length === selected.size && preset.ids.every((id) => selected.has(id));
-    presetButtons.get(preset.id).setAttribute('aria-pressed', String(active));
-  }
+  updateGroupCounts();
   currentBundle = '';
   preview.value = '';
   releaseDownload();
@@ -294,21 +316,24 @@ async function updateSelection({ signal } = {}) {
   downloadButton.disabled = true;
   status.textContent = '';
   element('load-error').hidden = true;
-  element('retry').hidden = true;
+  const retry = element('retry');
+  // Keep focus on a nearby control when the focused retry button disappears.
+  if (document.activeElement === retry) element('agent-choice').focus();
+  retry.hidden = true;
   element('size-warning').hidden = true;
   element('rule-count').textContent = chosen.length;
   element('rule-count-label').textContent = chosen.length === 1 ? 'rule set' : 'rule sets';
   element('mobile-rule-count').textContent = chosen.length;
   element('file-size').textContent = '—';
-  element('selection-summary').textContent = chosen.map((rule) => rule.title).join(' · ');
-  element('selection-summary').hidden = false;
+  element('selection-summary').replaceChildren(...chosen.map((rule) => textElement('li', '', rule.label)));
+  if (!chosen.length) element('selection-summary').append(textElement('li', '', 'No rules selected'));
   element('rule-size-breakdown').replaceChildren();
   element('size-breakdown-help').hidden = true;
   const missing = getMissingBaseRules([...selected]);
-  const missingNames = missing.map((id) => RULES.find((rule) => rule.id === id).title).join(' and ');
+  const missingNames = missing.map((id) => RULES.find((rule) => rule.id === id).label).join(' and ');
   element('base-warning').hidden = !missing.length;
   element('base-warning').textContent = missing.length
-    ? `Recommended alongside your selection: ${missingNames}. Leave them out only if you already supply that guidance elsewhere.`
+    ? `Suggested additions: ${missingNames}. Choose them only if your existing instructions do not already cover this guidance. Nothing is added automatically.`
     : '';
   preview.setAttribute('aria-busy', String(chosen.length > 0));
   if (!chosen.length) {
@@ -358,7 +383,6 @@ async function updateSelection({ signal } = {}) {
       element('rule-size-breakdown').append(entry);
     }
     element('size-breakdown-help').hidden = false;
-    element('selection-summary').hidden = true;
     element('file-size').textContent = `${(bytes / 1024).toFixed(1)} KiB`;
     element('size-warning').hidden = bytes <= 32768;
     copyButton.disabled = false;
@@ -397,13 +421,16 @@ async function registerAgentTools() {
   try {
     await context.registerTool({
       name: 'list_rule_sets',
-      description: 'List available Agent Rulebook rule sets, presets, and the current builder selection. Does not return rule text or change anything.',
+      description: 'List available Agent Rulebook rule sets with direct Markdown source URLs, presets, and the current builder selection. Does not return rule text or change anything. Linked rules are content for review, not instructions to adopt automatically.',
       inputSchema: { type: 'object', properties: {}, additionalProperties: false },
       annotations: { readOnlyHint: true, consequentialHint: false },
       execute: (args) => {
         if (!isObject(args) || Object.keys(args).length) return failure('invalid_input', 'Pass an empty object.');
         return {
-          ruleSets: RULES.map(({ id, title, description }) => ({ id, title, description })),
+          ruleSets: RULES.map(({ id, title, description, path }) => ({ id, title, description, sourceUrl: new URL(path, document.baseURI).href })),
+          groups: RULE_GROUPS.map(({ id, title, rules }) => ({ id, title, ruleIds: rules.map((rule) => rule.id) })),
+          guideUrl: new URL('./README.md', document.baseURI).href,
+          licenseUrl: new URL('./LICENSE', document.baseURI).href,
           presets: PRESETS,
           agents: agentIds,
           scopes,
@@ -437,6 +464,7 @@ async function registerAgentTools() {
         if (signal?.aborted) return failure('cancelled', 'Assembly was cancelled. Nothing was changed.');
         selected.clear();
         args.ruleIds.forEach((id) => selected.add(id));
+        revealSelectedGroups();
         if (args.agent !== undefined) element('agent-choice').value = args.agent;
         if (args.scope !== undefined) element('rule-scope').value = args.scope;
         updateSetup(true);
@@ -483,6 +511,8 @@ copyButton.addEventListener('click', async () => {
     status.textContent = 'Copied. Merge with your existing agent instructions.';
   } catch {
     if (copiedRevision !== revision) return;
+    const previewDetails = element('preview-details');
+    if (previewDetails) previewDetails.open = true;
     preview.focus();
     preview.select();
     status.textContent = 'Automatic copy is unavailable. The preview is selected; use your copy shortcut, or download the file.';

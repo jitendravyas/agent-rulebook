@@ -36,11 +36,3 @@
   * When changing script loading, preserve dependency order and required startup behaviour. Do not remove code solely because it is unused during initial page load; other routes or interactions may need it.
   * When changing delivery configuration stored in project files, use appropriate compression and caching for assets and avoid unnecessary redirects. Use long-lived caching only when the project has a reliable way to deliver updated assets.
   * For responses controlled by project code or configuration, return HTTP status codes that reflect the response, including missing pages.
-
-## Browser verification
-
-  * Use browser checks when requested, required by the project, or needed to verify affected rendering or interaction. Match coverage to the task's risk, stage, and supported environments; do not start unrelated audits.
-  * Before browser verification, confirm the intended file, page, or application and, when applicable, its source checkout; a familiar host, port, or tab may show different work. Distinguish content or application failures from browser-tool or connection failures; do not change the content or behaviour merely to make automation pass.
-  * For development tests, prefer isolated, disposable browser state and controlled test data. Preserve required test isolation when reusing sessions; use real accounts or persistent browser profiles only when required and authorised.
-  * When checking rendering or interaction, inspect the result and relevant errors in the intended browser or embedded runtime. Direct requests or passing builds do not prove rendered behaviour. Report coverage and verification gaps without generalising beyond what was checked.
-  * For accessibility assessments, use the agreed standard, level, coverage, and exclusions; do not invent a conformance target. Report methods, remaining barriers, and limits. Distinguish project-controlled issues from provider limitations. Do not hide inaccessible integrations with visual-only workarounds or claim full conformance from a partial review.
