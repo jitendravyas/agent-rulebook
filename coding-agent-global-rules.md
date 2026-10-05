@@ -51,4 +51,4 @@
 
 ## Change review
 
-  * During authorised implementation work, review final changes, using a diff when available, for bugs, regressions, security, and needless complexity. Fix required in-scope findings; report others with location, impact, and evidence, separate from optional improvements. Recheck after further edits when needed.
+  * During authorised implementation work, review final changes, using a diff when available, for bugs, regressions, security, and needless complexity. Before acting on reported findings, verify them against the current code and requirements. Fix required in-scope findings; report others with location, impact, and evidence, separate from optional improvements. Recheck after further edits when needed.
