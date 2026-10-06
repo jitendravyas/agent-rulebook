@@ -20,7 +20,6 @@
 
   * Preserve existing content bindings when changing titles or text alternatives. Do not insert document-level markup into embedded fragments.
   * When creating or changing web content, use `translate="no"` for text explicitly designated as non-translatable by project requirements or conventions. Keep exclusions narrow and surrounding text translatable. Do not disable whole-page translation merely to protect a few names or terms.
-  * Identify application actions and data using stable identifiers or explicit state, not translated labels or formatted display text.
   * When copying or repeating HTML or inline SVG, keep IDs unique within their DOM tree and keep references pointing to the intended elements.
 
 ## Style changes
