@@ -37,6 +37,7 @@
   </script>
   <link id="favicon" rel="icon" type="image/svg+xml" sizes="any" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%23101a15%22%2F%3E%3Cpath%20d%3D%22M16%205v4M3%2015v7m26-7v7%22%20stroke%3D%22%2391a390%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%2220%22%20height%3D%2219%22%20rx%3D%226%22%20fill%3D%22%2346594d%22%20stroke%3D%22%2391a390%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%2211%22%20width%3D%2214%22%20height%3D%2212%22%20rx%3D%224%22%20fill%3D%22%23071610%22%2F%3E%3Cpath%20d%3D%22M12%2015v3m8-3v3%22%20stroke%3D%22%23a5ed9a%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%224%22%20r%3D%222%22%20fill%3D%22%23a5ed9a%22%20fill-opacity%3D%22.65%22%2F%3E%3C%2Fsvg%3E">
   <link rel="stylesheet" href="./site/styles.css">
+  <noscript><style>.builder-loading, .builder-link { display: none; }</style></noscript>
   <script type="module" src="./site/app.js"></script>
 </head>
 <body>
@@ -46,7 +47,7 @@
     <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></symbol>
     <symbol id="icon-rulebook" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="14" rx="4"/><path d="M12 3v4M1 12v5m22-5v5M8 12v3m8-3v3m-7 3h6"/><circle cx="12" cy="2" r="1"/></symbol>
   </svg>
-  <a class="skip-link" href="#builder">Skip to rule builder</a>
+  <a id="skip-link" class="skip-link" href="#source-rules">Skip to source rules</a>
   <div class="agent-shell">
   <span class="case-screw screw-top-start" aria-hidden="true"></span><span class="case-screw screw-top-end" aria-hidden="true"></span>
   <span class="case-screw screw-bottom-start" aria-hidden="true"></span><span class="case-screw screw-bottom-end" aria-hidden="true"></span>
@@ -69,7 +70,7 @@
         <h1 id="page-title">Give your agent<br>a <span>clear brief.</span></h1>
         <p>Build one Markdown file of reusable AI agent instructions for everyday tasks, software development, or creative work. Help your agent protect your work, stay on task, and be honest about what it checked.</p>
         <div class="intro-actions">
-          <a class="button primary" href="#builder">Build your rulebook <span aria-hidden="true">↓</span></a>
+          <a class="button primary builder-link" href="#builder">Build your rulebook <span aria-hidden="true">↓</span></a>
           <a class="intro-guide" href="https://github.com/jitendravyas/agent-rulebook#how-to-use">How to use the rules</a>
         </div>
         <p class="intro-note">For agents with file and tool access. Free. No account needed.</p>
@@ -209,7 +210,7 @@
         <a class="back-to-selection" href="#builder">Back to rule selection</a>
       </section>
     </div>
-    <section id="source-rules" class="source-rules" aria-labelledby="source-rules-title">
+    <section id="source-rules" class="source-rules" aria-labelledby="source-rules-title" tabindex="-1">
       <h2 id="source-rules-title">Read the source rules</h2>
       <p>People and agents can read the original Markdown files directly, without JavaScript or browser automation. These links serve the same files used by the builder, not separate copies.</p>
       <details>

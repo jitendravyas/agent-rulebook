@@ -283,7 +283,7 @@ export function buildBundle(selectedIds, sourceById, licenseText) {
 }
 
 /**
- * Return base rules recommended by selected development or activity rules.
+ * Return base rules recommended by the selected rule sets.
  * Recommendations are informational; this function never mutates or adds ids.
  *
  * @param {Iterable<string>} selectedIds
@@ -293,7 +293,7 @@ export function getMissingBaseRules(selectedIds) {
   const selected = new Set(uniqueIds(selectedIds));
   const missing = [];
 
-  if (['coding', 'web', 'testing', 'browser-use', 'version-control'].some((id) => selected.has(id)) && !selected.has('general')) {
+  if (!selected.has('general') && RULES.some((rule) => selected.has(rule.id))) {
     missing.push('general');
   }
 

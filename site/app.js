@@ -5,6 +5,7 @@ const selected = new Set(PRESETS[0].ids);
 const sourceCache = new Map();
 const checkboxes = new Map();
 const groupViews = new Map();
+const linkWarnings = new Map();
 const preview = element('rule-preview');
 const copyButton = element('copy-rules');
 const downloadButton = element('download-rules');
@@ -13,6 +14,9 @@ let currentBundle = '';
 let revision = 0;
 let setupRevision = 0;
 let downloadUrl;
+let sectionHistoryGroup = 0;
+let historyGroupCount = 0;
+let lastSelectionSearch = window.location.search;
 
 // Setup affects placement and the filename, never the exported rule contents.
 // Keep these routes aligned with the official guides linked in each entry.
@@ -67,14 +71,35 @@ function syncSelectionURL() {
   link.value = shareURL.href;
   const address = new URL(window.location.href);
   for (const [key, value] of shareURL.searchParams) address.searchParams.set(key, value);
-  if (address.href === window.location.href) return;
+  const entry = window.history.state?.rulebook;
+  if (address.href === window.location.href && entry?.document === performance.timeOrigin
+    && entry.group === sectionHistoryGroup && entry.search === address.search) {
+    clearLinkWarnings('history');
+    return;
+  }
   try {
     // Update this entry, not a new Back-button step for every checkbox.
-    window.history.replaceState(window.history.state, '', address);
+    window.history.replaceState({ ...window.history.state,
+      rulebook: { document: performance.timeOrigin, group: sectionHistoryGroup, search: address.search },
+    }, '', address);
+    lastSelectionSearch = address.search;
+    clearLinkWarnings('history');
   } catch {
-    element('link-warning').textContent = 'Your browser could not update the address. Use Copy setup link to save your choices.';
-    element('link-warning').hidden = false;
+    linkWarnings.set('history', 'Your browser could not update the address. Use Copy setup link to save your choices.');
+    renderLinkWarnings();
   }
+}
+
+function renderLinkWarnings() {
+  const warning = element('link-warning');
+  const text = [...linkWarnings.values()].join(' ');
+  if (warning.textContent !== text) warning.textContent = text;
+  warning.hidden = !text;
+}
+
+function clearLinkWarnings(...keys) {
+  keys.forEach((key) => linkWarnings.delete(key));
+  renderLinkWarnings();
 }
 
 function restoreLinkedSelection() {
@@ -86,11 +111,21 @@ function restoreLinkedSelection() {
   const scope = params.get('scope') ?? 'personal';
   const validAgent = Object.hasOwn(AGENT_SETUP, agent);
   const validScope = ['personal', 'project'].includes(scope);
-  const invalid = requested.some((id) => !known.has(id)) || !validAgent || !validScope
-    || ['rules', 'agent', 'scope'].some((key) => params.getAll(key).length > 1);
-  element('link-warning').hidden = !invalid;
-  element('link-warning').textContent = invalid
-    ? 'Some choices in this link are unavailable or invalid. Review the restored selection and setup before using the rules.' : '';
+  const invalidChoices = {
+    rules: requested.some((id) => !known.has(id)) || params.getAll('rules').length > 1,
+    agent: !validAgent || params.getAll('agent').length > 1,
+    scope: !validScope || params.getAll('scope').length > 1,
+  };
+  const warnings = {
+    rules: 'Some rule choices in this link are unavailable or repeated. Review your rule selection.',
+    agent: 'This link has an invalid or repeated agent choice. Review the agent setting.',
+    scope: 'This link has an invalid or repeated scope choice. Review where the rules will apply.',
+  };
+  for (const key of Object.keys(invalidChoices)) {
+    if (invalidChoices[key]) linkWarnings.set(key, warnings[key]);
+    else linkWarnings.delete(key);
+  }
+  renderLinkWarnings();
   const changed = ids.length !== selected.size || ids.some((id) => !selected.has(id))
     || element('agent-choice').value !== (validAgent ? agent : 'other')
     || element('rule-scope').value !== (validScope ? scope : 'personal');
@@ -156,7 +191,7 @@ function renderChoices() {
     const description = textElement('p', 'group-description', group.description);
     description.id = `group-description-${group.id}`;
     fieldset.setAttribute('aria-describedby', description.id);
-    const choices = textElement('div', group.rules.every((rule) => rule.environment) ? 'os-choices' : '', '');
+    const choices = document.createElement('div');
     fieldset.append(legend, description, choices);
     const view = { group };
     let container = fieldset;
@@ -175,7 +210,7 @@ function renderChoices() {
     group.rules.forEach((rule) => containers.set(rule.id, choices));
   }
   for (const rule of RULES) {
-    const card = textElement('div', rule.environment ? 'rule-card os-card' : 'rule-card', '');
+    const card = textElement('div', 'rule-card', '');
     const label = document.createElement('label');
     const input = document.createElement('input');
     input.type = 'checkbox';
@@ -184,6 +219,7 @@ function renderChoices() {
     input.id = `rule-${rule.id}`;
     input.setAttribute('aria-labelledby', `name-${rule.id}`);
     input.addEventListener('change', () => {
+      clearLinkWarnings('rules');
       if (input.checked) selected.add(rule.id);
       else selected.delete(rule.id);
       updateSelection();
@@ -192,29 +228,26 @@ function renderChoices() {
     const name = textElement('strong', 'rule-name', rule.label);
     name.id = `name-${rule.id}`;
     text.append(name);
-    if (!rule.environment) {
-      const description = textElement('span', 'rule-description', rule.description);
-      description.id = `description-${rule.id}`;
-      input.setAttribute('aria-describedby', description.id);
-      text.append(description);
-    }
+    const description = textElement('span', 'rule-description', rule.description);
+    description.id = `description-${rule.id}`;
+    input.setAttribute('aria-describedby', description.id);
+    text.append(description);
     label.append(input, text);
     card.append(label);
-    if (!rule.environment) {
-      const source = textElement('a', 'source-link', '');
-      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      icon.classList.add('icon');
-      icon.setAttribute('aria-hidden', 'true');
-      const iconShape = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-      iconShape.setAttribute('href', '#icon-arrow');
-      icon.append(iconShape);
-      source.append(icon);
-      source.href = `https://github.com/jitendravyas/agent-rulebook/blob/main/${rule.path}`;
-      source.target = '_blank';
-      source.rel = 'noopener noreferrer';
-      source.setAttribute('aria-label', `Read ${rule.title} source on GitHub (opens in a new tab)`);
-      card.append(source);
-    }
+    const source = textElement('a', 'source-link', '');
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.classList.add('icon');
+    icon.setAttribute('aria-hidden', 'true');
+    const iconShape = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    iconShape.setAttribute('href', '#icon-arrow');
+    icon.append(iconShape);
+    source.append(icon);
+    source.href = new URL(rule.path, document.baseURI).href;
+    source.type = 'text/markdown';
+    source.target = '_blank';
+    source.rel = 'noopener noreferrer';
+    source.setAttribute('aria-label', `Read ${rule.title} source (opens in a new tab)`);
+    card.append(source);
     containers.get(rule.id).append(card);
     checkboxes.set(rule.id, input);
   }
@@ -465,8 +498,15 @@ async function registerAgentTools() {
         selected.clear();
         args.ruleIds.forEach((id) => selected.add(id));
         revealSelectedGroups();
-        if (args.agent !== undefined) element('agent-choice').value = args.agent;
-        if (args.scope !== undefined) element('rule-scope').value = args.scope;
+        clearLinkWarnings('rules');
+        if (args.agent !== undefined) {
+          element('agent-choice').value = args.agent;
+          clearLinkWarnings('agent');
+        }
+        if (args.scope !== undefined) {
+          element('rule-scope').value = args.scope;
+          clearLinkWarnings('scope');
+        }
         updateSetup(true);
         const expectedSetup = setupRevision;
         const result = await updateSelection({ signal });
@@ -550,19 +590,33 @@ element('copy-setup-link').addEventListener('click', async () => {
 });
 
 element('clear-selection').addEventListener('click', () => {
+  clearLinkWarnings('rules');
   selected.clear();
   updateSelection();
 });
 element('retry').addEventListener('click', updateSelection);
-element('agent-choice').addEventListener('change', () => updateSetup(true));
-element('rule-scope').addEventListener('change', () => updateSetup(true));
+element('agent-choice').addEventListener('change', () => {
+  clearLinkWarnings('agent');
+  updateSetup(true);
+});
+element('rule-scope').addEventListener('change', () => {
+  clearLinkWarnings('scope');
+  updateSetup(true);
+});
 element('rule-form').addEventListener('submit', (event) => event.preventDefault());
 window.addEventListener('pagehide', releaseDownload);
-window.addEventListener('popstate', () => {
-  if (restoreLinkedSelection()) {
-    updateSetup();
-    updateSelection();
+window.addEventListener('popstate', (event) => {
+  const entry = event.state?.rulebook;
+  // Section links create entries without state. Older section entries may have stale choices.
+  const knownEntry = entry?.document === performance.timeOrigin && entry.search === window.location.search;
+  if ((knownEntry && entry.group === sectionHistoryGroup) || (!entry && window.location.search === lastSelectionSearch)) {
+    syncSelectionURL();
+    return;
   }
+  sectionHistoryGroup = knownEntry ? entry.group : ++historyGroupCount;
+  const changed = restoreLinkedSelection();
+  updateSetup();
+  if (changed) updateSelection();
 });
 renderChoices();
 restoreLinkedSelection();
@@ -570,6 +624,8 @@ updateSetup();
 element('local-link-note').hidden = !(/^(localhost|.*\.localhost|127\..*|\[::1\])$/.test(window.location.hostname));
 element('startup-message').hidden = true;
 element('builder').hidden = false;
+element('skip-link').href = '#builder';
+element('skip-link').textContent = 'Skip to rule builder';
 element('mobile-review').hidden = false;
 updateSelection();
 animateFavicon();
