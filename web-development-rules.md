@@ -3,7 +3,7 @@
 ## Web scope and browser compatibility
 
   * Apply these rules to authorised web-development work: creating, changing, reviewing, or testing browser-rendered content, behaviour, and supporting web endpoints, including temporary output and embedded browsers, regardless of rendering architecture. Using a website or creating a temporary page for a non-development task does not by itself trigger a web-development workflow.
-  * Before using a browser feature with uncertain support or removing a fallback, find supported browsers and embedded runtimes in project instructions, configuration, or usage data. Check current compatibility; general compatibility summaries do not replace project policy. If no policy exists and support matters, propose a target for approval.
+  * Before using a browser feature with uncertain support or removing a fallback, identify supported browsers and embedded runtimes from the task, project instructions, configuration, or usage data. Reuse targets already established by the user or project. Check current compatibility; general compatibility summaries do not replace project policy. If the target remains unclear and support matters, propose a target for approval.
 
 ## Web security and privacy
 
@@ -29,7 +29,7 @@
 
 ## Browser lifecycle and state recovery
 
-  * When changing client state, sessions, or lifecycle behaviour, handle refresh, restore, backgrounding, and expiry. Do not depend only on page-close events or uninterrupted background work to preserve required state. Revalidate restored state when freshness affects correctness or access.
+  * When changing client state, sessions, or lifecycle behaviour, handle the refresh, restore, backgrounding, and expiry cases relevant to the affected state. Preserve or reset state according to task or product requirements; keep intentionally temporary state temporary. Do not depend only on page-close events or uninterrupted background work to preserve required state. Revalidate restored state when freshness affects correctness or access.
 
 ## Resource loading and responses
 
