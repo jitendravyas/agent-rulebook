@@ -24,7 +24,7 @@
 
 ## Style changes
 
-  * Before fixing styles, inspect source and, when available, computed styles or layout evidence to find the cause. Do not hide unexplained problems by increasing CSS selector specificity, adding `!important` or `z-index`, or hiding overflow. Scope selectors to their intended elements. After shared-style changes, verify representative affected components and pages, including third-party widgets or surrounding page content that the changes could affect.
+  * Before fixing styles, inspect source and, when available, computed styles or layout evidence to find the cause. Do not hide unexplained problems by increasing CSS selector specificity or adding `!important` or `z-index`. After shared-style changes, verify representative affected components and pages, including third-party widgets or surrounding page content that the changes could affect.
 
 ## Browser lifecycle and state recovery
 
