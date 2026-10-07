@@ -27,14 +27,14 @@ These rules change over time and have not been tested with every agent, model, o
 
 Use the [online prompt builder](https://jitendravyas.github.io/agent-rulebook/) when you want an agent to help decide which of these public rules are worth adopting. The website updates when changes are pushed to `main` and points to the current Markdown files on GitHub. It does not merge rules, install anything, or change your agent settings.
 
-1. Select the rule sets relevant to the work. Choose the operating-system add-on only for an environment the agent will operate, and select other optional sets only when their scope applies.
+1. Select the rule sets relevant to the work. Choose one **host operating system** where your agent normally runs, or leave it unspecified. Its OS rules are selected automatically. Select other OS rules for additional environments, such as remote machines, virtual machines, containers, or WSL. Other optional sets apply only within their stated scope.
 2. Choose whether you are considering the rules for personal, user-level work or for a project. This only gives the agent context for its recommendation; it does not place or activate anything.
-3. Copy the generated prompt and paste it into the agent that will review your instructions. The prompt links to the selected public rule files and tells the agent to treat them as reference material.
+3. Read the full prompt in the text area, then copy it and paste it into the agent that will review your instructions. The prompt links to the selected public rule files and tells the agent to treat them as reference material.
 4. Let the agent compare the selected rules with the applicable instructions and skills it can actually inspect. It should keep useful guidance, skip duplicates and irrelevant material, flag conflicts, and propose the smallest worthwhile changes. It should ask before editing instruction files and say when nothing useful needs to be added.
 
 The prompt is a starting point, not a guarantee that every conflict or duplicate will be found. The agent may need access to the relevant existing instructions; the website never reads or uploads your private instructions, project files, or agent settings. Review the recommendation before adopting it.
 
-Your selected rule sets and scope stay in the page address. Bookmark it or use **Copy setup link**; shared links restore selections and scope, not a frozen copy of the rules. Reopening or reloading uses the current source links. Older links may warn about unavailable choices. Local preview links work only on the machine serving them; share the hosted website’s address with others.
+Your selected rule sets, host OS, and scope stay in the page address and generated prompt. Bookmark it or use **Copy setup link**; shared links restore these choices, not a frozen copy of the rules. Older links without a host choice leave it unspecified. Reopening or reloading uses the current source links. Links may warn about unavailable choices. Local preview links work only on the machine serving them; share the hosted website’s address with others.
 
 The website’s **Read the source rules** section links directly to the original Markdown files, this README, and the licence. People, search crawlers, and agents can follow these links without running JavaScript. Reading the files does not activate their instructions.
 

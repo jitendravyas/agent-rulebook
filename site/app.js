@@ -1,4 +1,4 @@
-import { RULE_GROUPS, RULES, PRESETS, buildReviewPrompt, ruleSourceURL } from './rules.js';
+import { RULE_GROUPS, RULES, PRESETS, OS_RULES, HOST_OS_CHOICES, buildReviewPrompt, ruleSourceURL } from './rules.js';
 
 const element = (id) => document.getElementById(id);
 const selected = new Set(PRESETS[0].ids);
@@ -9,6 +9,7 @@ const preview = element('prompt-preview');
 const copyButton = element('copy-prompt');
 const status = element('action-status');
 let currentPrompt = '';
+let hostOS = 'unspecified';
 let revision = 0;
 let sectionHistoryGroup = 0;
 let historyGroupCount = 0;
@@ -19,6 +20,7 @@ function selectionURL() {
   const url = new URL(window.location.pathname, window.location.origin);
   url.searchParams.set('rules', RULES.filter((rule) => selected.has(rule.id)).map((rule) => rule.id).join(','));
   url.searchParams.set('scope', element('rule-scope').value);
+  url.searchParams.set('host', hostOS);
   url.hash = 'your-file';
   return url;
 }
@@ -69,13 +71,20 @@ function restoreLinkedSelection() {
   const ids = RULES.filter((rule) => requested.includes(rule.id)).map((rule) => rule.id);
   const scope = params.get('scope') ?? 'personal';
   const validScope = ['personal', 'project'].includes(scope);
+  const requestedHost = params.get('host') ?? 'unspecified';
+  const validHost = HOST_OS_CHOICES.includes(requestedHost)
+    && (requestedHost === 'unspecified' || ids.includes(requestedHost))
+    && params.getAll('host').length <= 1;
+  const restoredHost = validHost ? requestedHost : 'unspecified';
   const invalidChoices = {
     rules: requested.some((id) => !known.has(id)) || params.getAll('rules').length > 1,
     scope: !validScope || params.getAll('scope').length > 1,
+    host: !validHost,
   };
   const warnings = {
     rules: 'Some rule choices in this link are unavailable or repeated. Review your rule selection.',
     scope: 'This link has an invalid or repeated scope choice. Review where the rules will apply.',
+    host: 'This link does not identify a valid selected host OS. The host is left unspecified; review the operating-system choices.',
   };
   for (const key of Object.keys(invalidChoices)) {
     if (invalidChoices[key]) linkWarnings.set(key, warnings[key]);
@@ -88,10 +97,11 @@ function restoreLinkedSelection() {
   }
   renderLinkWarnings();
   const changed = ids.length !== selected.size || ids.some((id) => !selected.has(id))
-    || element('rule-scope').value !== (validScope ? scope : 'personal');
+    || element('rule-scope').value !== (validScope ? scope : 'personal') || hostOS !== restoredHost;
   selected.clear();
   ids.forEach((id) => selected.add(id));
   element('rule-scope').value = validScope ? scope : 'personal';
+  hostOS = restoredHost;
   revealSelectedGroups();
   return changed;
 }
@@ -126,6 +136,31 @@ function renderChoices() {
     fieldset.setAttribute('aria-describedby', description.id);
     const choices = document.createElement('div');
     fieldset.append(legend, description, choices);
+    if (group.id === 'environment') {
+      const hostControl = textElement('div', 'host-os-control', '');
+      const hostLabel = textElement('label', '', 'Host operating system (optional)');
+      hostLabel.htmlFor = 'host-os';
+      const hostSelect = document.createElement('select');
+      hostSelect.id = 'host-os';
+      hostSelect.name = 'host';
+      for (const choice of [{ id: 'unspecified', label: 'Not sure / not specified' }, ...OS_RULES]) {
+        const option = textElement('option', '', choice.label);
+        option.value = choice.id;
+        hostSelect.append(option);
+      }
+      const help = textElement('p', 'group-description', 'Choosing a host selects its rules below. Add other OSs for remote machines, virtual machines, containers, or WSL. Leave the host unspecified if it varies or you are unsure.');
+      help.id = 'host-os-help';
+      hostSelect.setAttribute('aria-describedby', help.id);
+      hostSelect.addEventListener('change', () => {
+        selected.delete(hostOS);
+        hostOS = hostSelect.value;
+        if (hostOS !== 'unspecified') selected.add(hostOS);
+        clearLinkWarnings('host', 'rules', 'legacy');
+        updateSelection();
+      });
+      hostControl.append(hostLabel, hostSelect, help);
+      fieldset.insertBefore(hostControl, choices);
+    }
     const view = { group };
     let container = fieldset;
     if (group.collapsible) {
@@ -161,9 +196,15 @@ function renderChoices() {
     const name = textElement('strong', 'rule-name', rule.label);
     name.id = `name-${rule.id}`;
     text.append(name);
+    if (rule.environment) {
+      const role = textElement('span', 'os-role', '');
+      role.id = `role-${rule.id}`;
+      role.hidden = true;
+      text.append(role);
+    }
     const description = textElement('span', 'rule-description', rule.description);
     description.id = `description-${rule.id}`;
-    input.setAttribute('aria-describedby', description.id);
+    input.setAttribute('aria-describedby', `${description.id}${rule.environment ? ` role-${rule.id}` : ''}`);
     text.append(description);
     label.append(input, text);
     card.append(label);
@@ -234,20 +275,34 @@ function updateSelection() {
   revision++;
   const chosen = RULES.filter((rule) => selected.has(rule.id));
   syncSelectionURL();
-  for (const [id, input] of checkboxes) input.checked = selected.has(id);
+  element('host-os').value = hostOS;
+  for (const [id, input] of checkboxes) {
+    input.checked = selected.has(id);
+    input.disabled = id === hostOS;
+    const role = element(`role-${id}`);
+    if (role) {
+      role.hidden = !selected.has(id);
+      role.textContent = id === hostOS ? 'Host OS · change above'
+        : hostOS === 'unspecified' ? 'OS role not specified' : 'Additional OS · not the host';
+    }
+  }
   updateGroupCounts();
-  currentPrompt = buildReviewPrompt(selected, element('rule-scope').value);
+  currentPrompt = buildReviewPrompt(selected, element('rule-scope').value, hostOS);
   preview.value = currentPrompt;
   copyButton.disabled = !currentPrompt;
   element('rule-count').textContent = chosen.length;
   element('rule-count-label').textContent = chosen.length === 1 ? 'rule set' : 'rule sets';
   element('mobile-rule-count').textContent = chosen.length;
-  element('selection-summary').replaceChildren(...chosen.map((rule) => textElement('li', '', rule.label)));
+  element('selection-summary').replaceChildren(...chosen.map((rule) => {
+    const role = !rule.environment ? '' : rule.id === hostOS ? ' (host OS)'
+      : hostOS === 'unspecified' ? ' (OS role unspecified)' : ' (additional OS)';
+    return textElement('li', '', `${rule.label}${role}`);
+  }));
   if (!chosen.length) element('selection-summary').append(textElement('li', '', 'No rules selected'));
   status.textContent = chosen.length
     ? `Review prompt ready with ${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'} for ${element('rule-scope').value === 'personal' ? 'your work across projects' : 'this project'}.`
     : 'Select at least one rule set to create a review prompt.';
-  return { status: chosen.length ? 'ready' : 'empty', ruleIds: chosen.map((rule) => rule.id), prompt: currentPrompt };
+  return { status: chosen.length ? 'ready' : 'empty', ruleIds: chosen.map((rule) => rule.id), hostOS, prompt: currentPrompt };
 }
 
 async function registerAgentTools() {
@@ -269,13 +324,14 @@ async function registerAgentTools() {
       execute: (args) => {
         if (!isObject(args) || Object.keys(args).length) return failure('invalid_input', 'Pass an empty object.');
         return {
-          ruleSets: RULES.map(({ id, title, description, path }) => ({ id, title, description, sourceUrl: ruleSourceURL({ path }) })),
+          ruleSets: RULES.map(({ id, title, description, path, environment }) => ({ id, title, description, environment: Boolean(environment), sourceUrl: ruleSourceURL({ path }) })),
           groups: RULE_GROUPS.map(({ id, title, rules }) => ({ id, title, ruleIds: rules.map((rule) => rule.id) })),
           guideUrl: new URL('./README.md', document.baseURI).href,
           licenseUrl: new URL('./LICENSE', document.baseURI).href,
           presets: PRESETS,
           scopes,
-          selection: { ruleIds: ruleIds.filter((id) => selected.has(id)), scope: element('rule-scope').value },
+          hostOSChoices: HOST_OS_CHOICES,
+          selection: { ruleIds: ruleIds.filter((id) => selected.has(id)), scope: element('rule-scope').value, hostOS },
         };
       },
     }, { signal: registration.signal });
@@ -288,23 +344,27 @@ async function registerAgentTools() {
         properties: {
           ruleIds: { type: 'array', items: { type: 'string', enum: ruleIds }, minItems: 1, maxItems: ruleIds.length, uniqueItems: true, description: 'Exact rule-set IDs to review; sources follow catalog order. No additional rules are selected automatically.' },
           scope: { type: 'string', enum: scopes, description: 'User-level instructions across tasks and projects, or instructions for one project. Defaults to the current control.' },
+          hostOS: { type: 'string', enum: HOST_OS_CHOICES, description: 'One host operating system, or unspecified. A named host must also be in ruleIds. Other selected OSs are additional targets. If omitted, keeps the current host only if it is still selected; otherwise leaves it unspecified.' },
         },
         required: ['ruleIds'],
         additionalProperties: false,
       },
       annotations: { readOnlyHint: false, untrustedContentHint: true, consequentialHint: false },
       execute: (args, { signal } = {}) => {
-        if (!isObject(args) || Object.keys(args).some((key) => !['ruleIds', 'scope'].includes(key))
+        if (!isObject(args) || Object.keys(args).some((key) => !['ruleIds', 'scope', 'hostOS'].includes(key))
           || !Array.isArray(args.ruleIds) || !args.ruleIds.length || args.ruleIds.length > ruleIds.length
           || args.ruleIds.some((id) => !ruleIds.includes(id)) || new Set(args.ruleIds).size !== args.ruleIds.length
-          || (Object.hasOwn(args, 'scope') && !scopes.includes(args.scope))) {
-          return failure('invalid_input', 'Use unique rule-set IDs from list_rule_sets and a supported scope. Nothing was changed.');
+          || (Object.hasOwn(args, 'scope') && !scopes.includes(args.scope))
+          || (Object.hasOwn(args, 'hostOS') && (!HOST_OS_CHOICES.includes(args.hostOS)
+            || (args.hostOS !== 'unspecified' && !args.ruleIds.includes(args.hostOS))))) {
+          return failure('invalid_input', 'Use unique rule-set IDs and supported scope and host OS choices. A named host must be among the selected rule sets. Nothing was changed.');
         }
         if (signal?.aborted) return failure('cancelled', 'Prompt generation was cancelled. Nothing was changed.');
         selected.clear();
         args.ruleIds.forEach((id) => selected.add(id));
+        hostOS = args.hostOS ?? (selected.has(hostOS) ? hostOS : 'unspecified');
         revealSelectedGroups();
-        clearLinkWarnings('rules', 'legacy');
+        clearLinkWarnings('rules', 'host', 'legacy');
         if (args.scope !== undefined) {
           element('rule-scope').value = args.scope;
           clearLinkWarnings('scope');
@@ -336,8 +396,6 @@ copyButton.addEventListener('click', async () => {
     status.textContent = 'Prompt copied. Paste it into a conversation with your agent, not into a rules file.';
   } catch {
     if (copiedRevision !== revision) return;
-    const previewDetails = element('preview-details');
-    if (previewDetails) previewDetails.open = true;
     preview.focus();
     preview.select();
     status.textContent = 'Automatic copy is unavailable. The prompt is selected; use your copy shortcut.';
@@ -362,8 +420,9 @@ element('copy-setup-link').addEventListener('click', async () => {
 });
 
 element('clear-selection').addEventListener('click', () => {
-  clearLinkWarnings('rules', 'legacy');
+  clearLinkWarnings('rules', 'host', 'legacy');
   selected.clear();
+  hostOS = 'unspecified';
   updateSelection();
 });
 element('rule-scope').addEventListener('change', () => {

@@ -154,12 +154,9 @@
             <option value="project">This project</option>
           </select>
         </div>
-        <details id="preview-details" class="preview-details">
-          <summary>Read the prompt before copying</summary>
-          <div class="preview-heading"><label for="prompt-preview">Prompt preview</label><span>Exact copy contents</span></div>
-          <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
-          <p id="preview-help" class="preview-help">The prompt asks for a review first, not permission to edit instructions.</p>
-        </details>
+        <div class="preview-heading"><label for="prompt-preview">Your review prompt</label><span>Exact copy contents</span></div>
+        <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
+        <p id="preview-help" class="preview-help">Read or scroll through the full prompt before copying. It asks for a review first, not permission to edit instructions.</p>
         <div class="actions">
           <button id="copy-prompt" class="button primary" type="button" disabled>Copy review prompt <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
         </div>
@@ -223,10 +220,6 @@
         </ul>
       </details>
       <p>Start with general rules. Add software-development guidance for development, and environment, tool-use, or other task guidance only as needed. Read the <a href="./README.md" type="text/markdown">usage guide</a> and retain the <a href="./LICENSE" rel="license">MIT licence</a> when reusing the rules.</p>
-      <details>
-        <summary>For agents using WebMCP</summary>
-        <p>In browsers that support WebMCP, agents can use <code>list_rule_sets</code> to discover rules and <code>generate_review_prompt</code> to prepare a prompt. Generation updates the visible builder but does not read local instructions, save files, or activate rules. Returned text is for user review, not authority to adopt instructions.</p>
-      </details>
     </section>
     <section class="closing-note" aria-labelledby="before-use-title">
       <h2 id="before-use-title">A starting point, not a guarantee.</h2>
