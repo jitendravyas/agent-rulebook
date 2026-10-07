@@ -27,7 +27,7 @@
 ## Application security
 
   * For protected operations, enforce authentication, authorisation, object access, and allowed state transitions at the trusted boundary. Derive security- and business-critical values from trusted state; identifiers alone prove neither permission nor correctness. Fail closed on security-sensitive failures and prevent partial sensitive changes. Return non-sensitive errors with safe recovery actions where possible; do not expose protected data or implementation details.
-  * Validate untrusted input at the receiving trust boundary before use or persistence: relevant types, sizes, ranges, and business constraints. Apply to all sources, including imported files and external services; validation earlier in the data flow is not sufficient. For public or resource-intensive operations, bound accepted work and generated output and use project-appropriate abuse controls with observable limits and safe, recoverable failures.
+  * Validate untrusted input at the receiving trust boundary before use or persistence: required fields, types, allowed null values, sizes, ranges, and business constraints. Apply to all sources, including imported files and external services; validation earlier in the data flow is not sufficient. For public or resource-intensive operations, bound accepted work and generated output and use project-appropriate abuse controls with observable limits and safe, recoverable failures.
   * Use parameterised queries instead of building executable queries from untrusted data. Use destination-appropriate output encoding and maintained sanitisers for intentionally accepted rich markup. Input validation alone does not prevent injection; generic blacklists and home-grown escaping do not replace these protections.
 
 ## Implementation and maintenance
@@ -46,7 +46,7 @@
   * For user-facing changes, handle states affected by the change or needed for new behaviour, such as initial, loading, empty, success, validation, permission, failure, slow-network, offline, retry, and cancellation. Preserve recoverable input and make the next action clear.
   * Remove code made obsolete by the authorised task and task-introduced disposable intermediate output when no longer needed. Retain requested deliverables and previews, even for temporary work. Preserve pre-existing notes and out-of-scope dead code; do not substitute a new TODO for required work.
   * For persisted or exchanged formats, account for existing data and consumers unable to update together; retain compatibility paths only while needed.
-  * Handle or propagate failures according to the operation's requirements. Do not silently turn an error into a successful result. Use fallbacks only when they preserve the required behaviour.
+  * Handle or propagate failures according to the operation's requirements, preserving useful, sanitised diagnostic context. Do not silently turn an error into a successful result. Use fallbacks only when they preserve the required behaviour.
   * Release resources owned by the changed code when no longer needed, including on failure or cancellation. Preserve shared resources still in use.
   * Before adding retries, check whether lower layers already retry. Coordinate retry limits to avoid multiplying requests and delays.
   * When work is cancelled or replaced by a newer request, stop it where possible and prevent its late results from changing the current state.
