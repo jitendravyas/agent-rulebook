@@ -18,4 +18,4 @@ Apply to authorised work on macOS, including tasks outside software development.
 
 ## Apple Intelligence
 
-  * For work that must stay local, use a model that runs on the Mac. Cloud and extension models process data outside the Mac, even when used through built-in tools.
+  * When using AI for work that must stay local, verify that the selected model processes the task data on the Mac. Access through a built-in tool does not by itself make processing local.
