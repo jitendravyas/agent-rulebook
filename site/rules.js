@@ -14,7 +14,7 @@ const CODING_RULE = {
   title: 'Coding-agent rules',
   label: 'Coding and maintenance',
   description:
-    'Shared development guidance for web, mobile, desktop, and other software. Skip if your own coding instructions cover this.',
+    'Implementation, maintenance, and static code checks, including linting, for any software. Skip if your own coding instructions cover this.',
   path: 'coding-agent-global-rules.md',
 };
 
@@ -32,7 +32,7 @@ const TESTING_RULE = {
   title: 'Software testing rules',
   label: 'Software testing',
   description:
-    'Focused tests, lint checks, and browser verification. Use with these coding rules or your own; not a request to run every check.',
+    'Focused tests and browser verification. Use with these coding rules or your own; not a request to run every check.',
   path: 'optional/software-testing-rules.md',
 };
 

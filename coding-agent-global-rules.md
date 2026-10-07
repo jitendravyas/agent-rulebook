@@ -56,6 +56,8 @@
   * When the likelihood and impact of recurrence justify the upkeep, recommend the smallest useful prevention: a behaviour test, automated check, or project rule. Recommend user-level prevention only for lessons that apply across software projects. Consider false positives; add prevention only when authorised and in scope. Exclude secrets and temporary facts.
   * Do not add comments by default. Prefer clear names and straightforward code. Add comments only for important reasons or constraints the code cannot express. Preserve required notices and API documentation. Remove existing comments only after confirming they are redundant, incorrect, or obsolete.
 
-## Change review
+## Code checks and review
 
+  * When relying on a third-party or custom linter or static checker, confirm it covers changed paths and file types and applies the intended rules. A pass may have skipped files or rules. Respect intentional exclusions. Fix missing coverage if in scope; otherwise recommend the smallest change. A gap alone does not justify new tools or unrelated checks.
+  * When fixes are within the authorised task, address task-related lint, type, and static-analysis errors at source. For demonstrably inapplicable rules, use the narrowest project-allowed suppression and explain the reason near the suppression. At untyped or external boundaries, keep any justified bypass of type checks narrowly scoped. Ask before broad or policy-changing suppressions.
   * During authorised implementation work, review final changes, using a diff when available, for bugs, regressions, security, and needless complexity. Before acting on reported findings, verify them against the current code and requirements. Fix required in-scope findings; report others with location, impact, and evidence, separate from optional improvements. Recheck after further edits when needed.

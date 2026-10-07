@@ -11,9 +11,9 @@ For the `AGENTS.md` format, examples, FAQ, and supported-agent directory, see [a
 | Agent setup | Load these files | Covers |
 | --- | --- | --- |
 | General tasks | [General rules](agent-global-rules.md) | Research, files, documents, media, and general safety for any task. |
-| Software development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) | Software planning, implementation, and maintenance. |
+| Software development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) | Software planning, implementation, maintenance, and static code checks. |
 | Web development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) + [web](web-development-rules.md) | Browser behaviour, resource loading, and web security. |
-| Software testing | [General](agent-global-rules.md) + [software testing](optional/software-testing-rules.md) | Focused tests, static checks, and browser verification, with our coding rules or your own. |
+| Software testing | [General](agent-global-rules.md) + [software testing](optional/software-testing-rules.md) | Focused tests and browser verification, with our coding rules or your own. |
 
 These are suggested combinations, not required bundles. Choose individual files, including General alongside your own coding instructions. Omit guidance you already supply elsewhere and resolve conflicts before combining. Load selected files in the order shown. "Global" means reusable across tasks or projects; your task and project requirements still set the architecture, tools, and conventions.
 
@@ -135,9 +135,9 @@ These add-ons can accompany any setup, including General tasks without coding ru
 
 Choose only the areas your agent needs. None requires a Git repository, and each can complement your own instructions:
 
-- [Coding and maintenance](coding-agent-global-rules.md): shared implementation guidance for web, mobile, desktop, and other software.
+- [Coding and maintenance](coding-agent-global-rules.md): shared implementation guidance for web, mobile, desktop, and other software, including lint, type, and static-analysis checks.
 - [Web development](web-development-rules.md): browser-specific implementation and security guidance.
-- [Software testing](optional/software-testing-rules.md): test quality, lint and static checks, and proportionate browser verification. It does not trigger a full test suite or audit just because it is loaded. General retains the basic expectations to verify outcomes and report unchecked work honestly.
+- [Software testing](optional/software-testing-rules.md): test quality and proportionate browser verification. It does not trigger a full test suite or audit just because it is loaded. General retains the basic expectations to verify outcomes and report unchecked work honestly.
 - [Browser animations](optional/browser-animation-rules.md): preserve application state and animation lifecycles when creating or changing live web motion. Not needed for web work without animation or for video exports.
 - [Web performance](optional/web-performance-rules.md): investigate and measure relevant performance changes without treating a local result as proof for all users.
 - [Internationalization and localization](optional/internationalization-localization-rules.md): prepare software and product interfaces for different languages and regions, including translations and text direction. It is not for ordinary message or document translation.
@@ -174,7 +174,7 @@ Select fewer relevant sections, load sections conditionally where supported, or 
 
 When replacing an earlier version of `agent-global-rules.md`, add Browser and computer use or Version control only when needed. Their detailed guidance is now optional; essential safeguards remain in General.
 
-When replacing an earlier version of `coding-agent-global-rules.md`, retain equivalent general guidance or select `agent-global-rules.md`. Shared safety, permissions, tool use, research, communication, and outcome verification belong there. Software-testing guidance has moved from Coding and Web into `optional/software-testing-rules.md`; select it if you want to retain that guidance. Review any saved prompt or source selection after updating. Replace old copied rules rather than appending duplicate versions, while preserving your own instructions.
+When replacing an earlier version of `coding-agent-global-rules.md`, retain equivalent general guidance or select `agent-global-rules.md`. Shared safety, permissions, tool use, research, communication, and outcome verification belong there. Testing and browser-verification guidance is in `optional/software-testing-rules.md`; lint, type, and static-analysis guidance is in Coding. Review any saved prompt or source selection after updating. Replace old copied rules rather than appending duplicate versions, while preserving your own instructions.
 
 Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional browser-animation rules only when relevant. The former standalone accessibility file is no longer needed; implementation safeguards remain in Coding and assessment boundaries are in Software testing.
 
