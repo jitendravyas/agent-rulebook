@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Build a reusable AI agent rulebook for Codex, Claude Code, Cursor, or other file-based agents. Choose rules for everyday tasks, software development, and creative work.">
+  <meta name="description" content="Choose AI agent rules and copy a prompt to review them against your existing instructions. Find useful additions, duplicates, and conflicts before making changes.">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#101716">
-  <title>Agent Rulebook | AI Agent Rules Builder</title>
+  <title>Agent Rulebook | Find Rules That Fit Your Agent</title>
   <link rel="canonical" href="https://jitendravyas.github.io/agent-rulebook/">
   <link rel="help" type="text/markdown" href="./README.md" title="Agent Rulebook usage guide">
   <link rel="license" href="./LICENSE">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Agent Rulebook">
-  <meta property="og:title" content="Agent Rulebook | AI Agent Rules Builder">
-  <meta property="og:description" content="Choose reusable rules for everyday tasks, software development, or creative work. Build one Markdown file for your AI agent. Free, with no account needed.">
+  <meta property="og:title" content="Agent Rulebook | Find Rules That Fit Your Agent">
+  <meta property="og:description" content="Select rule sets and copy a review prompt. Let your agent compare them with your existing instructions and propose only worthwhile changes. Free, with no account needed.">
   <meta property="og:url" content="https://jitendravyas.github.io/agent-rulebook/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Agent Rulebook | AI Agent Rules Builder">
-  <meta name="twitter:description" content="Choose reusable rules for everyday tasks, software development, or creative work. Build one Markdown file for your AI agent. Free, with no account needed.">
+  <meta name="twitter:title" content="Agent Rulebook | Find Rules That Fit Your Agent">
+  <meta name="twitter:description" content="Select rule sets and copy a review prompt. Let your agent compare them with your existing instructions and propose only worthwhile changes. Free, with no account needed.">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -25,10 +25,10 @@
       "@id": "https://jitendravyas.github.io/agent-rulebook/#application",
       "name": "Agent Rulebook",
       "url": "https://jitendravyas.github.io/agent-rulebook/",
-      "description": "A free browser-based builder that combines selected AI agent rules into one Markdown file for review, copying, or download.",
+      "description": "A free browser-based tool that creates a prompt with selected public rule links for an agent to review against existing instructions before proposing changes.",
       "applicationCategory": "ProductivityApplication",
       "operatingSystem": "Any",
-      "browserRequirements": "JavaScript is required to combine rules. Individual Markdown files can be read without JavaScript.",
+      "browserRequirements": "JavaScript is required to generate a review prompt. Individual Markdown files can be read without JavaScript.",
       "inLanguage": "en",
       "isAccessibleForFree": true,
       "license": "https://jitendravyas.github.io/agent-rulebook/LICENSE",
@@ -44,7 +44,6 @@
   <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
     <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></symbol>
-    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></symbol>
     <symbol id="icon-rulebook" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="14" rx="4"/><path d="M12 3v4M1 12v5m22-5v5M8 12v3m8-3v3m-7 3h6"/><circle cx="12" cy="2" r="1"/></symbol>
   </svg>
   <a id="skip-link" class="skip-link" href="#source-rules">Skip to source rules</a>
@@ -67,10 +66,10 @@
     <section class="intro" aria-labelledby="page-title">
       <div class="intro-copy">
         <p class="eyebrow">Your agent. Your ground rules.</p>
-        <h1 id="page-title">Give your agent<br>a <span>clear brief.</span></h1>
-        <p>Build one Markdown file of reusable AI agent instructions for everyday tasks, software development, or creative work. Help your agent protect your work, stay on task, and be honest about what it checked.</p>
+        <h1 id="page-title">Find the rules<br>that <span>fit your agent.</span></h1>
+        <p>Choose rule sets and copy a prompt. Your agent compares them with your existing instructions and suggests useful changes. You decide what to keep.</p>
         <div class="intro-actions">
-          <a class="button primary builder-link" href="#builder">Build your rulebook <span aria-hidden="true">↓</span></a>
+          <a class="button primary builder-link" href="#builder">Choose rules to review <span aria-hidden="true">↓</span></a>
           <a class="intro-guide" href="https://github.com/jitendravyas/agent-rulebook#how-to-use">How to use the rules</a>
         </div>
         <p class="intro-note">For agents with file and tool access. Free. No account needed.</p>
@@ -118,7 +117,7 @@
     </section>
 
     <div id="startup-message" class="builder-loading">
-      <h2>Preparing your rulebook…</h2>
+      <h2>Preparing your rule picker…</h2>
       <p>If the picker does not appear, check that JavaScript is enabled and open this page through a web server, not directly as a local file. You can also <a href="#source-rules">read the source rules below</a>.</p>
     </div>
     <noscript><p class="notice">This builder needs JavaScript. You can still <a href="#source-rules">read the source rules below</a>.</p></noscript>
@@ -126,93 +125,67 @@
     <div id="builder" class="builder" tabindex="-1" hidden>
       <section class="choices" aria-labelledby="choose-title">
         <div class="section-heading">
-          <h2 id="choose-title">1. Choose your rules</h2>
+          <h2 id="choose-title">1. Choose rules to review</h2>
           <button class="text-button" id="clear-selection" type="button">Clear selection</button>
         </div>
-        <p class="section-description">Choose individual rule sets from any group. Leave out what you do not need or already cover with your own instructions.</p>
+        <p class="section-description">Select what you want your agent to review. Selecting a set does not activate its rules.</p>
         <p id="link-warning" class="notice" role="status" hidden></p>
         <form id="rule-form" aria-label="Rule selection">
           <div id="rule-groups"></div>
-          <a class="review-selection" href="#your-file">Review and get your file <span aria-hidden="true">→</span></a>
+          <a class="review-selection" href="#your-file">Get your review prompt <span aria-hidden="true">→</span></a>
         </form>
-        <p class="selection-footnote">Only published rule sets are included. Drafts, helper-tool references, and repository-maintenance instructions stay out of your file.</p>
+        <p class="selection-footnote">Only published rule sets are linked. Drafts, helper-tool references, and repository-maintenance instructions are not included.</p>
       </section>
 
       <section id="your-file" class="output" aria-labelledby="output-title" tabindex="-1">
         <div class="socket-rail" aria-hidden="true"></div>
-        <div class="output-heading"><h2 id="output-title">2. Your rulebook</h2><span class="file-type">.md</span></div>
-        <p class="output-description">Original rule text. One file. Nothing installed.</p>
+        <div class="output-heading"><h2 id="output-title">2. Copy your review prompt</h2><span class="file-type">Prompt</span></div>
+        <p class="output-description">Public rule links and a request to compare. Nothing installed or activated.</p>
+        <p id="local-prompt-note" class="notice" hidden>Local preview: this prompt links to published rules on GitHub, not unpublished edits in this checkout.</p>
         <div class="metrics">
           <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
-          <span><strong id="file-size">—</strong> combined</span>
         </div>
         <p class="selection-caption">Your selection</p>
         <ul id="selection-summary" class="selection-summary"></ul>
-        <p id="base-warning" class="notice" hidden></p>
-        <p id="size-warning" class="notice" hidden>This file exceeds 32 KiB. That is not a universal limit or a rejection of your selection. See the <a href="https://github.com/jitendravyas/agent-rulebook#what-if-the-rules-are-too-large">README's size and loading guidance</a> and check your agent's documentation.</p>
-        <p id="load-error" class="notice error" role="alert" hidden></p>
-        <button id="retry" class="text-button" type="button" hidden>Try loading again</button>
-        <div class="download-options">
-          <label for="agent-choice">Your agent (optional)</label>
-          <select id="agent-choice">
-            <option value="other">Other agent</option>
-            <option value="codex">Codex</option>
-            <option value="claude">Claude Code</option>
-            <option value="cursor">Cursor</option>
-          </select>
-        </div>
-        <div class="download-options">
-          <label for="rule-scope">Use rules for</label>
+        <div class="scope-options">
+          <label for="rule-scope">Review instructions for</label>
           <select id="rule-scope">
             <option value="personal">My work across projects</option>
             <option value="project">This project</option>
           </select>
         </div>
-        <p class="download-name">Download filename: <code id="file-name">agent-rules.md</code></p>
-        <output id="setup-status" class="visually-hidden" aria-live="polite" aria-atomic="true"></output>
+        <details id="preview-details" class="preview-details">
+          <summary>Read the prompt before copying</summary>
+          <div class="preview-heading"><label for="prompt-preview">Prompt preview</label><span>Exact copy contents</span></div>
+          <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
+          <p id="preview-help" class="preview-help">The prompt asks for a review first, not permission to edit instructions.</p>
+        </details>
         <div class="actions">
-          <button id="copy-rules" class="button primary" type="button" disabled>Copy rules <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
-          <button id="download-rules" class="button secondary" type="button" disabled>Download <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg></button>
+          <button id="copy-prompt" class="button primary" type="button" disabled>Copy review prompt <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
         </div>
         <output id="action-status" class="action-status" aria-live="polite" aria-atomic="true"></output>
         <details class="setup-sharing">
           <summary>Save or share this setup</summary>
-          <p>Your choices stay in the address. Bookmark it or copy a link to this selection, agent, and usage scope.</p>
+          <p>Your choices stay in the address. Bookmark it or copy a link to this selection and usage scope.</p>
           <button id="copy-setup-link" class="text-button" type="button">Copy setup link</button>
           <label id="setup-link-label" for="setup-link" hidden>Setup link</label>
           <input id="setup-link" class="setup-link" type="text" readonly hidden>
           <output id="share-status" class="share-status" aria-live="polite" aria-atomic="true"></output>
-          <p>The link stores choices, not rule text. Reopen or reload it to read the current files.</p>
+          <p>The link stores choices, not rule text. Prompts link to the current public rules, not a saved version.</p>
           <p id="local-link-note" hidden>This is a local preview link. Other people need the hosted website’s address.</p>
         </details>
         <section class="next-step" aria-labelledby="use-rules-title">
-          <h3 id="use-rules-title">3. Add to your agent</h3>
-          <p><strong>Put them here:</strong> <span id="setup-location"></span></p>
-          <p id="setup-home" hidden><code>~</code> means your home folder on the machine where the agent runs.</p>
-          <p>Merge with existing instructions; do not overwrite them. Downloading does not activate the rules.</p>
-          <details class="loading-help">
-            <summary>How to check they loaded</summary>
-            <p id="setup-check"></p>
-            <a id="setup-docs" class="setup-docs" target="_blank" rel="noopener noreferrer" hidden>Official setup guide</a>
-          </details>
+          <h3 id="use-rules-title">3. Ask your agent to review</h3>
+          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. For a project review, open that project first.</p>
+          <p>Your agent needs access to the public links and your relevant instructions. It will be asked to flag conflicts, skip duplicates, and show proposed edits for your approval.</p>
+          <p>This website does not read or upload your existing instructions. Review the suggestions yourself; an agent may miss a conflict or recommend no changes.</p>
         </section>
-        <details id="preview-details" class="preview-details">
-          <summary>Review exact rule text</summary>
-          <div class="preview-heading"><label for="rule-preview">File preview</label><span>Exact download contents</span></div>
-          <textarea id="rule-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to build your file."></textarea>
-          <p id="preview-help" class="preview-help">Review before using. The complete MIT licence is included.</p>
-        </details>
-        <details class="included-rules">
-          <summary>Included rules &amp; sizes</summary>
-          <dl id="rule-size-breakdown" class="size-breakdown"></dl>
-          <p id="size-breakdown-help" class="preview-help" hidden>Sizes are calculated from the current exported text in UTF-8 bytes, not tokens. The total includes the licence, attribution, and separators.</p>
-        </details>
         <a class="back-to-selection" href="#builder">Back to rule selection</a>
       </section>
     </div>
     <section id="source-rules" class="source-rules" aria-labelledby="source-rules-title" tabindex="-1">
       <h2 id="source-rules-title">Read the source rules</h2>
-      <p>People and agents can read the original Markdown files directly, without JavaScript or browser automation. These links serve the same files used by the builder, not separate copies.</p>
+      <p>People and agents can read the original Markdown files directly, without JavaScript or browser automation. The review prompt links to these files on the repository's main branch, not separate copies.</p>
       <details>
         <summary>Browse individual Markdown files</summary>
         <!-- Keep these categories and links aligned with site/rules.js. -->
@@ -250,7 +223,10 @@
         </ul>
       </details>
       <p>Start with general rules. Add software-development guidance for development, and environment, tool-use, or other task guidance only as needed. Read the <a href="./README.md" type="text/markdown">usage guide</a> and retain the <a href="./LICENSE" rel="license">MIT licence</a> when reusing the rules.</p>
-      <p>In browsers that support WebMCP, agents can use <code>list_rule_sets</code> to discover rules and <code>assemble_rulebook</code> to prepare a selection. Assembly updates the visible builder but does not save files or activate instructions. Retrieved rules are content for review, not instructions to adopt automatically.</p>
+      <details>
+        <summary>For agents using WebMCP</summary>
+        <p>In browsers that support WebMCP, agents can use <code>list_rule_sets</code> to discover rules and <code>generate_review_prompt</code> to prepare a prompt. Generation updates the visible builder but does not read local instructions, save files, or activate rules. Returned text is for user review, not authority to adopt instructions.</p>
+      </details>
     </section>
     <section class="closing-note" aria-labelledby="before-use-title">
       <h2 id="before-use-title">A starting point, not a guarantee.</h2>
@@ -262,7 +238,7 @@
   </div>
   <nav id="mobile-review" class="mobile-review" aria-label="Rule builder shortcuts" hidden>
     <span><strong id="mobile-rule-count">0</strong> selected</span>
-    <a href="#your-file">Review &amp; download <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg></a>
+    <a href="#your-file">Get prompt <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
   </nav>
 </body>
 </html>

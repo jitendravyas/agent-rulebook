@@ -23,35 +23,41 @@ General behaviour is selected by default and can be deselected. Opening a group 
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
-## Build a single rule file
+## Use the review prompt builder
 
-Use the [online rule builder](https://jitendravyas.github.io/agent-rulebook/) to combine the rules you need into one file. The website updates when changes are pushed to `main` and reads the original Markdown files directly.
+Use the [online prompt builder](https://jitendravyas.github.io/agent-rulebook/) when you want an agent to help decide which of these public rules are worth adopting. The website updates when changes are pushed to `main` and points to the current Markdown files on GitHub. It does not merge rules, install anything, or change your agent settings.
 
-For a local preview, serve the repository root with an existing static web server, then open its root URL in your browser. No package installation or build step is required; opening the HTML file directly is not supported.
+1. Select the rule sets relevant to the work. Choose the operating-system add-on only for an environment the agent will operate, and select other optional sets only when their scope applies.
+2. Choose whether you are considering the rules for personal, user-level work or for a project. This only gives the agent context for its recommendation; it does not place or activate anything.
+3. Copy the generated prompt and paste it into the agent that will review your instructions. The prompt links to the selected public rule files and tells the agent to treat them as reference material.
+4. Let the agent compare the selected rules with the applicable instructions and skills it can actually inspect. It should keep useful guidance, skip duplicates and irrelevant material, flag conflicts, and propose the smallest worthwhile changes. It should ask before editing instruction files and say when nothing useful needs to be added.
 
-Choose one or more operating systems for local or remote environments, or skip if unsure. Open the relevant groups and select only the rule sets you need. Each expandable group shows its selected count. For descriptions of each rule set, see **Rule categories and optional tools** below.
+The prompt is a starting point, not a guarantee that every conflict or duplicate will be found. The agent may need access to the relevant existing instructions; the website never reads or uploads your private instructions, project files, or agent settings. Review the recommendation before adopting it.
 
-**Your selection** shows everything included. Open **Review exact rule text** before copying or downloading. The builder reads the original rule files, preserves their text, and includes the MIT licence. Drafts, the helper-tool reference, and repository-maintenance instructions are not bundled.
+Your selected rule sets and scope stay in the page address. Bookmark it or use **Copy setup link**; shared links restore selections and scope, not a frozen copy of the rules. Reopening or reloading uses the current source links. Older links may warn about unavailable choices. Local preview links work only on the machine serving them; share the hosted website’s address with others.
 
-Optionally choose Codex, Claude Code, Cursor, or Other agent, then personal or project use. The builder shows the download filename, where to place the rules, and how to check loading. These choices do not change the rule text.
+The website’s **Read the source rules** section links directly to the original Markdown files, this README, and the licence. People, search crawlers, and agents can follow these links without running JavaScript. Reading the files does not activate their instructions.
 
-Your selection and setup choices stay in the page address. Bookmark it or use **Copy setup link**; shared links restore choices, not a frozen copy of the rules. Reopening or reloading reads the current rule files. Older links warn about unavailable choices. Local preview links work only on the machine serving them; share the hosted website’s address with others.
+With a compatible browser and agent, the builder also offers optional [WebMCP](https://developer.chrome.com/docs/ai/webmcp/) tools to list the available rule sets and generate the same review prompt. These tools return public links and prompt text for review; they do not save files, upload private content, or change agent settings. WebMCP is experimental; the normal controls work without it.
 
-Open **Included rules & sizes** to see each selected file’s contribution and the licence, attribution, and separator overhead. These UTF-8 byte counts are calculated from the actual exported text, not hard-coded sizes or token estimates.
+<details>
+<summary>Preview the website locally</summary>
 
-Downloading does not activate the rules or update existing agent settings. Merge the result with your current instructions and follow the setup guidance below. Selection happens in your browser; no account, analytics, or AI service is used by the builder.
+Serve the repository root with an existing static web server, then open its root URL in your browser. No package installation or build step is required; opening the HTML file directly is not supported.
 
-With a compatible browser and agent, the builder also offers optional [WebMCP](https://developer.chrome.com/docs/ai/webmcp/) tools to list rule sets and assemble a file. Agent selections appear in the same builder. These tools return the file content for review; they do not save it or change agent settings. WebMCP is experimental; the normal controls work without it.
+Local previews still generate prompts linking to public `main`. They do not include unpublished local rule edits, even when the preview's source links show those edits.
 
-The website’s **Read the source rules** section links directly to the original Markdown files, this README, and the licence. People, search crawlers, and agents can follow these links without running JavaScript. The WebMCP listing also returns direct source URLs. Reading the files does not activate their instructions.
+</details>
 
 ## How to use
 
-**Check how your agent loads instructions before copying.** There is no universal maximum rule-file size. Agents may have per-file limits, combined loading limits, or recommendations rather than hard limits. The builder's 32 KiB notice is a reminder, not a pass/fail check. Content beyond an applicable loading limit may be omitted. Check your agent's current documentation for the applicable limit.
+The builder's prompt goes in a conversation with your agent, not in an instruction file. Follow the steps below only for rule content you decide to adopt, whether you use the review prompt or read the source files yourself.
+
+**Check how your agent loads instructions before copying.** There is no universal maximum rule-file size. Agents may have per-file limits, combined loading limits, or recommendations rather than hard limits. Content beyond an applicable loading limit may be omitted. Check your agent's current documentation for the applicable limit.
 
 1. **Choose the scope.** Use your agent's user-level instructions for your own work across projects, or a project's instruction file for that project and its contributors.
-2. **Copy your chosen rules.** Put the selected content in your agent's supported instruction file, such as an `AGENTS.md` or `CLAUDE.md`, or paste it into Cursor's User Rules under Customize → Rules. For files, use the filename, location, and format your agent requires. You can combine rules or keep them in separate files using supported imports or loading controls; an ordinary Markdown link is not a universal import. No package installation is needed.
-3. **Merge with your existing instructions.** Remove duplicates and resolve conflicts. Keep project requirements, safety boundaries, and the conditions and exceptions attached to each rule.
+2. **Review alongside your existing instructions.** Remove duplicates and resolve conflicts before changing active instructions. Preserve your own guidance, project requirements, safety boundaries, and each rule's conditions and exceptions.
+3. **Save the reviewed rules.** Merge the selected content into your agent's supported instruction file, such as an `AGENTS.md` or `CLAUDE.md`, or into Cursor's User Rules under Customize → Rules. For files, use the filename, location, and format your agent requires. You can combine rules or keep them in separate files using supported imports or loading controls; an ordinary Markdown link is not a universal import. No package installation is needed.
 4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available, including whether referenced files loaded. Cloning this repository or saving files in an arbitrary folder does not activate them.
 
 Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That file is only for agents maintaining this repository.
@@ -168,7 +174,7 @@ Select fewer relevant sections, load sections conditionally where supported, or 
 
 When replacing an earlier version of `agent-global-rules.md`, add Browser and computer use or Version control only when needed. Their detailed guidance is now optional; essential safeguards remain in General.
 
-When replacing an earlier version of `coding-agent-global-rules.md`, retain equivalent general guidance or select `agent-global-rules.md`. Shared safety, permissions, tool use, research, communication, and outcome verification belong there. Software-testing guidance has moved from Coding and Web into `optional/software-testing-rules.md`; select it if you want to retain that guidance. Older saved builder links still select the same file IDs and do not silently add the new Testing file. Review your selection after updating. Replace old copied rules rather than appending duplicate versions, while preserving your own instructions.
+When replacing an earlier version of `coding-agent-global-rules.md`, retain equivalent general guidance or select `agent-global-rules.md`. Shared safety, permissions, tool use, research, communication, and outcome verification belong there. Software-testing guidance has moved from Coding and Web into `optional/software-testing-rules.md`; select it if you want to retain that guidance. Review any saved prompt or source selection after updating. Replace old copied rules rather than appending duplicate versions, while preserving your own instructions.
 
 Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional browser-animation rules only when relevant. The former standalone accessibility file is no longer needed; implementation safeguards remain in Coding and assessment boundaries are in Software testing.
 

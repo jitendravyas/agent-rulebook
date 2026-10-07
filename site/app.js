@@ -1,64 +1,23 @@
-import { RULE_GROUPS, RULES, PRESETS, buildBundle, getMissingBaseRules } from './rules.js';
+import { RULE_GROUPS, RULES, PRESETS, buildReviewPrompt, ruleSourceURL } from './rules.js';
 
 const element = (id) => document.getElementById(id);
 const selected = new Set(PRESETS[0].ids);
-const sourceCache = new Map();
 const checkboxes = new Map();
 const groupViews = new Map();
 const linkWarnings = new Map();
-const preview = element('rule-preview');
-const copyButton = element('copy-rules');
-const downloadButton = element('download-rules');
+const preview = element('prompt-preview');
+const copyButton = element('copy-prompt');
 const status = element('action-status');
-let currentBundle = '';
+let currentPrompt = '';
 let revision = 0;
-let setupRevision = 0;
-let downloadUrl;
 let sectionHistoryGroup = 0;
 let historyGroupCount = 0;
 let lastSelectionSearch = window.location.search;
-
-// Setup affects placement and the filename, never the exported rule contents.
-// Keep these routes aligned with the official guides linked in each entry.
-const AGENT_SETUP = {
-  other: {
-    filename: 'agent-rules.md',
-    personal: 'Copy into your agent’s user-level or global instructions. Check its documentation for the supported location; agent-rules.md is only a download name.',
-    project: 'Merge into the instruction file your agent supports in this project. Check its required filename and location; agent-rules.md is only a download name.',
-    check: 'Start a new session and check its instruction-loading diagnostics, if available. Try a low-risk task; an agent saying it read the rules is not proof it will follow every rule.',
-  },
-  codex: {
-    filename: 'AGENTS.md',
-    personal: 'Merge into ~/.codex/AGENTS.md, or AGENTS.md inside your custom CODEX_HOME folder.',
-    project: 'Merge into AGENTS.md at the project root. More specific instructions can apply in subfolders.',
-    check: 'Start a new Codex session in the project and check which instruction sources loaded. If content is missing, check for AGENTS.override.md in the same folder and the project_doc_max_bytes setting. Confirm its behaviour for your installed version using the official guide.',
-    docs: 'https://learn.chatgpt.com/docs/agent-configuration/agents-md',
-    home: true,
-  },
-  claude: {
-    filename: 'CLAUDE.md',
-    personal: 'Merge into ~/.claude/CLAUDE.md for your work across projects.',
-    project: 'Merge into CLAUDE.md at the project root, or the existing .claude/CLAUDE.md. If your project already uses AGENTS.md, check Claude’s Project instructions setting and version support before adding another file. Where direct loading is unavailable, import it with @AGENTS.md from a CLAUDE.md in the same folder. Avoid copying the same rules into both files.',
-    check: 'Start a new Claude Code session in the project. Run /context and look under Memory files for the instruction file you updated.',
-    docs: 'https://code.claude.com/docs/en/memory',
-    home: true,
-  },
-  cursor: {
-    filename: 'AGENTS.md',
-    personalFilename: 'agent-rules.md',
-    personal: 'Use Copy rules, then paste into User Rules under Cursor’s Customize → Rules. The download is a backup, not an automatically loaded file.',
-    project: 'Merge into AGENTS.md at the project root. Do not put this plain Markdown file in .cursor/rules; that folder requires .mdc rules.',
-    personalCheck: 'Check that your text is saved under User Rules, then start a new Agent chat and try a low-risk task. User Rules do not apply to Tab or Inline Edit.',
-    projectCheck: 'Open this project in Cursor and start a new Agent chat. Check its rule/context display where available and try a low-risk task; a chat response alone is not proof that every rule loaded.',
-    docs: 'https://cursor.com/docs/rules',
-  },
-};
 
 function selectionURL() {
   // Share only catalog IDs and setup choices, never rule text or other URL data.
   const url = new URL(window.location.pathname, window.location.origin);
   url.searchParams.set('rules', RULES.filter((rule) => selected.has(rule.id)).map((rule) => rule.id).join(','));
-  url.searchParams.set('agent', element('agent-choice').value);
   url.searchParams.set('scope', element('rule-scope').value);
   url.hash = 'your-file';
   return url;
@@ -70,6 +29,7 @@ function syncSelectionURL() {
   if (link.value !== shareURL.href) element('share-status').textContent = '';
   link.value = shareURL.href;
   const address = new URL(window.location.href);
+  address.searchParams.delete('agent');
   for (const [key, value] of shareURL.searchParams) address.searchParams.set(key, value);
   const entry = window.history.state?.rulebook;
   if (address.href === window.location.href && entry?.document === performance.timeOrigin
@@ -107,60 +67,33 @@ function restoreLinkedSelection() {
   const requested = params.has('rules') ? params.get('rules').split(',').filter(Boolean) : PRESETS[0].ids;
   const known = new Set(RULES.map((rule) => rule.id));
   const ids = RULES.filter((rule) => requested.includes(rule.id)).map((rule) => rule.id);
-  const agent = params.get('agent') ?? 'other';
   const scope = params.get('scope') ?? 'personal';
-  const validAgent = Object.hasOwn(AGENT_SETUP, agent);
   const validScope = ['personal', 'project'].includes(scope);
   const invalidChoices = {
     rules: requested.some((id) => !known.has(id)) || params.getAll('rules').length > 1,
-    agent: !validAgent || params.getAll('agent').length > 1,
     scope: !validScope || params.getAll('scope').length > 1,
   };
   const warnings = {
     rules: 'Some rule choices in this link are unavailable or repeated. Review your rule selection.',
-    agent: 'This link has an invalid or repeated agent choice. Review the agent setting.',
     scope: 'This link has an invalid or repeated scope choice. Review where the rules will apply.',
   };
   for (const key of Object.keys(invalidChoices)) {
     if (invalidChoices[key]) linkWarnings.set(key, warnings[key]);
     else linkWarnings.delete(key);
   }
+  if (params.has('agent')) {
+    linkWarnings.set('legacy', 'This saved link now creates a review prompt, not a rule file. Your rule selection and scope are kept; an agent choice is no longer needed.');
+  } else {
+    linkWarnings.delete('legacy');
+  }
   renderLinkWarnings();
   const changed = ids.length !== selected.size || ids.some((id) => !selected.has(id))
-    || element('agent-choice').value !== (validAgent ? agent : 'other')
     || element('rule-scope').value !== (validScope ? scope : 'personal');
   selected.clear();
   ids.forEach((id) => selected.add(id));
-  element('agent-choice').value = validAgent ? agent : 'other';
   element('rule-scope').value = validScope ? scope : 'personal';
   revealSelectedGroups();
   return changed;
-}
-
-function updateSetup(announce = false) {
-  setupRevision++;
-  const agent = element('agent-choice');
-  const scope = element('rule-scope').value;
-  const setup = AGENT_SETUP[agent.value];
-  const filename = scope === 'personal' && setup.personalFilename ? setup.personalFilename : setup.filename;
-  element('file-name').textContent = filename;
-  element('setup-location').textContent = setup[scope];
-  element('setup-check').textContent = setup[`${scope}Check`] || setup.check;
-  element('setup-home').hidden = !setup.home || scope !== 'personal';
-  const docs = element('setup-docs');
-  docs.hidden = !setup.docs;
-  if (setup.docs) {
-    docs.href = setup.docs;
-    docs.textContent = `${agent.selectedOptions[0].textContent} setup guide`;
-    docs.setAttribute('aria-label', `${docs.textContent} (opens in a new tab)`);
-  } else {
-    docs.removeAttribute('href');
-    docs.removeAttribute('aria-label');
-  }
-  if (announce) {
-    element('setup-status').textContent = `${agent.selectedOptions[0].textContent} setup updated for ${scope === 'personal' ? 'your work across projects' : 'this project'}. Download filename: ${filename}.`;
-  }
-  syncSelectionURL();
 }
 
 function textElement(tag, className, text) {
@@ -183,7 +116,7 @@ function revealSelectedGroups() {
 }
 
 function renderChoices() {
-  // Use the same categories for people and WebMCP; export order stays independent.
+  // Use the same categories for people and WebMCP; source order stays independent.
   const containers = new Map();
   for (const group of RULE_GROUPS) {
     const fieldset = textElement('fieldset', 'rule-group', '');
@@ -219,7 +152,7 @@ function renderChoices() {
     input.id = `rule-${rule.id}`;
     input.setAttribute('aria-labelledby', `name-${rule.id}`);
     input.addEventListener('change', () => {
-      clearLinkWarnings('rules');
+      clearLinkWarnings('rules', 'legacy');
       if (input.checked) selected.add(rule.id);
       else selected.delete(rule.id);
       updateSelection();
@@ -252,42 +185,6 @@ function renderChoices() {
     checkboxes.set(rule.id, input);
   }
   updateGroupCounts();
-}
-
-function loadText(path) {
-  if (!sourceCache.has(path)) {
-    const request = (async () => {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000);
-      try {
-        const response = await fetch(new URL(path, document.baseURI), {
-          signal: controller.signal,
-          cache: 'no-cache',
-          credentials: 'omit',
-        });
-        if (!response.ok) throw new Error(`Could not load ${path} (HTTP ${response.status}).`);
-        const text = await response.text();
-        const expectedStart = path === 'LICENSE' ? 'MIT License' : '# ';
-        if (!text.trimStart().startsWith(expectedStart)) {
-          throw new Error(`The server did not return the expected text for ${path}.`);
-        }
-        return text;
-      } catch (error) {
-        sourceCache.delete(path);
-        if (error.name === 'AbortError') throw new Error(`Loading ${path} timed out. Try again.`);
-        throw error;
-      } finally {
-        clearTimeout(timeout);
-      }
-    })();
-    sourceCache.set(path, request);
-  }
-  return sourceCache.get(path);
-}
-
-function releaseDownload() {
-  if (downloadUrl) URL.revokeObjectURL(downloadUrl);
-  downloadUrl = undefined;
 }
 
 function animateFavicon() {
@@ -333,111 +230,24 @@ function animateFavicon() {
   sync();
 }
 
-async function updateSelection({ signal } = {}) {
-  if (signal?.aborted) return { status: 'cancelled' };
-  const thisRevision = ++revision;
+function updateSelection() {
+  revision++;
   const chosen = RULES.filter((rule) => selected.has(rule.id));
   syncSelectionURL();
-  for (const [id, input] of checkboxes) {
-    input.checked = selected.has(id);
-  }
+  for (const [id, input] of checkboxes) input.checked = selected.has(id);
   updateGroupCounts();
-  currentBundle = '';
-  preview.value = '';
-  releaseDownload();
-  copyButton.disabled = true;
-  downloadButton.disabled = true;
-  status.textContent = '';
-  element('load-error').hidden = true;
-  const retry = element('retry');
-  // Keep focus on a nearby control when the focused retry button disappears.
-  if (document.activeElement === retry) element('agent-choice').focus();
-  retry.hidden = true;
-  element('size-warning').hidden = true;
+  currentPrompt = buildReviewPrompt(selected, element('rule-scope').value);
+  preview.value = currentPrompt;
+  copyButton.disabled = !currentPrompt;
   element('rule-count').textContent = chosen.length;
   element('rule-count-label').textContent = chosen.length === 1 ? 'rule set' : 'rule sets';
   element('mobile-rule-count').textContent = chosen.length;
-  element('file-size').textContent = '—';
   element('selection-summary').replaceChildren(...chosen.map((rule) => textElement('li', '', rule.label)));
   if (!chosen.length) element('selection-summary').append(textElement('li', '', 'No rules selected'));
-  element('rule-size-breakdown').replaceChildren();
-  element('size-breakdown-help').hidden = true;
-  const missing = getMissingBaseRules([...selected]);
-  const missingNames = missing.map((id) => RULES.find((rule) => rule.id === id).label).join(' and ');
-  element('base-warning').hidden = !missing.length;
-  element('base-warning').textContent = missing.length
-    ? `Suggested additions: ${missingNames}. Choose them only if your existing instructions do not already cover this guidance. Nothing is added automatically.`
-    : '';
-  preview.setAttribute('aria-busy', String(chosen.length > 0));
-  if (!chosen.length) {
-    status.textContent = 'Select at least one rule set to get started.';
-    return { status: 'empty' };
-  }
-  status.textContent = 'Loading your selected rules…';
-  let cancel;
-  const cancelled = new Promise((resolve) => { cancel = resolve; });
-  const onAbort = () => {
-    // Invalidate this render, but keep shared requests for a newer selection.
-    if (thisRevision === revision) {
-      revision++;
-      preview.setAttribute('aria-busy', 'false');
-      element('retry').hidden = false;
-      status.textContent = 'Assembly cancelled. Your selection is kept; retry when ready.';
-    }
-    cancel(null);
-  };
-  signal?.addEventListener('abort', onAbort, { once: true });
-  try {
-    const loaded = await Promise.race([
-      Promise.all([
-        Promise.all(chosen.map(async (rule) => [rule.id, await loadText(rule.path)])),
-        loadText('LICENSE'),
-      ]),
-      cancelled,
-    ]);
-    if (!loaded) return { status: 'cancelled' };
-    // An earlier selection must never replace the user's newer selection.
-    if (thisRevision !== revision) return { status: 'superseded' };
-    const [sources, license] = loaded;
-    const ruleIds = chosen.map((rule) => rule.id);
-    currentBundle = buildBundle(ruleIds, new Map(sources), license);
-    preview.value = currentBundle;
-    const bytes = new TextEncoder().encode(currentBundle).length;
-    const sourceById = new Map(sources);
-    const ruleSizes = chosen.map((rule) => ({
-      id: rule.id,
-      title: rule.title,
-      bytes: new TextEncoder().encode(sourceById.get(rule.id).trim()).length,
-    }));
-    const overheadBytes = bytes - ruleSizes.reduce((total, rule) => total + rule.bytes, 0);
-    for (const row of [...ruleSizes, { title: 'Licence, attribution & separators', bytes: overheadBytes }, { title: 'Total', bytes }]) {
-      const entry = textElement('div', 'size-row', '');
-      entry.append(textElement('dt', '', row.title), textElement('dd', '', `${row.bytes.toLocaleString('en-US')} bytes`));
-      element('rule-size-breakdown').append(entry);
-    }
-    element('size-breakdown-help').hidden = false;
-    element('file-size').textContent = `${(bytes / 1024).toFixed(1)} KiB`;
-    element('size-warning').hidden = bytes <= 32768;
-    copyButton.disabled = false;
-    downloadButton.disabled = false;
-    // Announce selection warnings through the existing live region without moving focus.
-    status.textContent = [
-      `${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'} ready to copy or download.`,
-      missing.length ? `Also recommended: ${missingNames}, unless supplied elsewhere.` : '',
-      bytes > 32768 ? 'File exceeds 32 KiB; check your agent’s instruction-loading limit.' : '',
-    ].filter(Boolean).join(' ');
-    return { status: 'ready', revision: thisRevision, ruleIds, content: currentBundle, byteLength: bytes, ruleSizes, overheadBytes, missingBaseRuleIds: missing };
-  } catch (error) {
-    if (thisRevision !== revision) return { status: 'superseded' };
-    element('load-error').textContent = `${error.message} No incomplete file will be exported.`;
-    element('load-error').hidden = false;
-    element('retry').hidden = false;
-    status.textContent = 'Your selection is kept. Retry when the source is available.';
-    return { status: 'load_failed' };
-  } finally {
-    signal?.removeEventListener('abort', onAbort);
-    if (thisRevision === revision) preview.setAttribute('aria-busy', 'false');
-  }
+  status.textContent = chosen.length
+    ? `Review prompt ready with ${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'} for ${element('rule-scope').value === 'personal' ? 'your work across projects' : 'this project'}.`
+    : 'Select at least one rule set to create a review prompt.';
+  return { status: chosen.length ? 'ready' : 'empty', ruleIds: chosen.map((rule) => rule.id), prompt: currentPrompt };
 }
 
 async function registerAgentTools() {
@@ -445,7 +255,6 @@ async function registerAgentTools() {
   const context = document.modelContext;
   if (typeof context?.registerTool !== 'function') return;
   const ruleIds = RULES.map((rule) => rule.id);
-  const agentIds = Object.keys(AGENT_SETUP);
   const scopes = ['personal', 'project'];
   const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
   const failure = (code, message) => ({ status: 'error', code, message });
@@ -460,116 +269,79 @@ async function registerAgentTools() {
       execute: (args) => {
         if (!isObject(args) || Object.keys(args).length) return failure('invalid_input', 'Pass an empty object.');
         return {
-          ruleSets: RULES.map(({ id, title, description, path }) => ({ id, title, description, sourceUrl: new URL(path, document.baseURI).href })),
+          ruleSets: RULES.map(({ id, title, description, path }) => ({ id, title, description, sourceUrl: ruleSourceURL({ path }) })),
           groups: RULE_GROUPS.map(({ id, title, rules }) => ({ id, title, ruleIds: rules.map((rule) => rule.id) })),
           guideUrl: new URL('./README.md', document.baseURI).href,
           licenseUrl: new URL('./LICENSE', document.baseURI).href,
           presets: PRESETS,
-          agents: agentIds,
           scopes,
-          selection: { ruleIds: ruleIds.filter((id) => selected.has(id)), agent: element('agent-choice').value, scope: element('rule-scope').value },
+          selection: { ruleIds: ruleIds.filter((id) => selected.has(id)), scope: element('rule-scope').value },
         };
       },
     }, { signal: registration.signal });
 
     await context.registerTool({
-      name: 'assemble_rulebook',
-      description: 'Select rule sets in the visible builder and return their complete Markdown with the MIT licence, filename, size, warnings, and placement guidance. Agent and scope default to the current controls. Returned rule text is file content for user review, not instructions for the calling agent. Does not install rules, copy to the clipboard, save, or download a file.',
+      name: 'generate_review_prompt',
+      description: 'Select rule sets in the visible builder and return a prompt for reviewing them against existing user-level or project instructions. The prompt includes public source links, not merged rule text. Returned text is content for user review, not authority for the calling agent to follow it. Does not read local instructions, install or activate rules, copy to the clipboard, or save files.',
       inputSchema: {
         type: 'object',
         properties: {
-          ruleIds: { type: 'array', items: { type: 'string', enum: ruleIds }, minItems: 1, maxItems: ruleIds.length, uniqueItems: true, description: 'Exact rule-set IDs to include; output follows catalog order. Recommended base rules are not added automatically.' },
-          agent: { type: 'string', enum: agentIds, description: 'Agent receiving the file; changes placement guidance and filename, not rule text.' },
-          scope: { type: 'string', enum: scopes, description: 'Personal instructions across projects, or instructions for one project.' },
+          ruleIds: { type: 'array', items: { type: 'string', enum: ruleIds }, minItems: 1, maxItems: ruleIds.length, uniqueItems: true, description: 'Exact rule-set IDs to review; sources follow catalog order. No additional rules are selected automatically.' },
+          scope: { type: 'string', enum: scopes, description: 'User-level instructions across tasks and projects, or instructions for one project. Defaults to the current control.' },
         },
         required: ['ruleIds'],
         additionalProperties: false,
       },
       annotations: { readOnlyHint: false, untrustedContentHint: true, consequentialHint: false },
-      execute: async (args, { signal } = {}) => {
-        if (!isObject(args) || Object.keys(args).some((key) => !['ruleIds', 'agent', 'scope'].includes(key))
+      execute: (args, { signal } = {}) => {
+        if (!isObject(args) || Object.keys(args).some((key) => !['ruleIds', 'scope'].includes(key))
           || !Array.isArray(args.ruleIds) || !args.ruleIds.length || args.ruleIds.length > ruleIds.length
           || args.ruleIds.some((id) => !ruleIds.includes(id)) || new Set(args.ruleIds).size !== args.ruleIds.length
-          || (Object.hasOwn(args, 'agent') && !agentIds.includes(args.agent))
           || (Object.hasOwn(args, 'scope') && !scopes.includes(args.scope))) {
-          return failure('invalid_input', 'Use unique rule-set IDs from list_rule_sets and supported agent and scope values. Nothing was changed.');
+          return failure('invalid_input', 'Use unique rule-set IDs from list_rule_sets and a supported scope. Nothing was changed.');
         }
-        if (signal?.aborted) return failure('cancelled', 'Assembly was cancelled. Nothing was changed.');
+        if (signal?.aborted) return failure('cancelled', 'Prompt generation was cancelled. Nothing was changed.');
         selected.clear();
         args.ruleIds.forEach((id) => selected.add(id));
         revealSelectedGroups();
-        clearLinkWarnings('rules');
-        if (args.agent !== undefined) {
-          element('agent-choice').value = args.agent;
-          clearLinkWarnings('agent');
-        }
+        clearLinkWarnings('rules', 'legacy');
         if (args.scope !== undefined) {
           element('rule-scope').value = args.scope;
           clearLinkWarnings('scope');
         }
-        updateSetup(true);
-        const expectedSetup = setupRevision;
-        const result = await updateSelection({ signal });
-        if (signal?.aborted || result.status === 'cancelled') return failure('cancelled', 'Assembly was cancelled. No file was saved.');
-        if (result.status === 'superseded' || (result.status === 'ready' && result.revision !== revision) || expectedSetup !== setupRevision) return failure('superseded', 'The builder changed during assembly. Inspect the current selection before trying again.');
-        if (result.status !== 'ready') return failure('load_failed', 'A selected source or licence could not be loaded. No incomplete content was returned.');
+        const result = updateSelection();
         return {
-          status: result.status,
-          ruleIds: result.ruleIds,
-          content: result.content,
-          byteLength: result.byteLength,
-          ruleSizes: result.ruleSizes,
-          overheadBytes: result.overheadBytes,
-          missingBaseRuleIds: result.missingBaseRuleIds,
-          agent: element('agent-choice').value,
+          ...result,
           scope: element('rule-scope').value,
-          filename: element('file-name').textContent,
           setupLink: selectionURL().href,
-          warnings: [
-            result.missingBaseRuleIds.length ? element('base-warning').textContent : '',
-            result.byteLength > 32768 ? 'File exceeds 32 KiB; check the target agent’s instruction-loading limit.' : '',
-          ].filter(Boolean),
-          setup: { location: element('setup-location').textContent, check: element('setup-check').textContent, docs: AGENT_SETUP[element('agent-choice').value].docs || null },
+          sourceUrls: RULES.filter((rule) => selected.has(rule.id)).map(ruleSourceURL),
         };
       },
     }, { signal: registration.signal });
   } catch {
-    // Remove a partial registration without affecting human controls or exports.
+    // Roll back partial tool registration without disabling the ordinary controls.
     registration.abort();
     console.warn('WebMCP tools could not be registered. The rule builder is still available.');
   }
 }
 
 copyButton.addEventListener('click', async () => {
-  if (!currentBundle) return;
+  if (!currentPrompt) return;
   const copiedRevision = revision;
-  const content = currentBundle;
+  const content = currentPrompt;
   try {
     if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
     await navigator.clipboard.writeText(content);
     if (copiedRevision !== revision) return;
-    status.textContent = 'Copied. Merge with your existing agent instructions.';
+    status.textContent = 'Prompt copied. Paste it into a conversation with your agent, not into a rules file.';
   } catch {
     if (copiedRevision !== revision) return;
     const previewDetails = element('preview-details');
     if (previewDetails) previewDetails.open = true;
     preview.focus();
     preview.select();
-    status.textContent = 'Automatic copy is unavailable. The preview is selected; use your copy shortcut, or download the file.';
+    status.textContent = 'Automatic copy is unavailable. The prompt is selected; use your copy shortcut.';
   }
-});
-
-downloadButton.addEventListener('click', () => {
-  if (!currentBundle) return;
-  releaseDownload();
-  downloadUrl = URL.createObjectURL(new Blob([currentBundle], { type: 'text/markdown;charset=utf-8' }));
-  const link = document.createElement('a');
-  link.href = downloadUrl;
-  link.download = element('file-name').textContent;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  status.textContent = 'Download requested. Review the file before using it.';
 });
 
 element('copy-setup-link').addEventListener('click', async () => {
@@ -578,7 +350,7 @@ element('copy-setup-link').addEventListener('click', async () => {
   try {
     if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
     await navigator.clipboard.writeText(requestedLink);
-    if (link.value === requestedLink) element('share-status').textContent = 'Setup link copied. It restores choices and loads the current rules, not a saved version.';
+    if (link.value === requestedLink) element('share-status').textContent = 'Setup link copied. It restores choices for a new review prompt, not a saved version of the rules.';
   } catch {
     if (link.value !== requestedLink) return;
     link.hidden = false;
@@ -590,21 +362,15 @@ element('copy-setup-link').addEventListener('click', async () => {
 });
 
 element('clear-selection').addEventListener('click', () => {
-  clearLinkWarnings('rules');
+  clearLinkWarnings('rules', 'legacy');
   selected.clear();
   updateSelection();
 });
-element('retry').addEventListener('click', updateSelection);
-element('agent-choice').addEventListener('change', () => {
-  clearLinkWarnings('agent');
-  updateSetup(true);
-});
 element('rule-scope').addEventListener('change', () => {
-  clearLinkWarnings('scope');
-  updateSetup(true);
+  clearLinkWarnings('scope', 'legacy');
+  updateSelection();
 });
 element('rule-form').addEventListener('submit', (event) => event.preventDefault());
-window.addEventListener('pagehide', releaseDownload);
 window.addEventListener('popstate', (event) => {
   const entry = event.state?.rulebook;
   // Section links create entries without state. Older section entries may have stale choices.
@@ -615,13 +381,14 @@ window.addEventListener('popstate', (event) => {
   }
   sectionHistoryGroup = knownEntry ? entry.group : ++historyGroupCount;
   const changed = restoreLinkedSelection();
-  updateSetup();
   if (changed) updateSelection();
+  else syncSelectionURL();
 });
 renderChoices();
 restoreLinkedSelection();
-updateSetup();
-element('local-link-note').hidden = !(/^(localhost|.*\.localhost|127\..*|\[::1\])$/.test(window.location.hostname));
+const isLocalPreview = /^(localhost|.*\.localhost|127\..*|\[::1\])$/.test(window.location.hostname);
+element('local-link-note').hidden = !isLocalPreview;
+element('local-prompt-note').hidden = !isLocalPreview;
 element('startup-message').hidden = true;
 element('builder').hidden = false;
 element('skip-link').href = '#builder';
