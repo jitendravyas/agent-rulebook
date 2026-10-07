@@ -147,13 +147,17 @@
         </div>
         <p class="selection-caption">Your selection</p>
         <ul id="selection-summary" class="selection-summary"></ul>
-        <div class="scope-options">
-          <label for="rule-scope">Review instructions for</label>
-          <select id="rule-scope">
-            <option value="personal">My work across projects</option>
-            <option value="project">This project</option>
-          </select>
-        </div>
+        <fieldset id="rule-scope" class="scope-options">
+          <legend>Instructions to review</legend>
+          <label>
+            <input type="radio" name="scope" value="personal" checked>
+            <span>My global instructions</span>
+          </label>
+          <label>
+            <input type="radio" name="scope" value="project">
+            <span>Instructions for a specific project</span>
+          </label>
+        </fieldset>
         <div class="preview-heading"><label for="prompt-preview">Your review prompt</label><span>Exact copy contents</span></div>
         <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
         <p id="preview-help" class="preview-help">Read or scroll through the full prompt before copying. It asks for a review first, not permission to edit instructions.</p>

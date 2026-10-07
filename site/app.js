@@ -1,6 +1,10 @@
 import { RULE_GROUPS, RULES, PRESETS, OS_RULES, HOST_OS_CHOICES, buildReviewPrompt, ruleSourceURL } from './rules.js';
 
 const element = (id) => document.getElementById(id);
+const getScope = () => element('rule-scope').querySelector('input:checked').value;
+const setScope = (value) => {
+  for (const input of element('rule-scope').querySelectorAll('input')) input.checked = input.value === value;
+};
 const selected = new Set(PRESETS[0].ids);
 const checkboxes = new Map();
 const groupViews = new Map();
@@ -19,7 +23,7 @@ function selectionURL() {
   // Share only catalog IDs and setup choices, never rule text or other URL data.
   const url = new URL(window.location.pathname, window.location.origin);
   url.searchParams.set('rules', RULES.filter((rule) => selected.has(rule.id)).map((rule) => rule.id).join(','));
-  url.searchParams.set('scope', element('rule-scope').value);
+  url.searchParams.set('scope', getScope());
   url.searchParams.set('host', hostOS);
   url.hash = 'your-file';
   return url;
@@ -97,10 +101,10 @@ function restoreLinkedSelection() {
   }
   renderLinkWarnings();
   const changed = ids.length !== selected.size || ids.some((id) => !selected.has(id))
-    || element('rule-scope').value !== (validScope ? scope : 'personal') || hostOS !== restoredHost;
+    || getScope() !== (validScope ? scope : 'personal') || hostOS !== restoredHost;
   selected.clear();
   ids.forEach((id) => selected.add(id));
-  element('rule-scope').value = validScope ? scope : 'personal';
+  setScope(validScope ? scope : 'personal');
   hostOS = restoredHost;
   revealSelectedGroups();
   return changed;
@@ -287,7 +291,7 @@ function updateSelection() {
     }
   }
   updateGroupCounts();
-  currentPrompt = buildReviewPrompt(selected, element('rule-scope').value, hostOS);
+  currentPrompt = buildReviewPrompt(selected, getScope(), hostOS);
   preview.value = currentPrompt;
   copyButton.disabled = !currentPrompt;
   element('rule-count').textContent = chosen.length;
@@ -300,7 +304,7 @@ function updateSelection() {
   }));
   if (!chosen.length) element('selection-summary').append(textElement('li', '', 'No rules selected'));
   status.textContent = chosen.length
-    ? `Review prompt ready with ${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'} for ${element('rule-scope').value === 'personal' ? 'your work across projects' : 'this project'}.`
+    ? `Review prompt ready with ${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'} to review ${getScope() === 'personal' ? 'your global instructions' : 'instructions for a specific project'}.`
     : 'Select at least one rule set to create a review prompt.';
   return { status: chosen.length ? 'ready' : 'empty', ruleIds: chosen.map((rule) => rule.id), hostOS, prompt: currentPrompt };
 }
@@ -331,7 +335,7 @@ async function registerAgentTools() {
           presets: PRESETS,
           scopes,
           hostOSChoices: HOST_OS_CHOICES,
-          selection: { ruleIds: ruleIds.filter((id) => selected.has(id)), scope: element('rule-scope').value, hostOS },
+          selection: { ruleIds: ruleIds.filter((id) => selected.has(id)), scope: getScope(), hostOS },
         };
       },
     }, { signal: registration.signal });
@@ -366,13 +370,13 @@ async function registerAgentTools() {
         revealSelectedGroups();
         clearLinkWarnings('rules', 'host', 'legacy');
         if (args.scope !== undefined) {
-          element('rule-scope').value = args.scope;
+          setScope(args.scope);
           clearLinkWarnings('scope');
         }
         const result = updateSelection();
         return {
           ...result,
-          scope: element('rule-scope').value,
+          scope: getScope(),
           setupLink: selectionURL().href,
           sourceUrls: RULES.filter((rule) => selected.has(rule.id)).map(ruleSourceURL),
         };
