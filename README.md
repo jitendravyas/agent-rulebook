@@ -17,16 +17,9 @@ For the `AGENTS.md` format, examples, FAQ, and supported-agent directory, see [a
 
 These are suggested combinations, not required bundles. Choose individual files, including General alongside your own coding instructions. Omit guidance you already supply elsewhere and resolve conflicts before combining. Load selected files in the order shown. "Global" means reusable across tasks or projects; your task and project requirements still set the architecture, tools, and conventions.
 
-The website groups the rule files by purpose:
+The website groups individual rule sets by purpose. These groups organise choices, not requirements.
 
-- **Operating systems:** macOS, Windows, and Linux environments, including remote machines.
-- **General behaviour:** scope, approvals, privacy, verification, and communication.
-- **Tools and interfaces:** browser and desktop interaction and version control, including non-development work.
-- **Software development:** coding, web development, software testing, browser animation, web performance, and software localization.
-- **Creative media:** motion graphics videos, separate from software development.
-- **Agent instructions:** writing rules and agent workflows.
-
-General behaviour is selected by default and can be deselected. Opening a group selects nothing; all rule sets remain individually selectable. The categories organise choices, not requirements.
+General behaviour is selected by default and can be deselected. Opening a group selects nothing; each rule set remains individually selectable.
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
@@ -36,7 +29,7 @@ Use the [online rule builder](https://jitendravyas.github.io/agent-rulebook/) to
 
 For a local preview, serve the repository root with an existing static web server, then open its root URL in your browser. No package installation or build step is required; opening the HTML file directly is not supported.
 
-Choose the operating systems your agent works on, or skip if unsure. Keep or deselect **General agent behaviour**, then open the groups you need. **Software development** contains separate choices for **Coding and maintenance**, **Web development**, **Software testing**, and narrower topics. For example, select only Software testing if you already have your own implementation rules. Choose browser use or version control under **Tools and interfaces**, and motion videos under **Creative media**. Each expandable group shows how many rule sets you selected.
+Choose one or more operating systems for local or remote environments, or skip if unsure. Open the relevant groups and select only the rule sets you need. Each expandable group shows its selected count. For descriptions of each rule set, see **Rule categories and optional tools** below.
 
 **Your selection** shows everything included. Open **Review exact rule text** before copying or downloading. The builder reads the original rule files, preserves their text, and includes the MIT licence. Drafts, the helper-tool reference, and repository-maintenance instructions are not bundled.
 
