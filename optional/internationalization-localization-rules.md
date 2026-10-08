@@ -18,7 +18,7 @@ Do not introduce translation infrastructure, locales, or translated copy unless 
   * Use locale-aware platform or project formatting for dates, times, numbers, units, currencies, and plural or ordinal messages.
   * When adding or changing natural-language display sorting, use locale-aware order unless another order is required. Keep it consistent with any server-side sorting, pagination, or search. Preserve established ordering outside the requested change, including for identifiers and machine data.
   * Keep locale-independent values and their required context, such as currency code and time zone, in data rather than storing only a formatted display string.
-  * Keep language data distinct from identifiers. Use the project's normalisation, comparison, length, and search rules; do not apply lossy normalisation or ASCII-only validation to natural-language text without an explicit contract.
+  * For natural-language text, use the project's normalisation, comparison, length, and search rules; do not apply lossy normalisation or ASCII-only validation without an explicit contract.
   * Allow layouts to accommodate different text lengths. Use the platform's appropriate grapheme, word, or locale-aware facilities for user-visible counts, truncation, and cursor movement. Preserve explicit storage, protocol, and validation limits, including byte limits.
   * Keep language and direction metadata with natural-language content when a format supports it. Do not add bidirectional control characters as a general fix; use the platform's language and direction mechanisms, and isolate mixed-direction dynamic values where needed.
 

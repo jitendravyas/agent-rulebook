@@ -20,11 +20,11 @@
 
   * Preserve existing content bindings when changing titles or text alternatives. Do not insert document-level markup into embedded fragments.
   * When creating or changing web content, use `translate="no"` for text explicitly designated as non-translatable by project requirements or conventions. Keep exclusions narrow and surrounding text translatable. Do not disable whole-page translation merely to protect a few names or terms.
-  * When copying or repeating HTML or inline SVG, keep IDs unique within their DOM tree and keep references pointing to the intended elements.
+  * When copying or repeating page elements, keep IDs unique within their DOM tree and keep references pointing to the intended elements.
 
 ## Style changes
 
-  * Before fixing styles, inspect source and, when available, computed styles or layout evidence to find the cause. Do not hide unexplained problems by increasing CSS selector specificity or adding `!important` or `z-index`. After shared-style changes, verify representative affected components and pages, including third-party widgets or surrounding page content that the changes could affect.
+  * Before fixing styles, inspect source and, when available, computed styles or layout evidence to find the cause. Do not hide unexplained problems by increasing selector specificity or adding `!important` or `z-index`. After shared-style changes, verify representative affected components and pages, including third-party widgets or surrounding page content that the changes could affect.
 
 ## Browser lifecycle and state recovery
 

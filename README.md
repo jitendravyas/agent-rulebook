@@ -38,7 +38,7 @@ Your selected rule sets, host OS, and scope stay in the page address and generat
 
 The website’s **Read the source rules** section links directly to the original Markdown files, this README, and the licence. People, search crawlers, and agents can follow these links without running JavaScript. Reading the files does not activate their instructions.
 
-With a compatible browser and agent, the builder also offers optional [WebMCP](https://developer.chrome.com/docs/ai/webmcp/) tools to list the available rule sets and generate the same review prompt. These tools return public links and prompt text for review; they do not save files, upload private content, or change agent settings. WebMCP is experimental; the normal controls work without it.
+With a compatible browser and agent, the builder also offers optional [WebMCP](https://developer.chrome.com/docs/ai/webmcp/) tools to list the available rule sets and generate the same review prompt. These tools return public rule links and prompt text for review; they do not save files, upload private content, or change agent settings. WebMCP is experimental; the normal controls work without it.
 
 <details>
 <summary>Preview the website locally</summary>
