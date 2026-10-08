@@ -1,0 +1,152 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+import { runInNewContext } from 'node:vm';
+import * as catalog from './rules.js';
+
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const app = readFileSync(new URL('./app.js', import.meta.url), 'utf8');
+const importLine = /^import \{([^}]+)\} from '\.\/rules\.js';\r?\n/;
+assert.match(app, importLine);
+const script = app.replace(importLine, (_, names) => `const {${names}} = catalog;\n`);
+
+function boot(address) {
+  const nodes = new Map();
+  let location = new URL(address);
+
+  // This DOM double runs the actual app and event handlers, not layout or browser APIs.
+  class Node {
+    constructor(tag) {
+      this.tag = tag;
+      this.children = [];
+      this.listeners = new Map();
+      this.classList = { add() {} };
+      this.checked = false;
+      this.disabled = false;
+      this.value = '';
+      this.text = '';
+    }
+    set id(value) {
+      assert.ok(!nodes.has(value), `Duplicate control ID: ${value}`);
+      nodes.set(value, this);
+      this.identifier = value;
+    }
+    get id() { return this.identifier; }
+    set textContent(value) { this.text = String(value); this.children = []; }
+    get textContent() { return this.text + this.children.map(node => node.textContent ?? node).join(''); }
+    setAttribute(key, value) { this[key] = value; }
+    append(...children) { this.children.push(...children); }
+    insertBefore(child, before) {
+      const index = this.children.indexOf(before);
+      assert.ok(index >= 0);
+      this.children.splice(index, 0, child);
+    }
+    replaceChildren(...children) { this.children = children; this.text = ''; }
+    querySelectorAll(selector) {
+      assert.equal(selector, 'input');
+      return this.children.filter(node => node.tag === 'input');
+    }
+    querySelector(selector) {
+      assert.equal(selector, 'input:checked');
+      return this.querySelectorAll('input').find(input => input.checked) ?? null;
+    }
+    addEventListener(type, listener) {
+      const listeners = this.listeners.get(type) ?? [];
+      listeners.push(listener);
+      this.listeners.set(type, listeners);
+    }
+    dispatch(type) {
+      for (const listener of this.listeners.get(type) ?? []) {
+        listener({ type, target: this, preventDefault() {} });
+      }
+    }
+  }
+
+  const attributes = markup => [...markup.matchAll(/\s([\w-]+)(?:="([^"]*)")?/g)]
+    .map(([, key, value]) => [key, value ?? true]);
+  for (const [markup, tag] of html.matchAll(/<([\w-]+)\b[^>]*\bid="[^"]+"[^>]*>/g)) {
+    const node = new Node(tag);
+    for (const [key, value] of attributes(markup)) node[key] = value;
+  }
+  const get = id => {
+    assert.ok(nodes.has(id), `Missing page control: ${id}`);
+    return nodes.get(id);
+  };
+  const scope = html.match(/<fieldset\b[^>]*id="rule-scope"[^>]*>([\s\S]*?)<\/fieldset>/)?.[1];
+  assert.ok(scope);
+  for (const [markup] of scope.matchAll(/<input\b[^>]*>/g)) {
+    const input = new Node('input');
+    for (const [key, value] of attributes(markup)) input[key] = value;
+    get('rule-scope').append(input);
+  }
+  const window = new Node('window');
+  Object.defineProperty(window, 'location', { get: () => location });
+  window.history = {
+    state: null,
+    replaceState(state, unused, url) { this.state = state; location = new URL(url, location); },
+  };
+  window.matchMedia = () => ({ matches: true, addEventListener() {} });
+  const document = new Node('document');
+  Object.defineProperty(document, 'baseURI', { get: () => location.href });
+  Object.assign(document, {
+    getElementById: id => nodes.get(id) ?? null,
+    createElement: tag => new Node(tag),
+    createElementNS: (namespace, tag) => new Node(tag),
+  });
+  runInNewContext(script, {
+    catalog, document, window, URL, performance: { timeOrigin: 1000 },
+    navigator: {}, AbortController, clearTimeout,
+    setTimeout() { throw new Error('Unexpected animation timer in reduced-motion test'); },
+  }, { filename: 'site/app.js', timeout: 1000 });
+  return { get, window };
+}
+
+test('saved setup restores selected controls, host OS, scope, and the exact prompt', () => {
+  for (const scope of ['personal', 'project']) {
+    const first = boot('https://example.test/agent-rulebook/?unrelated=discard-from-share');
+    const host = first.get('host-os');
+    host.value = 'mac';
+    host.dispatch('change');
+    for (const id of ['web', 'linux', 'i18n']) {
+      const input = first.get(`rule-${id}`);
+      input.checked = true;
+      input.dispatch('change');
+    }
+    for (const input of first.get('rule-scope').querySelectorAll('input')) input.checked = input.value === scope;
+    first.get('rule-scope').dispatch('change');
+    const saved = first.get('setup-link').value;
+    assert.deepEqual([...new URL(saved).searchParams.keys()], ['rules', 'scope', 'host']);
+
+    const restored = boot(saved);
+    const expectedIds = ['general', 'web', 'mac', 'linux', 'i18n'];
+    assert.deepEqual(catalog.RULES.filter(rule => restored.get(`rule-${rule.id}`).checked).map(rule => rule.id), expectedIds);
+    assert.equal(restored.get('host-os').value, 'mac');
+    assert.equal(restored.get('rule-mac').disabled, true);
+    assert.equal(restored.get('rule-linux').disabled, false);
+    assert.equal(restored.get('rule-coding').checked, false);
+    assert.equal(restored.get('rule-scope').querySelector('input:checked').value, scope);
+    assert.match(restored.get('role-mac').textContent, /Host OS/);
+    assert.match(restored.get('role-linux').textContent, /Additional OS/);
+    assert.equal(restored.get('rule-count').textContent, '5');
+    assert.equal(restored.get('copy-prompt').disabled, false);
+    assert.equal(restored.get('setup-link').value, saved);
+    const prompt = restored.get('prompt-preview').value;
+    assert.equal(prompt, first.get('prompt-preview').value);
+    assert.match(prompt, /Host operating system: macOS\./);
+    assert.match(prompt, /Additional operating systems \(not the host\): Linux\./);
+    assert.match(prompt.split('\n')[0], scope === 'project' ? /instructions for this project/ : /my user-level \(global\) agent instructions/);
+    for (const rule of catalog.RULES) {
+      assert.equal(prompt.includes(catalog.ruleSourceURL(rule)), expectedIds.includes(rule.id));
+    }
+  }
+});
+
+test('an explicitly empty saved selection stays empty after reload', () => {
+  const first = boot('https://example.test/agent-rulebook/');
+  first.get('clear-selection').dispatch('click');
+  const restored = boot(first.get('setup-link').value);
+  assert.ok(catalog.RULES.every(rule => !restored.get(`rule-${rule.id}`).checked));
+  assert.equal(restored.get('host-os').value, 'unspecified');
+  assert.equal(restored.get('prompt-preview').value, '');
+  assert.equal(restored.get('copy-prompt').disabled, true);
+});

@@ -207,6 +207,8 @@ The rules combine practical experience, research, and ideas shared publicly by o
 
 The [Vale workflow](.github/workflows/vale.yml) checks the general, software, web, and optional rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
 
+The [website test workflow](.github/workflows/website.yml) runs on relevant pull requests and pushes to `main`. It checks rule-file links, catalog categories, review prompts, and saved-selection behaviour. Run it locally with Node.js 24: `node --test site/*.test.js`. These tests do not assess rendered appearance or accessibility.
+
 </details>
 
 <details>

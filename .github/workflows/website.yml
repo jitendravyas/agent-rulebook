@@ -1,0 +1,53 @@
+name: Website tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - 'site/**'
+      - agent-global-rules.md
+      - coding-agent-global-rules.md
+      - web-development-rules.md
+      - 'optional/**'
+      - .github/workflows/website.yml
+  pull_request:
+    paths:
+      - index.html
+      - 'site/**'
+      - agent-global-rules.md
+      - coding-agent-global-rules.md
+      - web-development-rules.md
+      - 'optional/**'
+      - .github/workflows/website.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  website:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Check website JavaScript
+        run: |
+          node --check site/app.js
+          node --check site/rules.js
+
+      - name: Test catalog, prompts, and saved selections
+        run: node --test site/*.test.js
