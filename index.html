@@ -128,9 +128,9 @@
           <h2 id="choose-title">1. Choose rules to review</h2>
           <button class="text-button" id="clear-selection" type="button">Clear selection</button>
         </div>
-        <p class="section-description">Select what you want your agent to review. Selecting a set does not activate its rules.</p>
+        <p id="selection-notice" class="section-description">Selection adds public rule links to the prompt; it does not install or activate rules.</p>
         <p id="link-warning" class="notice" role="status" hidden></p>
-        <form id="rule-form" aria-label="Rule selection">
+        <form id="rule-form" aria-label="Rule selection" aria-describedby="selection-notice">
           <div id="rule-groups"></div>
           <a class="review-selection" href="#your-file">Get your review prompt <span aria-hidden="true">→</span></a>
         </form>
@@ -140,7 +140,7 @@
       <section id="your-file" class="output" aria-labelledby="output-title" tabindex="-1">
         <div class="socket-rail" aria-hidden="true"></div>
         <div class="output-heading"><h2 id="output-title">2. Copy your review prompt</h2><span class="file-type">Prompt</span></div>
-        <p class="output-description">Public rule links and a request to compare. Nothing installed or activated.</p>
+        <p class="output-description">The prompt contains public rule links and asks your agent to compare them with your instructions.</p>
         <p id="local-prompt-note" class="notice" hidden>Local preview: this prompt links to published rules on GitHub, not unpublished edits in this checkout.</p>
         <div class="metrics">
           <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
@@ -160,7 +160,7 @@
         </fieldset>
         <div class="preview-heading"><label for="prompt-preview">Your review prompt</label><span>Exact copy contents</span></div>
         <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
-        <p id="preview-help" class="preview-help">Read or scroll through the full prompt before copying. It asks for a review first, not permission to edit instructions.</p>
+        <p id="preview-help" class="preview-help">Read the full prompt before copying. Your agent must show proposed changes and ask for your approval before editing instructions.</p>
         <div class="actions">
           <button id="copy-prompt" class="button primary" type="button" disabled>Copy review prompt <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
         </div>
@@ -178,7 +178,7 @@
         <section class="next-step" aria-labelledby="use-rules-title">
           <h3 id="use-rules-title">3. Ask your agent to review</h3>
           <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. For a project review, open that project first.</p>
-          <p>Your agent needs access to the public links and your relevant instructions. It will be asked to flag conflicts, skip duplicates, and show proposed edits for your approval.</p>
+          <p>Your agent needs access to the public links and your relevant instructions. It will be asked to flag conflicts, skip duplicates, and explain proposed edits.</p>
           <p>This website does not read or upload your existing instructions. Review the suggestions yourself; an agent may miss a conflict or recommend no changes.</p>
         </section>
         <a class="back-to-selection" href="#builder">Back to rule selection</a>
@@ -235,7 +235,7 @@
   </div>
   <nav id="mobile-review" class="mobile-review" aria-label="Rule builder shortcuts" hidden>
     <span><strong id="mobile-rule-count">0</strong> selected</span>
-    <a href="#your-file">Get prompt <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+    <a id="mobile-review-link" href="#your-file"><span id="mobile-review-label">Get prompt</span> <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
   </nav>
 </body>
 </html>

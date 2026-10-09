@@ -232,49 +232,6 @@ function renderChoices() {
   updateGroupCounts();
 }
 
-function animateFavicon() {
-  const icon = element('favicon');
-  const pause = element('pause-motion');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const staticIcon = icon.href;
-  const svg = decodeURIComponent(staticIcon.slice(staticIcon.indexOf(',') + 1));
-  // Reuse eight tiny frames. No network requests, canvases, or object URLs.
-  const frames = [.65, .75, .9, 1, .9, .75, .6, .5].map((opacity) =>
-    'data:image/svg+xml,' + encodeURIComponent(svg.replace('fill-opacity=".65"', `fill-opacity="${opacity}"`)));
-  let timer;
-  let pageActive = true;
-
-  function stop() {
-    clearTimeout(timer);
-    timer = undefined;
-    if (icon.href !== staticIcon) icon.href = staticIcon;
-  }
-
-  function canAnimate() {
-    return pageActive && !document.hidden && !reducedMotion.matches && !pause.checked;
-  }
-
-  function sync() {
-    stop();
-    if (!canAnimate()) return;
-    let frame = 0;
-    function tick() {
-      if (!canAnimate()) return stop();
-      icon.href = frames[frame];
-      frame = (frame + 1) % frames.length;
-      timer = setTimeout(tick, 750);
-    }
-    timer = setTimeout(tick, 750);
-  }
-
-  pause.addEventListener('change', sync);
-  reducedMotion.addEventListener('change', sync);
-  document.addEventListener('visibilitychange', sync);
-  window.addEventListener('pagehide', () => { pageActive = false; stop(); });
-  window.addEventListener('pageshow', () => { pageActive = true; sync(); });
-  sync();
-}
-
 function updateSelection() {
   revision++;
   const chosen = RULES.filter((rule) => selected.has(rule.id));
@@ -307,6 +264,21 @@ function updateSelection() {
     ? `Review prompt ready with ${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'} to review ${getScope() === 'personal' ? 'your global instructions' : 'instructions for a specific project'}.`
     : 'Select at least one rule set to create a review prompt.';
   return { status: chosen.length ? 'ready' : 'empty', ruleIds: chosen.map((rule) => rule.id), hostOS, prompt: currentPrompt };
+}
+
+function syncMobileReview() {
+  const link = element('mobile-review-link');
+  const label = element('mobile-review-label');
+  const setDestination = (promptVisible) => {
+    link.href = promptVisible ? '#builder' : '#your-file';
+    label.textContent = promptVisible ? 'Back to rule selection' : 'Get prompt';
+  };
+  setDestination(false);
+  if (!('IntersectionObserver' in window)) return;
+  const observer = new window.IntersectionObserver(([entry]) => {
+    setDestination(entry.isIntersecting);
+  });
+  observer.observe(element('your-file'));
 }
 
 async function registerAgentTools() {
@@ -348,7 +320,7 @@ async function registerAgentTools() {
         properties: {
           ruleIds: { type: 'array', items: { type: 'string', enum: ruleIds }, minItems: 1, maxItems: ruleIds.length, uniqueItems: true, description: 'Exact rule-set IDs to review; sources follow catalog order. No additional rules are selected automatically.' },
           scope: { type: 'string', enum: scopes, description: 'User-level instructions across tasks and projects, or instructions for one project. Defaults to the current control.' },
-          hostOS: { type: 'string', enum: HOST_OS_CHOICES, description: 'One host operating system, or unspecified. A named host must also be in ruleIds. Other selected OSs are additional targets. If omitted, keeps the current host only if it is still selected; otherwise leaves it unspecified.' },
+          hostOS: { type: 'string', enum: HOST_OS_CHOICES, description: 'One host operating system where the agent runs commands or operates apps, or unspecified. It may differ from the device viewing this website. A named host must also be in ruleIds. Other selected OSs are additional targets. If omitted, keeps the current host only if it is still selected; otherwise leaves it unspecified.' },
         },
         required: ['ruleIds'],
         additionalProperties: false,
@@ -458,5 +430,5 @@ element('skip-link').href = '#builder';
 element('skip-link').textContent = 'Skip to rule builder';
 element('mobile-review').hidden = false;
 updateSelection();
-animateFavicon();
+syncMobileReview();
 registerAgentTools();

@@ -1,10 +1,15 @@
 # Agent Rulebook
 
-Reusable instructions to help AI agents stay within scope, protect existing work, check results, and explain them clearly. Use them with one agent or several, for everyday tasks, small experiments, or established software projects. They aim to reduce repeated prompting and avoidable mistakes without prescribing an operating system, framework, or agent.
+Reusable instructions to help AI agents stay within scope, protect existing work, check results, and explain them clearly. Use them with one agent or several for everyday tasks, small experiments, or established software projects. They do not prescribe an operating system, framework, or agent.
 
-These rules are intended for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalisation fields. Reading or uploading a file does not by itself activate it as standing instructions.
+These rules are for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalisation fields, and reading or uploading a file does not by itself activate it as standing instructions.
 
 For the `AGENTS.md` format, examples, FAQ, and supported-agent directory, see [agents.md](https://agents.md/). The instructions below explain how to use this repository's rules.
+
+Choose how to start:
+
+- [Use the website](#use-the-review-prompt-builder) to ask your agent which rules fit your existing instructions.
+- [Copy reviewed rule text](#how-to-use) yourself if you already know what you need.
 
 ## Choose your rules
 
@@ -15,28 +20,25 @@ For the `AGENTS.md` format, examples, FAQ, and supported-agent directory, see [a
 | Web development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) + [web](web-development-rules.md) | Browser behaviour, resource loading, and web security. |
 | Software testing | [General](agent-global-rules.md) + [software testing](optional/software-testing-rules.md) | Focused tests and browser verification, with our coding rules or your own. |
 
-These are suggested combinations, not required bundles. Choose individual files, including General alongside your own coding instructions. Omit guidance you already supply elsewhere and resolve conflicts before combining. Load selected files in the order shown. "Global" means reusable across tasks or projects; your task and project requirements still set the architecture, tools, and conventions.
-
-The website groups individual rule sets by purpose. These groups organise choices, not requirements.
-
-General behaviour is selected by default and can be deselected. Opening a group selects nothing; each rule set remains individually selectable.
+These are suggested combinations, not required bundles. Choose individual files, including General alongside your own coding instructions. Omit guidance you already supply elsewhere, resolve conflicts before combining, and load selected files in the order shown. "Global" means reusable across tasks or projects; your task and project requirements still set the architecture, tools, and conventions.
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
 ## Use the review prompt builder
 
-Use the [online prompt builder](https://jitendravyas.github.io/agent-rulebook/) when you want an agent to help decide which of these public rules are worth adopting. The website updates when changes are pushed to `main` and points to the current Markdown files on GitHub. It does not merge rules, install anything, or change your agent settings.
+The [website](https://jitendravyas.github.io/agent-rulebook/) creates a review prompt with links to your selected public rules. It does not merge rules, install anything, or change agent settings. It updates when changes reach `main`.
 
-1. Select the rule sets relevant to the work. Choose one **host operating system** where your agent normally runs, or leave it unspecified. Its OS rules are selected automatically. Select other OS rules for additional environments, such as remote machines, virtual machines, containers, or WSL. Other optional sets apply only within their stated scope.
-2. Choose whether you are considering the rules for personal, user-level work or for a project. This only gives the agent context for its recommendation; it does not place or activate anything.
-3. Read the full prompt in the text area, then copy it and paste it into the agent that will review your instructions. The prompt links to the selected public rule files and tells the agent to treat them as reference material.
-4. Let the agent compare the selected rules with the applicable instructions and skills it can actually inspect. It should keep useful guidance, skip duplicates and irrelevant material, flag conflicts, and propose the smallest worthwhile changes. It should ask before editing instruction files and say when nothing useful needs to be added.
+Choose individual sets; opening a group selects nothing. General is selected by default and can be deselected.
 
-The prompt is a starting point, not a guarantee that every conflict or duplicate will be found. The agent may need access to the relevant existing instructions; the website never reads or uploads your private instructions, project files, or agent settings. Review the recommendation before adopting it.
+1. **Choose rules to review.** Choose one host OS where the agent runs commands or operates apps, not necessarily the device viewing the website. This selects its OS rules. Leave it unspecified if unsure; add other operating systems for remote machines, virtual machines, containers, or WSL. Each set applies only within its scope.
+2. **Copy your review prompt.** Choose global instructions or instructions for a specific project. This sets review context, not installation location. Read the full prompt before copying.
+3. **Ask your agent to review.** Paste the prompt into a conversation, opening the project first for a project review. The agent compares the references with instructions and skills it can inspect, skips duplicates and unsuitable guidance, flags conflicts, and proposes worthwhile edits. It must ask before editing and may recommend no changes.
 
-Your selected rule sets, host OS, and scope stay in the page address and generated prompt. Bookmark it or use **Copy setup link**; shared links restore these choices, not a frozen copy of the rules. Older links without a host choice leave it unspecified. Reopening or reloading uses the current source links. Links may warn about unavailable choices. Local preview links work only on the machine serving them; share the hosted website’s address with others.
+The agent needs access to the public links and relevant instructions. The website never reads or uploads your private instructions, project files, or agent settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
-The website’s **Read the source rules** section links directly to the original Markdown files, this README, and the licence. People, search crawlers, and agents can follow these links without running JavaScript. Reading the files does not activate their instructions.
+Bookmark the page address or use **Copy setup link** to save selected sets, host OS, and scope. These choices also appear in the prompt. Links restore choices, not a fixed rule version; prompts always link to public `main`. Older links leave the host unspecified and may warn about unavailable choices. Local preview links work only on the serving machine; share the hosted address with others.
+
+The website's **Read the source rules** section links to the original Markdown files, this README, and the licence. People, crawlers, and agents can follow them without JavaScript.
 
 With a compatible browser and agent, the builder also offers optional [WebMCP](https://developer.chrome.com/docs/ai/webmcp/) tools to list the available rule sets and generate the same review prompt. These tools return public rule links and prompt text for review; they do not save files, upload private content, or change agent settings. WebMCP is experimental; the normal controls work without it.
 
@@ -51,20 +53,20 @@ Local previews still generate prompts linking to public `main`. They do not incl
 
 ## How to use
 
-The builder's prompt goes in a conversation with your agent, not in an instruction file. Follow the steps below only for rule content you decide to adopt, whether you use the review prompt or read the source files yourself.
+Copy rule text you decide to adopt, whether you used the website or reviewed the files yourself. Do not copy the builder's review prompt into an instruction file.
 
 **Check how your agent loads instructions before copying.** There is no universal maximum rule-file size. Agents may have per-file limits, combined loading limits, or recommendations rather than hard limits. Content beyond an applicable loading limit may be omitted. Check your agent's current documentation for the applicable limit.
 
 1. **Choose the scope.** Use your agent's user-level instructions for your own work across projects, or a project's instruction file for that project and its contributors.
 2. **Review alongside your existing instructions.** Remove duplicates and resolve conflicts before changing active instructions. Preserve your own guidance, project requirements, safety boundaries, and each rule's conditions and exceptions.
-3. **Save the reviewed rules.** Merge the selected content into your agent's supported instruction file, such as an `AGENTS.md` or `CLAUDE.md`, or into Cursor's User Rules under Customize → Rules. For files, use the filename, location, and format your agent requires. You can combine rules or keep them in separate files using supported imports or loading controls; an ordinary Markdown link is not a universal import. No package installation is needed.
+3. **Save the reviewed rules.** Merge the selected content into your agent's supported instruction file, such as an `AGENTS.md` or `CLAUDE.md`, or into Cursor's User Rules under Customize → Rules. Use the filename, location, and format your agent requires. You can combine rules or keep them in separate files using supported imports or loading controls; an ordinary Markdown link is not a universal import. No package installation is needed.
 4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available, including whether referenced files loaded. Cloning this repository or saving files in an arbitrary folder does not activate them.
 
 Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That file is only for agents maintaining this repository.
 
 For personal instructions across projects, see [Set up global rules](#set-up-global-rules). It links to official setup guides and distinguishes direct `AGENTS.md` support from imports and project-level support.
 
-Once loaded, these are standing instructions, not skills you need to invoke. The agent should apply only what is relevant to your request, without starting extra audits, tests, or installations just because a rule mentions them. Browser checks should match the requested work, risk, stage, and project requirements, not run a full audit for every web task.
+Loaded rules are standing instructions, not skills to invoke. Only relevant guidance applies; mentioning audits, tests, or tools does not request them. Browser checks must match the work, risk, stage, and project requirements.
 
 ### Set up global rules
 
@@ -160,9 +162,9 @@ Choose only the areas your agent needs. None requires a Git repository, and each
 
 ### Do I need coding rules for non-development work?
 
-No. General remains useful on its own or with OS-specific rules, including for research, files, documents, media, and other non-development work. Browser and computer use and Version control can accompany those tasks too. Add coding or web rules when you want specialised development guidance.
+No. General can stand alone or accompany OS, Browser and computer use, or Version control rules for non-development tasks. Add coding or web rules only for specialised development guidance.
 
-The development rules also cover temporary and standalone work without a Git repository. They do not require browser automation or version control that the task does not need.
+Development rules also cover temporary and standalone work without a Git repository. They do not require browser automation or version control when unnecessary.
 
 If one agent handles mixed work, your selected rules can stay loaded. Each applies only within its stated scope; use conditional loading where supported to reduce context use.
 

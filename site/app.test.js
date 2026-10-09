@@ -10,8 +10,9 @@ const importLine = /^import \{([^}]+)\} from '\.\/rules\.js';\r?\n/;
 assert.match(app, importLine);
 const script = app.replace(importLine, (_, names) => `const {${names}} = catalog;\n`);
 
-function boot(address) {
+function boot(address, { intersectionObserver = true } = {}) {
   const nodes = new Map();
+  const observers = [];
   let location = new URL(address);
 
   // This DOM double runs the actual app and event handlers, not layout or browser APIs.
@@ -85,7 +86,15 @@ function boot(address) {
     state: null,
     replaceState(state, unused, url) { this.state = state; location = new URL(url, location); },
   };
-  window.matchMedia = () => ({ matches: true, addEventListener() {} });
+  if (intersectionObserver) {
+    window.IntersectionObserver = class {
+      constructor(callback) {
+        this.callback = callback;
+        observers.push(this);
+      }
+      observe(target) { this.target = target; }
+    };
+  }
   const document = new Node('document');
   Object.defineProperty(document, 'baseURI', { get: () => location.href });
   Object.assign(document, {
@@ -95,10 +104,9 @@ function boot(address) {
   });
   runInNewContext(script, {
     catalog, document, window, URL, performance: { timeOrigin: 1000 },
-    navigator: {}, AbortController, clearTimeout,
-    setTimeout() { throw new Error('Unexpected animation timer in reduced-motion test'); },
+    navigator: {}, AbortController,
   }, { filename: 'site/app.js', timeout: 1000 });
-  return { get, window };
+  return { get, window, observers };
 }
 
 test('saved setup restores selected controls, host OS, scope, and the exact prompt', () => {
@@ -149,4 +157,43 @@ test('an explicitly empty saved selection stays empty after reload', () => {
   assert.equal(restored.get('host-os').value, 'unspecified');
   assert.equal(restored.get('prompt-preview').value, '');
   assert.equal(restored.get('copy-prompt').disabled, true);
+});
+
+test('mobile shortcut returns to selection while the prompt section is visible', () => {
+  const page = boot('https://example.test/agent-rulebook/');
+  const link = page.get('mobile-review-link');
+  const label = page.get('mobile-review-label');
+  assert.equal(page.observers.length, 1);
+  const observer = page.observers[0];
+  assert.equal(observer.target, page.get('your-file'));
+  assert.equal(link.href, '#your-file');
+  assert.equal(label.textContent, 'Get prompt');
+
+  observer.callback([{ isIntersecting: true, intersectionRatio: 0 }]);
+  assert.equal(link.href, '#builder');
+  assert.equal(label.textContent, 'Back to rule selection');
+
+  observer.callback([{ isIntersecting: true, intersectionRatio: 0.1 }]);
+  assert.equal(link.href, '#builder');
+  assert.equal(label.textContent, 'Back to rule selection');
+
+  observer.callback([{ isIntersecting: false, intersectionRatio: 0 }]);
+  assert.equal(link.href, '#your-file');
+  assert.equal(label.textContent, 'Get prompt');
+});
+
+test('mobile shortcut keeps its working default without IntersectionObserver', () => {
+  const page = boot('https://example.test/agent-rulebook/', { intersectionObserver: false });
+  assert.equal(page.get('mobile-review-link').href, '#your-file');
+  assert.equal(page.get('mobile-review-label').textContent, 'Get prompt');
+  assert.equal(page.get('copy-prompt').disabled, false);
+});
+
+test('keeps a static favicon and separate review approval guidance', () => {
+  assert.match(html, /<link id="favicon"[^>]+type="image\/svg\+xml"[^>]+data:image\/svg\+xml/);
+  assert.match(html, /Selection adds public rule links to the prompt; it does not install or activate rules\./);
+  assert.equal((html.match(/install or activate/g) ?? []).length, 1);
+  assert.match(html, /show proposed changes and ask for your approval before editing instructions/);
+  assert.doesNotMatch(app, /animateFavicon/);
+  assert.match(html, /id="pause-motion"/);
 });
