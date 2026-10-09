@@ -14,4 +14,4 @@ Apply to authorised work on Linux, including tasks outside software development.
 ## Files and persistent state
 
   * Exclude `/proc`, `/sys`, `/dev`, and `/run` from routine file-content searches. Inspect specific entries only when needed for the task; these locations contain live system interfaces or runtime state, not ordinary documents or general cleanup targets.
-  * Treat `/var/lib` and application data directories as potentially persistent user or service data, not caches. For authorised cleanup, use the owning application's or package manager's supported method; do not delete state directories because they are large or unfamiliar.
+  * Treat `/var/lib` and application data directories as potentially persistent user or service data, not caches. For authorised cleanup, prefer the owning application's or package manager's supported method. If manual cleanup is needed, confirm the exact targets, authorisation, and recovery path before proceeding. Do not delete state directories because they are large or unfamiliar.

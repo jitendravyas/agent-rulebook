@@ -6,7 +6,7 @@ Apply when authoring or changing motion graphics intended for video export, incl
 
   * Use the intended output dimensions, aspect ratio, duration, and frame rate as composition constraints. Keep the source timeline and export settings aligned; do not let the preview window size determine the exported layout.
   * Keep essential text and subjects within the intended visible area, accounting for required crops or player overlays. Leave enough readable time at normal playback speed. Adjust layout and timing instead of silently truncating required text.
-  * Drive generated animation from the composition's frame or time position, not wall-clock time or rendering speed. Keep random choices and external data stable across renders. For effects that depend on earlier frames, use a supported cache or sequential rendering; do not render frames independently unless their state can be reconstructed.
+  * Drive generated animation from the composition's frame or time position, not wall-clock time or rendering speed. Control randomness and external data to prevent unintended changes within an export. Keep them stable between exports when reproducibility is required. For effects that depend on earlier frames, use a supported cache or sequential rendering; do not render frames independently unless their state can be reconstructed.
   * When audio is included, align its timing, trims, and ending with the intended visual sequence. Preserve synchronisation after timing changes; do not unintentionally cut speech, add silence, or distort audio through excessive volume.
   * Avoid rapid, high-contrast flashing; do not add it solely for emphasis.
 
