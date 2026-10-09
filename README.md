@@ -4,6 +4,8 @@ Reusable instructions to help AI agents stay within scope, protect existing work
 
 These rules are for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalisation fields, and reading or uploading a file does not by itself activate it as standing instructions.
 
+The rules also apply without a desktop, including servers accessed only through SSH. Use available tools for the task. If a required interaction or visual check is unavailable, report the gap rather than claiming it passed.
+
 For the `AGENTS.md` format, examples, FAQ, and supported-agent directory, see [agents.md](https://agents.md/). The instructions below explain how to use this repository's rules.
 
 Choose how to start:

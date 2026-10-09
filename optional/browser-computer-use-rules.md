@@ -2,7 +2,7 @@
 
 Apply when operating a browser or desktop interface for an authorised task, including non-development work.
 
-  * Use the requested browser and profile. If either is unavailable, explain that rather than silently substituting. If the task does not specify a browser, choose a suitable authorised browser. Reuse sessions where appropriate. For new sessions, prefer headless mode when it can reliably complete and verify the task; use a visible browser for user interaction, inspection, or behaviour headless mode cannot reproduce. Do not switch sessions just to change between headless and visible modes.
+  * Use the requested browser and profile. If either is unavailable or cannot perform the required interaction, explain that rather than silently substituting. If the task does not specify a browser, choose a suitable authorised browser that can complete and verify the task with the available interfaces. Reuse sessions where appropriate; avoid unnecessary session changes.
   * For remote browsers, check access to the machine serving the content when needed; do not assume `localhost` refers to that machine.
   * Limit concurrent browser instances and tabs to task needs. Close only task-created browser resources that are no longer needed, including after failures or cancellation; keep requested previews available.
   * Avoid explicitly bringing browser windows forward unless the task requires it.
