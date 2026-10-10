@@ -142,11 +142,14 @@ test('opt-in modules put applicability beneath their title and do not import oth
   }
 });
 
-test('README keeps Personalize last when combining files', () => {
+test('README keeps Personalize last and independent when combining files', () => {
   const guidance = read('README.md').match(/^When combining files,[^\n]+/m)?.[0];
   assert.ok(guidance, 'README explains how to combine files');
   assert.match(guidance, /General first, selected add-ons next/);
   assert.match(guidance, /move General's \*\*Personalize\*\* section.*to the end/);
+  assert.match(guidance, /Change its heading to `# Personalize` so it is separate from every add-on/);
+  assert.match(guidance, /Keep `## Personalize` when using General alone/);
+  assert.match(read('agent-global-rules.md'), /^## Personalize$/m);
 });
 
 test('README and website distinguish relevant modules from loading the whole collection', () => {

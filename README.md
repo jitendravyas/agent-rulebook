@@ -34,7 +34,7 @@ Keep broadly useful guidance at user level. Put specialized guidance in the rele
 
 For fresh installs, General is a suggested baseline; software and activity-specific guidance is opt-in. When updating existing instructions, compare before merging and avoid duplicate versions. Project instructions govern implementation choices, not waivers of required approval or safety. "Global" means reusable across tasks or projects, not permission to act everywhere.
 
-When combining files, keep General first, selected add-ons next, and move General's **Personalize** section, including any preferences already added, to the end. Keep each add-on's heading and applicability line together. Add personal preferences or an optional private context-file instruction under Personalize.
+When combining files, keep General first, selected add-ons next, and move General's **Personalize** section, including any preferences already added, to the end. Change its heading to `# Personalize` so it is separate from every add-on. Keep `## Personalize` when using General alone. Keep each add-on's heading and applicability line together. Add personal preferences or an optional private context-file instruction under Personalize.
 
 American English is used consistently in the supplied rules; it does not prescribe how agents must write your content.
 
