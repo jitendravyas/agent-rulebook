@@ -151,8 +151,10 @@
         </div>
         <h3 class="selection-caption">What your selection covers</h3>
         <ul id="selection-summary" class="selection-summary"></ul>
-        <fieldset id="rule-scope" class="scope-options">
+        <fieldset id="rule-scope" class="scope-options" aria-describedby="scope-help scope-start-help">
           <legend>Instructions to review</legend>
+          <p id="scope-help" class="preview-help">Global instructions apply across tasks and projects. Project instructions apply only to one project.</p>
+          <p id="scope-start-help" class="preview-help">Already working on a project? Start by reviewing instructions for that project. Choose global instructions only for guidance you want across all your work. You do not need every rule set; your agent will suggest what fits your existing instructions.</p>
           <label>
             <input type="radio" name="scope" value="personal" checked>
             <span>My global instructions</span>
