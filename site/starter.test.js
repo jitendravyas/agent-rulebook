@@ -24,9 +24,10 @@ test('General is compact, neutral, and excludes software-specific workflow', () 
   assert.doesNotMatch(general, /agent-info\.json|\/Users\/|C:\\|modern-web-guidance|Chrome DevTools|\bMCP\b/);
 });
 
-test('published and draft rule files have one valid update date near the title, without version labels', () => {
+test('rules and the helper reference have one valid update date near the title, without version labels', () => {
   const paths = [
     ...RULES.map(rule => rule.path),
+    'optional/helper-tools.md',
     ...readdirSync(new URL('drafts/', root))
       .filter(path => path.endsWith('-rules.md'))
       .map(path => `drafts/${path}`),
@@ -57,6 +58,8 @@ test('General covers unattended approval, persistent memory, and final self-revi
   const privacy = general.split('## Security and privacy\n')[1].split('\n## ')[0];
   assert.match(privacy, /When persistent memory use is authorized, save only confirmed, reusable facts or preferences/);
   assert.match(privacy, /applicable scope/);
+  assert.match(privacy, /Save sensitive personal, customer, or confidential details only when needed for an explicitly authorized memory purpose/);
+  assert.match(privacy, /Keep real secrets[^\n]*out of[^\n]*persistent memory/);
   assert.match(privacy, /Do not retain guesses or temporary task state as reusable guidance/);
   const completion = general.split('## Verification and completion\n')[1].split('\n## ')[0];
   assert.match(completion, /Before handing off changed work, review your final changes against the request/);
@@ -103,7 +106,13 @@ test('repository prose uses American spelling while source paths stay unchanged'
       .filter(path => path.endsWith('-rules.md'))
       .map(path => `drafts/${path}`),
   ];
-  const britishSpellings = /\b(?:authorised|authorisation|behaviour|licence|personalise|internationalisation|localisation|localisable|localised|organisations?|normalisation|parameterised|sanitisers?|sanitised|cancelled|colour|synchronisation|recognise)\b/i;
+  const britishSpellings = /\b(?:authorised|authorisation|behaviour|licence|personalis(?:e[ds]?|ing|ation)|generalis(?:e[ds]?|ing|ations?)|internationalisation|localisation|localisable|localised|organisations?|normalisation|parameterised|sanitisers?|sanitised|cancelled|colour|synchronisation|recognise)\b/i;
+  for (const spelling of ['generalise', 'generalised', 'generalises', 'generalising', 'generalisation', 'personalise', 'personalised', 'personalises', 'personalising', 'personalisation']) {
+    assert.ok(britishSpellings.test(spelling), `detects ${spelling}`);
+  }
+  for (const spelling of ['generalizing', 'generalization', 'personalization', 'exercise', 'surprise', 'franchise']) {
+    assert.ok(!britishSpellings.test(spelling), `permits ${spelling}`);
+  }
   for (const path of paths) {
     const prose = read(path).replace(/`[^`]*`|https?:\/\/[^\s<>")\]]+|^>.*$|“[^”]*”/gm, '');
     assert.ok(!britishSpellings.test(prose), `${path} uses American spellings in prose`);
@@ -174,4 +183,9 @@ test('README setup advice and eight scenario checks stay separate from agent rul
   assert.equal([...plan.matchAll(/^\| “/gm)].length, 8);
   assert.match(plan, /not evidence that every agent passes/);
   assert.ok(!RULES.some(rule => /README|rule-scenarios/.test(rule.path)));
+  const helper = read('optional/helper-tools.md');
+  assert.match(helper, /^# Optional helper-tool reference\n/);
+  assert.match(helper, /Do not load this reference for every request/);
+  assert.ok(!RULES.some(rule => rule.path === 'optional/helper-tools.md'));
+  assert.match(read('README.md'), /Its update date records edits, not verification of every tool or requirement/);
 });

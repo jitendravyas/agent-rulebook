@@ -2,7 +2,7 @@
 
 Reusable instructions to help AI agents stay within scope, protect existing work, check results, and explain them clearly. Use them with one agent or several for everyday tasks, small experiments, or established software projects. They do not prescribe an operating system, framework, or agent.
 
-These rules are for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalisation fields, and reading or uploading a file does not by itself activate it as standing instructions.
+These rules are for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalization fields, and reading or uploading a file does not by itself activate it as standing instructions.
 
 The rules also apply without a desktop, including servers accessed only through SSH. Use available tools for the task. If a required interaction or visual check is unavailable, report the gap rather than claiming it passed.
 
@@ -182,7 +182,7 @@ Choose only the areas your agent needs. None requires a Git repository, and each
 
 ### Tool reference
 
-[Helper tools](optional/helper-tools.md) covers utilities, integrations, and operating-system capabilities for research, browser use, files, and other tasks. It includes Windows and Linux diagnostics, Spotlight, text recognition, Shortcuts, and Apple Intelligence, with version conditions where needed. These tools are optional, not assumed to be installed. Provide relevant entries for a task or use supported conditional loading; do not load the whole reference in every session. No rule file imports it automatically.
+The dated [helper-tool reference](optional/helper-tools.md) covers utilities, integrations, and operating-system capabilities for research, browser use, files, and other tasks. It includes Windows and Linux diagnostics, Spotlight, text recognition, Shortcuts, and Apple Intelligence, with version conditions where needed. These tools are optional, not assumed to be installed. Provide relevant entries for a task or use supported conditional loading; do not load the whole reference in every session. No rule file imports it automatically. Its update date records edits, not verification of every tool or requirement.
 
 </details>
 
