@@ -5,8 +5,8 @@ const GENERAL_RULE = {
   title: 'General agent rules',
   label: 'General: useful for any task',
   description:
-    'Safety, privacy, clear replies, and efficient code and assets. Use for research, documents, files, media, or development.',
-  purpose: 'Safety, privacy, clear replies, basic code and asset efficiency, and staying within your request.',
+    'Safety, approvals, privacy, verification, and clear replies for everyday tasks. No software-development workflow required.',
+  purpose: 'General safety and behaviour for research, documents, files, media, or development. No plugins or project required.',
   path: 'agent-global-rules.md',
 };
 
@@ -15,8 +15,8 @@ const CODING_RULE = {
   title: 'Coding-agent rules',
   label: 'Build or maintain software',
   description:
-    'Build and maintain native apps, browser apps, and temporary software, with whole-feature performance guidance and code checks. Skip if your own coding instructions cover this.',
-  purpose: 'Software implementation and maintenance, whole-feature performance, and code checks.',
+    'Opt-in software guidance for native apps, browser apps, and temporary software: implementation, security, maintenance, performance, and static checks.',
+  purpose: 'Software-specific guidance. Not needed for ordinary research, documents, or computer use.',
   path: 'coding-agent-global-rules.md',
 };
 
@@ -25,7 +25,7 @@ const WEB_RULE = {
   title: 'Web development rules',
   label: 'Build websites or web apps',
   description:
-    'Browser behaviour, resource loading, and web security when creating or changing web pages. Use alongside your coding guidance, not merely for browsing websites.',
+    'Browser behaviour, resource loading, and web security when creating or changing web pages. Not merely for browsing websites.',
   purpose: 'Browser-specific behaviour, resource loading, and web security for websites and web apps.',
   path: 'web-development-rules.md',
 };
@@ -164,8 +164,8 @@ export const RULE_GROUPS = [
   {
     id: 'general',
     title: 'General behaviour',
-    summary: 'Baseline guidance for any task; selected by default but optional.',
-    description: 'Guidance for any task. It is selected by default, but you can deselect it or use it alongside instructions you already have.',
+    summary: 'A starting point for any task; review against your existing instructions when updating.',
+    description: 'General covers safety and behaviour for everyone. Add Coding only for software work. You can review other sets alone if you already have equivalent general guidance.',
     rules: [GENERAL_RULE],
   },
   {
@@ -180,7 +180,7 @@ export const RULE_GROUPS = [
     id: 'development',
     title: 'Software development',
     summary: 'Build software or websites, test changes, or add animation and language support.',
-    description: 'Use your existing coding guidance or select Build or maintain software. Add the other sets only for the activities you need. Each can be selected separately.',
+    description: 'Choose Coding for software work, then add Web or Testing for those activities. Skip sets already covered by your own instructions. Animation and language support are additional specialist options.',
     collapsible: true,
     rules: [
       CODING_RULE,

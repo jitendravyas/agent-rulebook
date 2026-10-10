@@ -1,6 +1,6 @@
-# Software testing rules
+Apply when testing software or verifying software changes, including temporary and standalone work; match checks to the task, risk, stage, and supported environments, without unrelated tests or audits.
 
-Apply when testing software or verifying software changes, including temporary and standalone work. Match checks to the authorised task, its risk, stage, and supported environments. Loading these rules does not request unrelated testing or audits.
+# Software testing and browser verification rules
 
 ## Software checks
 

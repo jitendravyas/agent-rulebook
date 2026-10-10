@@ -1,6 +1,6 @@
-# Version-control rules
-
 Apply when using version control for an authorised task, including non-software work.
+
+# Version-control rules
 
 ## Reviewing and preserving work
 

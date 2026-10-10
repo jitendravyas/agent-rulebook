@@ -171,6 +171,16 @@ test('saved links flag a retired set without losing other choices', () => {
   assert.ok(!page.get('setup-link').value.includes('web-performance'));
 });
 
+test('a saved coding-only choice remains Coding without silently adding General', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=coding&scope=project');
+  assert.equal(page.get('rule-general').checked, false);
+  assert.equal(page.get('rule-coding').checked, true);
+  assert.equal(page.get('rule-count').textContent, '1');
+  assert.equal(page.get('link-warning').hidden, true);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['coding'], 'project'));
+  assert.equal(new URL(page.get('setup-link').value).searchParams.get('rules'), 'coding');
+});
+
 test('shows purpose examples before a category is opened without selecting its rules', () => {
   const page = boot('https://example.test/agent-rulebook/');
   for (const group of catalog.RULE_GROUPS.filter(group => group.collapsible)) {

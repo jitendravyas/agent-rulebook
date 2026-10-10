@@ -1,6 +1,6 @@
-# Browser and computer-use rules
-
 Apply when operating a browser or desktop interface for an authorised task, including non-development work.
+
+# Browser and computer-use rules
 
   * Use the requested browser and profile. If either is unavailable or cannot perform the required interaction, explain that rather than silently substituting. If the task does not specify a browser, choose a suitable authorised browser that can complete and verify the task with the available interfaces. Reuse sessions where appropriate; avoid unnecessary session changes.
   * For remote browsers, check access to the machine serving the content when needed; do not assume `localhost` refers to that machine.

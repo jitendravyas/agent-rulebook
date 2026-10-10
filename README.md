@@ -13,16 +13,26 @@ Choose how to start:
 - [Use the website](#use-the-review-prompt-builder) to ask your agent which rules fit your existing instructions.
 - [Copy reviewed rule text](#how-to-use) yourself if you already know what you need.
 
-## Choose your rules
+## Choose General, then relevant add-ons
+
+Start with [General rules](agent-global-rules.md) for safety, approvals, privacy, verification, and communication. They work without a project, desktop, plugins, or skills. Add [Coding rules](coding-agent-global-rules.md) only for software development. Both files are versioned and dated so you can review updates.
+
+Append only the add-ons relevant to your intended activities. Keep their applicability lines when copying. They can complement General or equivalent existing guidance; no file imports or activates another file. The existing files remain the source, with no duplicate starter bundle.
 
 | Agent setup | Load these files | Covers |
 | --- | --- | --- |
-| General tasks | [General rules](agent-global-rules.md) | Research, files, documents, media, safety, and basic efficiency for generated code and assets. |
-| Software development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) | Software planning, implementation, whole-feature performance, maintenance, and static code checks. |
-| Web development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) + [web](web-development-rules.md) | Browser behaviour, resource loading, and web security. |
-| Software testing | [General](agent-global-rules.md) + [software testing](optional/software-testing-rules.md) | Focused tests and browser verification, with our coding rules or your own. |
+| Any task | [General](agent-global-rules.md) | Scope, approvals, safety, privacy, verification, communication, and basic efficiency. |
+| Software development | General + [Coding](coding-agent-global-rules.md) | Software implementation, security, maintenance, performance, and static checks. |
+| Web development | General + Coding + [web](web-development-rules.md) | Browser-specific implementation, resource loading, and web security. |
+| Software testing and browser verification | General + [testing](optional/software-testing-rules.md) | Focused tests and proportionate browser verification. |
+| Version control, including non-code files | General + [version control](optional/version-control-rules.md) | Reviewing changes, preserving work, identities, commits, pushes, and exposed history. |
+| Browser or desktop operation | General + [computer use](optional/browser-computer-use-rules.md) | Sessions, tabs, focus, and interface interaction for any task. |
 
-These are suggested combinations, not required bundles. Choose individual files, including General alongside your own coding instructions. Omit guidance you already supply elsewhere, resolve conflicts before combining, and load selected files in the order shown. "Global" means reusable across tasks or projects; your task and project requirements still set the architecture, tools, and conventions.
+For fresh installs, General is a suggested baseline; software and activity-specific guidance is opt-in. When updating existing instructions, compare before merging and avoid duplicate versions. Project instructions govern implementation choices, not waivers of required approval or safety. "Global" means reusable across tasks or projects, not permission to act everywhere.
+
+Add personal preferences or an optional private context-file instruction under General's **Personalise** section. British English is used consistently in the supplied rules; it does not prescribe how agents must write your content.
+
+The [scenario test plan](docs/rule-scenarios.md) provides eight safe checks for loading and behaviour across agents. Existing operating-system and specialist files remain available separately; they are not required for the starter setup.
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
@@ -30,7 +40,7 @@ These rules change over time and have not been tested with every agent, model, o
 
 The [website](https://jitendravyas.github.io/agent-rulebook/) creates a review prompt with links to your selected public rules. It does not merge rules, install anything, or change agent settings. It updates when changes reach `main`.
 
-Choose individual sets; opening a group selects nothing. General is selected by default and can be deselected.
+Choose individual sets; opening a group selects nothing. General is selected by default. It can be deselected when reviewing add-ons against equivalent instructions you already have. Coding is a separate choice, not automatically included.
 
 1. **Choose rules to review.** Choose one host OS where the agent runs commands or operates apps, not necessarily the device viewing the website. This selects its OS rules. Leave it unspecified if unsure; add other operating systems for remote machines, virtual machines, containers, or WSL. Each set applies only within its scope.
 2. **Copy your review prompt.** Choose global instructions or instructions for a specific project. This sets review context, not installation location. Read the full prompt before copying.
@@ -69,6 +79,17 @@ Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That fi
 For personal instructions across projects, see [Set up global rules](#set-up-global-rules). It links to official setup guides and distinguishes direct `AGENTS.md` support from imports and project-level support.
 
 Loaded rules are standing instructions, not skills to invoke. The agent should recognise relevant conditions from context and apply the guidance without reminders. This does not expand the task or grant approval; mentioning audits, tests, or tools does not request them. Checks must match the work, risk, stage, and project requirements.
+
+### Safe setup
+
+This advice is for the person installing, not instructions to load into the agent. Rules guide behaviour; they cannot enforce it or guarantee safety. Follow [How to use](#how-to-use) to choose, merge, save, and confirm loading. Review updates before replacing active rules, retain the version/date, and keep the MIT licence notice when reusing the files.
+
+- **Enable available controls.** Use approval prompts for destructive actions, installations, external writes, and access beyond the task. Prefer a sandbox restricted to the task directory and necessary network access. Do not disable controls because the rules ask for approval. If controls are unavailable, start with disposable data and restrict account permissions.
+- **Protect Git commits from secrets.** If you use Git, configure an approved secret scanner through a global pre-commit hook. Check the effective hooks configuration and preserve or compose with existing hooks. Test with synthetic examples, never real credentials, and confirm coverage for new, changed, and non-text files. Local hooks can be bypassed and do not inspect other contributors' pushes or all outgoing history; use server-side push protection or continuous integration (CI) checks where available.
+- **Store credentials securely.** Use an operating-system credential store or password/credential manager, not plaintext documents, agent instructions, source files, or chat. Use supported secure injection and least-privilege credentials. Do not paste secrets to prove they work.
+- **Try the rules safely.** Keep private context outside this public repository. Run the [scenario checks](docs/rule-scenarios.md) in a disposable environment and review failures before trusting unattended work.
+
+These documents and the website do not install tools or hooks, connect accounts, or change permissions.
 
 ### Set up global rules
 
@@ -120,11 +141,11 @@ For renamed or replaced products, follow the current product's guide: [Windsurf 
 
 ### General behaviour
 
-[General rules](agent-global-rules.md) are the recommended baseline for development and non-development work. They cover reusable behaviour, safety, and basic efficiency for code and assets, including throwaway pages. The categories below add context only when the task needs it.
+[General rules](agent-global-rules.md) are useful for development and everyday work. They cover safety, approvals, verification, communication, and basic efficiency, not software-specific implementation. The categories below add context only when the task needs it.
 
 ### Operating systems
 
-These add-ons can accompany any setup, including General tasks without coding rules. Choose the operating-system file for the environment where the agent works, including remote environments.
+These additional add-ons can accompany General for development or everyday tasks. Choose the operating-system file for the environment where the agent works, including remote environments.
 
 - [macOS agent rules](optional/macos-agent-rules.md): a compact safety add-on for agents that operate a Mac, including non-software tasks. Covers system protection, permissions, iCloud and Photos file handling, and local-processing boundaries. This safety layer can stay loaded; detailed tool guidance stays optional.
 - [Windows agent rules](optional/windows-agent-rules.md): protect managed system files, handle redirected and synced folders, and keep Windows and WSL operations distinct.
@@ -139,7 +160,7 @@ These add-ons can accompany any setup, including General tasks without coding ru
 
 Choose only the areas your agent needs. None requires a Git repository, and each can complement your own instructions:
 
-- [Coding and maintenance](coding-agent-global-rules.md): shared implementation guidance for web, native apps, and other software, including whole-feature performance, lint, type, and static-analysis checks. Performance applies to the complete affected feature or operation, not just individual files.
+- [Coding and maintenance](coding-agent-global-rules.md): shared implementation guidance for native apps, browser apps, and temporary software, including whole-feature performance and static code checks. It applies only to software work.
 - [Web development](web-development-rules.md): browser-specific implementation, resource-loading safeguards, and security guidance.
 - [Software testing](optional/software-testing-rules.md): test quality and proportionate browser verification. It does not trigger a full test suite or audit just because it is loaded. General retains the basic expectations to verify outcomes and report unchecked work honestly.
 - [Browser animations](optional/browser-animation-rules.md): preserve application state and animation lifecycles when creating or changing live web motion. Not needed for web work without animation or for video exports.
@@ -147,7 +168,7 @@ Choose only the areas your agent needs. None requires a Git repository, and each
 
 ### Creative media
 
-- [Motion graphics videos](optional/motion-video-rules.md): keep composition, timeline, assets, and video export consistent. Use with the general rules for motion graphics intended for MP4 or other video output; a browser preview alone does not require the web-development setup.
+- [Motion graphics videos](optional/motion-video-rules.md): keep composition, timeline, assets, and video export consistent. Use with General for motion graphics intended for MP4 or other video output; a browser preview alone does not require the web-development setup.
 
 ### Agent instructions
 
@@ -163,7 +184,7 @@ Choose only the areas your agent needs. None requires a Git repository, and each
 
 ### Do I need coding rules for non-development work?
 
-No. General can stand alone or accompany OS, Browser and computer use, or Version control rules for non-development tasks. Add coding or web rules only for specialised development guidance.
+No. General stands alone for non-development tasks. Add Coding only for software work. Browser and computer use, Version control, or other activity-specific guidance can be useful without software development.
 
 Development rules also cover temporary and standalone work without a Git repository. They do not require browser automation or version control when unnecessary.
 
@@ -175,9 +196,9 @@ Select fewer relevant sections, load sections conditionally where supported, or 
 
 ### How do I migrate from older rule files?
 
-When replacing an earlier version of `agent-global-rules.md`, add Browser and computer use or Version control only when needed. Their detailed guidance is now optional; essential safeguards remain in General.
+The existing General and Coding files now include a version and update date. Replace old copied guidance rather than appending another copy, preserving personal preferences and essential safety protections.
 
-When replacing an earlier version of `coding-agent-global-rules.md`, retain equivalent general guidance or select `agent-global-rules.md`. Shared safety, permissions, tool use, research, communication, and outcome verification belong there. Testing and browser-verification guidance is in `optional/software-testing-rules.md`; lint, type, and static-analysis guidance is in Coding. Review any saved prompt or source selection after updating. Replace old copied rules rather than appending duplicate versions, while preserving your own instructions.
+`coding-agent-global-rules.md` remains a separate opt-in file. General does not include its software-specific guidance. Website links preserve General and Coding as separate choices; review the changed sources before adopting them.
 
 Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional browser-animation rules only when relevant. The former standalone accessibility file is no longer needed; implementation safeguards remain in Coding and assessment boundaries are in Software testing.
 

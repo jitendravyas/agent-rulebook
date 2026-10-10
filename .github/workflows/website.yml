@@ -8,6 +8,8 @@ on:
       - 'site/**'
       - agent-global-rules.md
       - coding-agent-global-rules.md
+      - README.md
+      - 'docs/rule-*.md'
       - web-development-rules.md
       - 'optional/**'
       - .github/workflows/website.yml
@@ -17,6 +19,8 @@ on:
       - 'site/**'
       - agent-global-rules.md
       - coding-agent-global-rules.md
+      - README.md
+      - 'docs/rule-*.md'
       - web-development-rules.md
       - 'optional/**'
       - .github/workflows/website.yml
