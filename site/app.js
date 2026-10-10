@@ -343,7 +343,7 @@ async function registerAgentTools() {
             || (args.hostOS !== 'unspecified' && !args.ruleIds.includes(args.hostOS))))) {
           return failure('invalid_input', 'Use unique rule-set IDs and supported scope and host OS choices. A named host must be among the selected rule sets. Nothing was changed.');
         }
-        if (signal?.aborted) return failure('cancelled', 'Prompt generation was cancelled. Nothing was changed.');
+        if (signal?.aborted) return failure('cancelled', 'Prompt generation was canceled. Nothing was changed.');
         selected.clear();
         args.ruleIds.forEach((id) => selected.add(id));
         hostOS = args.hostOS ?? (selected.has(hostOS) ? hostOS : 'unspecified');

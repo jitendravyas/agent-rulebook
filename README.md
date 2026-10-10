@@ -15,9 +15,13 @@ Choose how to start:
 
 ## Choose General, then relevant add-ons
 
-Start with [General rules](agent-global-rules.md) for safety, approvals, privacy, verification, and communication. They work without a project, desktop, plugins, or skills. Add [Coding rules](coding-agent-global-rules.md) only for software development. Both files are versioned and dated so you can review updates.
+Start with [General rules](agent-global-rules.md) for safety, approvals, privacy, verification, and communication. They work without a project, desktop, plugins, or skills. Add [Coding rules](coding-agent-global-rules.md) only for software development. Each rule file, including drafts, has an `Updated: YYYY-MM-DD` date to help identify updates. Use the source Git commit for an exact revision.
 
 Append only the add-ons relevant to your intended activities. Keep their applicability lines when copying. They can complement General or equivalent existing guidance; no file imports or activates another file. The existing files remain the source, with no duplicate starter bundle.
+
+**Do not load the whole collection by default.** Keep General, or equivalent safety guidance, active. Add only modules for work that agent actually does. For example, research and documents need no Coding or Web rules; building a website does not automatically need animation, localization, or desktop-operation rules.
+
+Keep broadly useful guidance at user level. Put specialized guidance in the relevant project or use your agent's supported conditional loading. If that agent regularly does the same kind of work, the relevant modules can stay loaded. An “Apply when” sentence limits behavior, not context use: its text still loads. Separate files save context only when irrelevant files stay unloaded.
 
 | Agent setup | Load these files | Covers |
 | --- | --- | --- |
@@ -30,9 +34,11 @@ Append only the add-ons relevant to your intended activities. Keep their applica
 
 For fresh installs, General is a suggested baseline; software and activity-specific guidance is opt-in. When updating existing instructions, compare before merging and avoid duplicate versions. Project instructions govern implementation choices, not waivers of required approval or safety. "Global" means reusable across tasks or projects, not permission to act everywhere.
 
-Add personal preferences or an optional private context-file instruction under General's **Personalise** section. British English is used consistently in the supplied rules; it does not prescribe how agents must write your content.
+When combining files, keep General first, selected add-ons next, and move General's **Personalize** section, including any preferences already added, to the end. Keep each add-on's heading and applicability line together. Add personal preferences or an optional private context-file instruction under Personalize.
 
-The [scenario test plan](docs/rule-scenarios.md) provides eight safe checks for loading and behaviour across agents. Existing operating-system and specialist files remain available separately; they are not required for the starter setup.
+American English is used consistently in the supplied rules; it does not prescribe how agents must write your content.
+
+The [scenario test plan](docs/rule-scenarios.md) provides eight safe checks for loading and behavior across agents. Existing operating-system and specialist files remain available separately; they are not required for the starter setup.
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
@@ -50,7 +56,7 @@ The agent needs access to the public links and relevant instructions. The websit
 
 Bookmark the page address or use **Copy setup link** to save selected sets, host OS, and scope. These choices also appear in the prompt. Links restore choices, not a fixed rule version; prompts always link to public `main`. Older links leave the host unspecified and may warn about unavailable choices. Local preview links work only on the serving machine; share the hosted address with others.
 
-The website's **Read the source rules** section links to the original Markdown files, this README, and the licence. People, crawlers, and agents can follow them without JavaScript.
+The website's **Read the source rules** section links to the original Markdown files, this README, and the license. People, crawlers, and agents can follow them without JavaScript.
 
 With a compatible browser and agent, the builder also offers optional [WebMCP](https://developer.chrome.com/docs/ai/webmcp/) tools to list the available rule sets and generate the same review prompt. These tools return public rule links and prompt text for review; they do not save files, upload private content, or change agent settings. WebMCP is experimental; the normal controls work without it.
 
@@ -78,11 +84,11 @@ Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That fi
 
 For personal instructions across projects, see [Set up global rules](#set-up-global-rules). It links to official setup guides and distinguishes direct `AGENTS.md` support from imports and project-level support.
 
-Loaded rules are standing instructions, not skills to invoke. The agent should recognise relevant conditions from context and apply the guidance without reminders. This does not expand the task or grant approval; mentioning audits, tests, or tools does not request them. Checks must match the work, risk, stage, and project requirements.
+Loaded rules are standing instructions, not skills to invoke. The agent should recognize relevant conditions from context and apply the guidance without reminders. This does not expand the task or grant approval; mentioning audits, tests, or tools does not request them. Checks must match the work, risk, stage, and project requirements.
 
 ### Safe setup
 
-This advice is for the person installing, not instructions to load into the agent. Rules guide behaviour; they cannot enforce it or guarantee safety. Follow [How to use](#how-to-use) to choose, merge, save, and confirm loading. Review updates before replacing active rules, retain the version/date, and keep the MIT licence notice when reusing the files.
+This advice is for the person installing, not instructions to load into the agent. Rules guide behavior; they cannot enforce it or guarantee safety. Follow [How to use](#how-to-use) to choose, merge, save, and confirm loading. Review updates before replacing active rules, retain each file's update date, and keep the MIT license notice when reusing the files.
 
 - **Enable available controls.** Use approval prompts for destructive actions, installations, external writes, and access beyond the task. Prefer a sandbox restricted to the task directory and necessary network access. Do not disable controls because the rules ask for approval. If controls are unavailable, start with disposable data and restrict account permissions.
 - **Protect Git commits from secrets.** If you use Git, configure an approved secret scanner through a global pre-commit hook. Check the effective hooks configuration and preserve or compose with existing hooks. Test with synthetic examples, never real credentials, and confirm coverage for new, changed, and non-text files. Local hooks can be bypassed and do not inspect other contributors' pushes or all outgoing history; use server-side push protection or continuous integration (CI) checks where available.
@@ -108,7 +114,7 @@ Documentation checked on 4 October 2026. These are documented defaults, not a co
 | [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions) | `~/.copilot/copilot-instructions.md` or `~/.copilot/instructions/**/*.instructions.md` | Reads project `AGENTS.md`; a shared file can also load from a directory listed in `COPILOT_CUSTOM_INSTRUCTIONS_DIRS`. |
 | [Copilot in VS Code](https://code.visualstudio.com/docs/agent-customization/custom-instructions) | User instruction files; placement differs between Local and Agent Host sessions | Project `AGENTS.md` support depends on the session type and settings. Follow the guide for the agent you use. |
 | [Antigravity CLI](https://www.antigravity.google/docs/rules/) | `~/.gemini/AGENTS.md` or `~/.gemini/GEMINI.md` | Reads either global filename directly; also supports project instructions. |
-| [Gemini CLI](https://geminicli.com/docs/cli/gemini-md/) (enterprise or paid API access) | `~/.gemini/GEMINI.md` by default | Configure `context.fileName` to recognise `AGENTS.md`; do not just rename the default file. Consumer users should see Antigravity CLI. |
+| [Gemini CLI](https://geminicli.com/docs/cli/gemini-md/) (enterprise or paid API access) | `~/.gemini/GEMINI.md` by default | Configure `context.fileName` to recognize `AGENTS.md`; do not just rename the default file. Consumer users should see Antigravity CLI. |
 | [Devin CLI / Devin Local](https://docs.devin.ai/cli/extensibility/rules) | `~/.config/devin/AGENTS.md` | Reads global and project `AGENTS.md`. [Devin Desktop's Devin Local agent](https://docs.devin.ai/desktop/devin-local) uses this setup, not legacy Cascade's global location. |
 | [Windsurf for JetBrains](https://docs.devin.ai/windsurf/plugins/cascade/memories) | **Customizations → Rules → + Global** | Use the plugin's Global Rules option for personal instructions; do not assume Devin Desktop's file support applies to the plugin. |
 | [OpenCode V2](https://opencode.ai/v2/docs/instructions) / [V1](https://opencode.ai/docs/rules/) | `~/.config/opencode/AGENTS.md` | Both read this global file directly. V1 and V2 differ in other supported instruction sources. |
@@ -124,7 +130,7 @@ Documentation checked on 4 October 2026. These are documented defaults, not a co
 | [Kimi Code CLI](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/agents.html#instruction-files) | `~/.kimi-code/AGENTS.md` or shared `~/.agents/AGENTS.md` | Reads global and project instructions. This is the current Kimi Code CLI, not the archived Kimi CLI. |
 | [Qwen Code](https://qwenlm.github.io/qwen-code-docs/en/users/features/memory/) | `~/.qwen/QWEN.md` | Reads project `AGENTS.md` too; `QWEN.md` can import a shared file using `@path/to/file`. |
 | [OpenClaw](https://docs.openclaw.ai/concepts/agent-workspace) | `AGENTS.md` in the agent's workspace; default: `~/.openclaw/workspace/AGENTS.md` | Loads for that agent's sessions. Separate agents can have separate workspaces; this is not a machine-wide rules file. |
-| [Hermes](https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes) | `~/.hermes/SOUL.md` for personal communication and behaviour defaults | Uses `AGENTS.md` for project instructions. Merge only relevant behaviour defaults into `SOUL.md`, not a full development bundle; preserve the existing persona. |
+| [Hermes](https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes) | `~/.hermes/SOUL.md` for personal communication and behavior defaults | Uses `AGENTS.md` for project instructions. Merge only relevant behavior defaults into `SOUL.md`, not a full development bundle; preserve the existing persona. |
 | [goose](https://goose-docs.ai/docs/guides/context-engineering/using-goosehints/) | `~/.config/goose/.goosehints` | [Version 1.39+](https://github.com/aaif-goose/goose/releases/tag/v1.39.0) also supports `~/.agents/AGENTS.md`. Check the required Developer extension. |
 | [Zed Agent](https://zed.dev/docs/ai/instructions) | `~/.config/zed/AGENTS.md`; Windows: `%APPDATA%\Zed\AGENTS.md` | Reads this global file directly. External agents may use their own configuration instead. |
 | [Aider](https://aider.chat/docs/config/aider_conf.html) | Set `read:` in `~/.aider.conf.yml` to an absolute file path | Can load an `AGENTS.md` through that configuration; it is not a special global filename. |
@@ -139,7 +145,7 @@ For renamed or replaced products, follow the current product's guide: [Windsurf 
 <details>
 <summary>Rule categories and optional tools</summary>
 
-### General behaviour
+### General behavior
 
 [General rules](agent-global-rules.md) are useful for development and everyday work. They cover safety, approvals, verification, communication, and basic efficiency, not software-specific implementation. The categories below add context only when the task needs it.
 
@@ -196,7 +202,7 @@ Select fewer relevant sections, load sections conditionally where supported, or 
 
 ### How do I migrate from older rule files?
 
-The existing General and Coding files now include a version and update date. Replace old copied guidance rather than appending another copy, preserving personal preferences and essential safety protections.
+All reusable rule files, including drafts, now include an update date. Replace old copied guidance rather than appending another copy, preserving personal preferences and essential safety protections.
 
 `coding-agent-global-rules.md` remains a separate opt-in file. General does not include its software-specific guidance. Website links preserve General and Coding as separate choices; review the changed sources before adopting them.
 
@@ -212,7 +218,7 @@ These are gap-filling defaults, not a competing project policy. Follow your agen
 
 Your user-level rules do not affect teammates' agents. Agree on a shared subset, keep it in the project's version-controlled instructions, and confirm each agent loads it. Keep personal preferences at user level.
 
-Record the source commit and agree who reviews updates. Rules do not enforce behaviour; use automated checks and permission controls for requirements that need enforcement.
+Record the source commit and agree who reviews updates. Rules do not enforce behavior; use automated checks and permission controls for requirements that need enforcement.
 
 ### Will these rules save tokens?
 
@@ -220,7 +226,7 @@ Not necessarily. They add context and may add checks. Savings depend on whether 
 
 ### Will they make the agent ask permission more often?
 
-They may. Downloads, installations, and publishing need approval unless already authorised. Exceptions cover temporary reference copies of public documentation and restoring a project's existing locked dependencies through its established workflow. These exceptions do not permit new tools, changed requirements, or wider access; see the [approval conditions](agent-global-rules.md#required-approval). Check that this policy fits your workflow. Routine in-scope work and already approved actions should not trigger repeated questions.
+They may. Downloads, installations, and publishing need approval unless already authorized. Exceptions cover temporary reference copies of public documentation and restoring a project's existing locked dependencies through its established workflow. These exceptions do not permit new tools, changed requirements, or wider access; see the [approval conditions](agent-global-rules.md#required-approval). Check that this policy fits your workflow. Routine in-scope work and already approved actions should not trigger repeated questions.
 
 ## Influences
 
@@ -233,7 +239,7 @@ The rules combine practical experience, research, and ideas shared publicly by o
 
 The [Vale workflow](.github/workflows/vale.yml) checks the general, software, web, and optional rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
 
-The [website test workflow](.github/workflows/website.yml) runs on relevant pull requests and pushes to `main`. It checks rule-file links, catalog categories, review prompts, and saved-selection behaviour. Run it locally with Node.js 24: `node --test site/*.test.js`. These tests do not assess rendered appearance or accessibility.
+The [website test workflow](.github/workflows/website.yml) runs on relevant pull requests and pushes to `main`. It checks rule-file links, catalog categories, review prompts, and saved-selection behavior. Run it locally with Node.js 24: `node --test site/*.test.js`. These tests do not assess rendered appearance or accessibility.
 
 </details>
 
@@ -259,14 +265,14 @@ These sources contributed guidance that remains in the rules; this is not a list
 - [Ohans Emmanuel's process-cleanup post](https://x.com/OhansEmmanuel/status/2103885312787439850) informed checking for a suitable running instance before starting another long-running development process.
 - Ansh Nanda's [testing discussion](https://x.com/anshnanda/status/2101627891721371971) informed the requirement for meaningful tests with expected results independent of the implementation, without adopting an E2E-only policy.
 - Matt Pocock's [tracer-bullet approach](https://www.aihero.dev/tracer-bullets) informed the small end-to-end path for unfamiliar multi-component features; his [small-change guidance](https://x.com/mattpocockuk/status/2103506709633466648) and [advice to pair direct evidence with a narrow, reversible change](https://x.com/mattpocockuk/status/2103601654113112276) informed keeping changes reviewable and recoverable.
-- Addy Osmani's [Brownfield Agentic Engineering](https://addyosmani.com/blog/brownfield-agentic-engineering/) informed the rules to establish existing behaviour before refactoring and preserve safeguards and consumer compatibility during replacement.
+- Addy Osmani's [Brownfield Agentic Engineering](https://addyosmani.com/blog/brownfield-agentic-engineering/) informed the rules to establish existing behavior before refactoring and preserve safeguards and consumer compatibility during replacement.
 - [AWS's secure agentic development guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-security/best-practices-dev-practices.html) and OWASP's [input-validation](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html), [injection-prevention](https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html), and [CSRF-prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html) guidance informed the trust-boundary and web-security rules.
 - Jad Joubran's [Baseline article](https://www.smashingmagazine.com/2026/08/how-baseline-can-help-ship-less-javascript/) informed the browser-support decision rule without replacing project-specific compatibility requirements.
-- [Anthropic's customisation guidance](https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more) informed the distinction between instructions and enforceable controls.
+- [Anthropic's customization guidance](https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more) informed the distinction between instructions and enforceable controls.
 - [The Elements of Agent Style](https://github.com/yzhao062/agent-style/blob/99722a59e5ab654bafe68788f3bff7d1c8237f5a/RULES.md#L32-L42) informed writing for the intended reader, [consistent terminology](https://github.com/yzhao062/agent-style/blob/99722a59e5ab654bafe68788f3bff7d1c8237f5a/RULES.md#L681-L691), and [evidence-backed factual claims](https://github.com/yzhao062/agent-style/blob/99722a59e5ab654bafe68788f3bff7d1c8237f5a/RULES.md#L747-L757).
 
 </details>
 
-## Licence
+## License
 
-Licensed under [MIT](LICENSE). When copying these rules or substantial portions of them, retain the copyright and permission notice from the licence.
+Licensed under [MIT](LICENSE). When copying these rules or substantial portions of them, retain the copyright and permission notice from the license.

@@ -1,6 +1,8 @@
 # Windows-specific agent instructions
 
-Apply to authorised work on Windows, including tasks outside software development.
+Apply to authorized work on Windows, including tasks outside software development.
+
+Updated: 2026-10-10
 
 ## System protection
 

@@ -23,7 +23,7 @@ test('every catalog rule belongs to exactly one category', () => {
   const grouped = RULE_GROUPS.flatMap(group => group.rules);
   assert.equal(grouped.length, RULES.length);
   assert.equal(new Set(grouped.map(rule => rule.id)).size, RULES.length);
-  for (const rule of RULES) assert.ok(grouped.includes(rule), `Uncategorised rule: ${rule.id}`);
+  for (const rule of RULES) assert.ok(grouped.includes(rule), `Uncategorized rule: ${rule.id}`);
 });
 
 test('every selectable rule explains its purpose and categories include visible examples', () => {
@@ -36,6 +36,28 @@ test('every selectable rule explains its purpose and categories include visible 
     assert.ok(group.summary.trim().length, `Missing category examples: ${group.id}`);
   }
   assert.equal(RULE_GROUPS[0].id, 'environment');
+});
+
+test('selection guidance uses the visible software rule labels', () => {
+  const coding = RULES.find(rule => rule.id === 'coding');
+  const selectionHelp = html.match(/<p id="selection-help">([^<]+)<\/p>/)?.[1];
+  const sourceHelp = html.match(/<p>Start with General[^<]+/)?.[0];
+  const generalHelp = RULE_GROUPS.find(group => group.id === 'general').description;
+  for (const help of [selectionHelp, sourceHelp, generalHelp]) {
+    assert.ok(help?.includes(coding.label), 'Software guidance names its selection card');
+  }
+  const developmentHelp = RULE_GROUPS.find(group => group.id === 'development').description;
+  for (const id of ['coding', 'web', 'testing']) {
+    assert.ok(developmentHelp.includes(RULES.find(rule => rule.id === id).label));
+  }
+});
+
+test('review prompt recommends relevant loading without making safety optional', () => {
+  const prompt = buildReviewPrompt(['general', 'web']);
+  assert.match(prompt, /Keep always-loaded instructions focused/);
+  assert.match(prompt, /specialized modules only for relevant work/);
+  assert.match(prompt, /supported conditional loading/);
+  assert.match(prompt, /Keep required approval, security, and privacy protections active/);
 });
 
 test('static source links and categories match the live catalog', () => {
@@ -102,10 +124,10 @@ test('rejects unknown hosts and hosts without a selected rule set', () => {
   assert.throws(() => buildReviewPrompt(['general'], 'personal', 'mac'), /selected rule/i);
 });
 
-test('retains every selected source once and keeps the licence footer removed', () => {
+test('retains every selected source once and keeps the license footer removed', () => {
   const prompt = buildReviewPrompt(RULES.map(rule => rule.id), 'project', 'windows');
   for (const rule of RULES) assert.equal(prompt.split(ruleSourceURL(rule)).length - 1, 1);
-  assert.ok(!prompt.includes('Source and MIT licence:'));
+  assert.ok(!/Source and MIT licen[cs]e:/.test(prompt));
   assert.ok(!prompt.endsWith('\n'));
 });
 
@@ -122,7 +144,7 @@ test('shorter prompts retain review-only, privacy, scope, and uncertainty bounda
     assert.ok(prompt.includes('Say if no change is useful'));
     assert.ok(prompt.includes('do not promise to eliminate all conflicts'));
     assert.ok(prompt.includes('ask for my approval before editing, installing, or activating instructions'));
-    assert.ok(prompt.includes('Preserve unrelated instructions and required licence notices'));
+    assert.ok(prompt.includes('Preserve unrelated instructions and required license notices'));
     assert.ok(prompt.includes(scope === 'personal'
       ? 'not specific to the current project' : 'do not change my user-level instructions'));
   }
