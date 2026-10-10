@@ -4,7 +4,7 @@ Apply when testing software or verifying software changes, including temporary a
 
 ## Software checks
 
-  * When the task or project has an established test environment, use it, whether local or remote. Isolate checks that could affect shared state or real data. Check that inherited settings do not redirect isolated tests to real or shared resources. Self-contained checks need no additional services or isolation unless project policy requires them.
+  * Use the test environment specified for the check, whether local or remote. Otherwise, prefer a relevant established environment when suitable. Isolate checks that could affect shared state or real data. Check that inherited settings do not redirect isolated tests to real or shared resources. Self-contained checks need no additional services or isolation unless project policy requires them.
   * Set expected results from requirements or contracts, not implementation logic. Do not assert incidental internals or mock away the behaviour being tested.
   * When adding a regression test, confirm it detects the original defect where safe and practical.
   * When the task or project has an established test approach, follow it. Reuse available coverage. Add or change tests only for meaningful gaps; a focused check may be enough for a small, low-risk change. Prefer the narrowest test level that reliably detects the relevant failure. Avoid repeating detailed cases across test levels; retain broader checks where they add confidence in integration or important user journeys.

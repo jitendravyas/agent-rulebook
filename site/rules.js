@@ -3,36 +3,40 @@ const SOURCE_ROOT = 'https://raw.githubusercontent.com/jitendravyas/agent-rulebo
 const GENERAL_RULE = {
   id: 'general',
   title: 'General agent rules',
-  label: 'General agent behaviour',
+  label: 'General: useful for any task',
   description:
-    'Recommended for every task, including development. Covers safety, privacy, communication, and staying on task.',
+    'Safety, privacy, clear replies, and efficient code and assets. Use for research, documents, files, media, or development.',
+  purpose: 'Safety, privacy, clear replies, basic code and asset efficiency, and staying within your request.',
   path: 'agent-global-rules.md',
 };
 
 const CODING_RULE = {
   id: 'coding',
   title: 'Coding-agent rules',
-  label: 'Coding and maintenance',
+  label: 'Build or maintain software',
   description:
-    'Implementation, maintenance, and static code checks, including linting, for any software. Skip if your own coding instructions cover this.',
+    'Build and maintain native apps, browser apps, and temporary software, with whole-feature performance guidance and code checks. Skip if your own coding instructions cover this.',
+  purpose: 'Software implementation and maintenance, whole-feature performance, and code checks.',
   path: 'coding-agent-global-rules.md',
 };
 
 const WEB_RULE = {
   id: 'web',
   title: 'Web development rules',
-  label: 'Web development',
+  label: 'Build websites or web apps',
   description:
-    'Browser-specific implementation and security guidance for websites and web apps, alongside your chosen coding instructions.',
+    'Browser behaviour, resource loading, and web security when creating or changing web pages. Use alongside your coding guidance, not merely for browsing websites.',
+  purpose: 'Browser-specific behaviour, resource loading, and web security for websites and web apps.',
   path: 'web-development-rules.md',
 };
 
 const TESTING_RULE = {
   id: 'testing',
   title: 'Software testing rules',
-  label: 'Software testing',
+  label: 'Test software or browser behaviour',
   description:
-    'Focused tests and browser verification. Use with these coding rules or your own; not a request to run every check.',
+    'Choose useful tests and verify changes, including browser behaviour. Does not ask for every check or an unrelated audit.',
+  purpose: 'Focused software tests and proportionate browser verification.',
   path: 'optional/software-testing-rules.md',
 };
 
@@ -42,7 +46,8 @@ const MAC_RULE = {
   label: 'macOS',
   environment: true,
   description:
-    'Safety guidance for authorised work on macOS, including system protection, permissions, and synced files.',
+    'Optional safety guidance for agent work on macOS, including system protection, permissions, and synced files.',
+  purpose: 'Safety for agent work on macOS.',
   path: 'optional/macos-agent-rules.md',
 };
 
@@ -52,7 +57,8 @@ const WINDOWS_RULE = {
   label: 'Windows',
   environment: true,
   description:
-    'Safety guidance for protected Windows resources, redirected folders, OneDrive, and WSL boundaries.',
+    'Optional safety guidance for agent work on Windows, including protected resources, redirected folders, OneDrive, and WSL boundaries.',
+  purpose: 'Safety for agent work on Windows and its protected or redirected resources.',
   path: 'optional/windows-agent-rules.md',
 };
 
@@ -62,61 +68,58 @@ const LINUX_RULE = {
   label: 'Linux',
   environment: true,
   description:
-    'Safety guidance for distribution differences, protected system interfaces, permissions, and persistent state.',
+    'Optional safety guidance for agent work on Linux, including distribution differences, protected system interfaces, permissions, and persistent state.',
+  purpose: 'Safety for agent work across Linux distributions and system interfaces.',
   path: 'optional/linux-agent-rules.md',
 };
 
 const BROWSER_USE_RULE = {
   id: 'browser-use',
   title: 'Browser and computer-use rules',
-  label: 'Use browsers or desktop apps',
+  label: 'Operate browsers or desktop apps',
   description:
-    'For an agent that clicks, navigates, or operates apps. Not just for building websites.',
+    'Sessions, tabs, focus, and clicks when using websites or apps, including non-development tasks. Not needed just to write website code.',
+  purpose: 'Operating browsers or desktop apps, not merely building websites.',
   path: 'optional/browser-computer-use-rules.md',
 };
 
 const VERSION_CONTROL_RULE = {
   id: 'version-control',
   title: 'Version-control rules',
-  label: 'Version control',
+  label: 'Use version control',
   description:
-    'Review and preserve repository changes, including non-code files. Applies across version-control systems, with Git-specific identity checks.',
+    'Preserve work when reviewing changes, resolving conflicts, committing, or pushing. Applies to code and non-code files.',
+  purpose: 'Reviewing and preserving version-controlled repository changes.',
   path: 'optional/version-control-rules.md',
 };
 
 const BROWSER_ANIMATION_RULE = {
   id: 'browser-animation',
   title: 'Browser animation rules',
-  label: 'Animate web interfaces',
+  label: 'Animate websites or web apps',
   description:
-    'For motion within a website or app, not an exported video.',
+    'Motion within a running web page, including animation state and accessibility. Not for exported video.',
+  purpose: 'Changing motion in live web interfaces, not exported video.',
   path: 'optional/browser-animation-rules.md',
-};
-
-const WEB_PERFORMANCE_RULE = {
-  id: 'web-performance',
-  title: 'Web performance rules',
-  label: 'Improve web performance',
-  description:
-    'For measuring and improving how quickly a website or web app works.',
-  path: 'optional/web-performance-rules.md',
 };
 
 const MOTION_VIDEO_RULE = {
   id: 'motion-video',
   title: 'Motion graphics video rules',
-  label: 'Create motion videos',
+  label: 'Create animated videos for export',
   description:
-    'For animated videos exported to MP4 or another video format.',
+    'Composition, timing, assets, and export for animated videos such as MP4. Not for animation running inside a website.',
+  purpose: 'Creating animated video for export, separate from browser animation.',
   path: 'optional/motion-video-rules.md',
 };
 
 const I18N_RULE = {
   id: 'i18n',
   title: 'Internationalization and localization rules',
-  label: 'Build multilingual software',
+  label: 'Build software for different languages',
   description:
-    'For software in different languages and regions, including right-to-left interfaces. Not ordinary document translation.',
+    'Language and regional support in software, including right-to-left interfaces. Not for ordinary message or document translation.',
+  purpose: 'Building software for different languages and regions, not ordinary document translation.',
   path: 'optional/internationalization-localization-rules.md',
 };
 
@@ -125,7 +128,8 @@ const AUTHORING_RULE = {
   title: 'Agent workflow authoring rules',
   label: 'Write agent instructions',
   description:
-    'For creating or improving agent rules, skills, and workflows.',
+    'Add when the agent writes or maintains rules, skills, subagents, or workflows.',
+  purpose: 'Writing and maintaining agent rules, skills, and workflows.',
   path: 'optional/agent-workflow-authoring-rules.md',
 };
 
@@ -141,7 +145,6 @@ export const RULES = [
   BROWSER_USE_RULE,
   VERSION_CONTROL_RULE,
   BROWSER_ANIMATION_RULE,
-  WEB_PERFORMANCE_RULE,
   MOTION_VIDEO_RULE,
   I18N_RULE,
   AUTHORING_RULE,
@@ -154,47 +157,52 @@ export const RULE_GROUPS = [
   {
     id: 'environment',
     title: 'Operating systems',
-    description: 'Choose one host OS where your agent runs commands or operates apps, which may differ from the device viewing this website. Add other OSs only for additional environments it accesses.',
+    summary: 'Optional: choose the main environment your agent works in; add other environments only when it accesses them.',
+    description: 'Optional. Choose the main environment where your agent runs commands or operates apps, not necessarily the device viewing this website. Add other environments only when it accesses them.',
     rules: OS_RULES,
   },
   {
     id: 'general',
     title: 'General behaviour',
-    description: 'Selected by default. Use on its own or alongside instructions you already have.',
+    summary: 'Baseline guidance for any task; selected by default but optional.',
+    description: 'Guidance for any task. It is selected by default, but you can deselect it or use it alongside instructions you already have.',
     rules: [GENERAL_RULE],
   },
   {
     id: 'tools',
     title: 'Tools and interfaces',
-    description: 'For development and everyday tasks. Choose only the tools your agent uses.',
+    summary: 'Operate browsers or desktop apps, or work with version-controlled repositories.',
+    description: 'For everyday tasks as well as development. Select either or both, only when your agent needs them.',
     collapsible: true,
     rules: [BROWSER_USE_RULE, VERSION_CONTROL_RULE],
   },
   {
     id: 'development',
     title: 'Software development',
-    description: 'Choose individual areas for web, mobile, desktop, or other software. Opening this group selects nothing.',
+    summary: 'Build software or websites, test changes, or add animation and language support.',
+    description: 'Use your existing coding guidance or select Build or maintain software. Add the other sets only for the activities you need. Each can be selected separately.',
     collapsible: true,
     rules: [
       CODING_RULE,
       WEB_RULE,
       TESTING_RULE,
       BROWSER_ANIMATION_RULE,
-      WEB_PERFORMANCE_RULE,
       I18N_RULE,
     ],
   },
   {
     id: 'media',
     title: 'Creative media',
-    description: 'For media output, separate from software development. Choose the activities you need.',
+    summary: 'Create animated video for export, not motion inside a website.',
+    description: 'For animated video intended for export, separate from motion inside a website. Choose it only for video work.',
     collapsible: true,
     rules: [MOTION_VIDEO_RULE],
   },
   {
     id: 'authoring',
     title: 'Agent instructions',
-    description: 'For writing and maintaining instructions for agents.',
+    summary: 'Write or maintain instructions, skills, and agent workflows.',
+    description: 'For writing or maintaining instructions, skills, and workflows. Opening this group selects nothing.',
     collapsible: true,
     rules: [AUTHORING_RULE],
   },

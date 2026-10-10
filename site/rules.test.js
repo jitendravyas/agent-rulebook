@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import test from 'node:test';
 import { RULE_GROUPS, RULES, buildReviewPrompt, ruleSourceURL } from './rules.js';
 
@@ -26,6 +26,18 @@ test('every catalog rule belongs to exactly one category', () => {
   for (const rule of RULES) assert.ok(grouped.includes(rule), `Uncategorised rule: ${rule.id}`);
 });
 
+test('every selectable rule explains its purpose and categories include visible examples', () => {
+  for (const rule of RULES) {
+    assert.equal(typeof rule.purpose, 'string');
+    assert.ok(rule.purpose.trim().length, `Missing selection explanation: ${rule.id}`);
+  }
+  for (const group of RULE_GROUPS) {
+    assert.equal(typeof group.summary, 'string');
+    assert.ok(group.summary.trim().length, `Missing category examples: ${group.id}`);
+  }
+  assert.equal(RULE_GROUPS[0].id, 'environment');
+});
+
 test('static source links and categories match the live catalog', () => {
   const section = html.match(/<section\b[^>]*id="source-rules"[^>]*>([\s\S]*?)<\/section>/)?.[1];
   assert.ok(section, 'Missing no-JavaScript source list');
@@ -43,6 +55,14 @@ test('static source links and categories match the live catalog', () => {
       assert.equal(link.type, 'text/markdown');
     });
   });
+});
+
+test('the retired performance set is not offered or linked in review prompts', () => {
+  assert.ok(!RULES.some(rule => rule.id === 'web-performance'));
+  assert.ok(!existsSync(new URL('optional/web-performance-rules.md', repository)));
+  const prompt = buildReviewPrompt(RULES.map(rule => rule.id));
+  assert.ok(!prompt.includes('optional/web-performance-rules.md'));
+  assert.throws(() => buildReviewPrompt(['web-performance']), /Unknown rule id/);
 });
 
 test('identifies one host and additional operating systems in either scope', () => {

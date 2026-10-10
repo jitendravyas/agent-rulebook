@@ -13,7 +13,7 @@ Apply to authorised work on macOS, including tasks outside software development.
   * Exclude `/System`, `/Library`, `/private/var` (also reached through `/var`), and `~/Library` from routine context searches. If the authorised task needs one of these locations, inspect only the relevant paths, not the whole tree.
   * Do not scan Mail, Messages, browser profiles, or Keychain stores merely to gather context. For authorised access, prefer supported apps or secure credential interfaces; inspect raw stores only when the task explicitly requires it.
   * Use the clipboard only when needed for the task. Avoid unnecessarily overwriting the user's copied content. Remember that Universal Clipboard may share copied content with other Apple devices.
-  * Before using an iCloud Drive file offline or treating it as missing, check whether it is downloaded and synced. Deleting an item or moving it out of iCloud Drive affects synced devices. To free only local space, use Remove Download rather than deleting the cloud file.
+  * Before using an iCloud Drive file offline or treating it as missing, check whether it is downloaded and synced. Deleting an item or moving it out of iCloud Drive affects synced devices. To free only local space, use a supported option that removes the local download while retaining the cloud file.
   * For Photos libraries, use Photos or its documented export, move, and repair procedures. Do not reorganise or delete files inside a `.photoslibrary` package as if they were independent media files.
 
 ## Apple Intelligence

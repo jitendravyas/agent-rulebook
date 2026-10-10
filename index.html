@@ -128,9 +128,13 @@
           <h2 id="choose-title">1. Choose rules to review</h2>
           <button class="text-button" id="clear-selection" type="button">Clear selection</button>
         </div>
+        <div class="selection-guide" aria-labelledby="selection-guide-title">
+          <h3 id="selection-guide-title">Not sure what to choose?</h3>
+          <p id="selection-help">General is selected as a starting point. Keep it if useful, then add only the activities and environments your agent needs. You can combine sets or skip any; you do not need them all.</p>
+        </div>
         <p id="selection-notice" class="section-description">Selection adds public rule links to the prompt; it does not install or activate rules.</p>
         <p id="link-warning" class="notice" role="status" hidden></p>
-        <form id="rule-form" aria-label="Rule selection" aria-describedby="selection-notice">
+        <form id="rule-form" aria-label="Rule selection" aria-describedby="selection-help selection-notice">
           <div id="rule-groups"></div>
           <a class="review-selection" href="#your-file">Get your review prompt <span aria-hidden="true">→</span></a>
         </form>
@@ -145,7 +149,7 @@
         <div class="metrics">
           <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
         </div>
-        <p class="selection-caption">Your selection</p>
+        <h3 class="selection-caption">What your selection covers</h3>
         <ul id="selection-summary" class="selection-summary"></ul>
         <fieldset id="rule-scope" class="scope-options">
           <legend>Instructions to review</legend>
@@ -211,7 +215,6 @@
           <li><a data-rule-id="web" href="./web-development-rules.md" type="text/markdown">Web development rules</a></li>
           <li><a data-rule-id="testing" href="./optional/software-testing-rules.md" type="text/markdown">Software testing rules</a></li>
           <li><a data-rule-id="browser-animation" href="./optional/browser-animation-rules.md" type="text/markdown">Browser animation rules</a></li>
-          <li><a data-rule-id="web-performance" href="./optional/web-performance-rules.md" type="text/markdown">Web performance rules</a></li>
           <li><a data-rule-id="i18n" href="./optional/internationalization-localization-rules.md" type="text/markdown">Internationalization and localization rules</a></li>
         </ul>
         <h3>Creative media</h3>

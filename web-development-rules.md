@@ -19,7 +19,7 @@
 ## Content and identifiers
 
   * Preserve existing content bindings when changing titles or text alternatives. Do not insert document-level markup into embedded fragments.
-  * When creating or changing web content, use `translate="no"` for text explicitly designated as non-translatable by project requirements or conventions. Keep exclusions narrow and surrounding text translatable. Do not disable whole-page translation merely to protect a few names or terms.
+  * When creating or changing web content, follow task or project conventions for marking text explicitly designated as non-translatable. For browser translation, use `translate="no"` where applicable. Keep exclusions narrow and surrounding text translatable. Do not disable whole-page translation merely to protect a few names or terms.
   * When copying or repeating page elements, keep IDs unique within their DOM tree and keep references pointing to the intended elements.
 
 ## Style changes
@@ -32,6 +32,6 @@
 
 ## Resource loading and responses
 
-  * When changing script loading, preserve dependency order and required startup behaviour. Do not remove code solely because it is unused during initial page load; other routes or interactions may need it.
+  * When changing resource loading, preserve script dependency order, required startup and interaction behaviour, response freshness, and consent requirements. Check preloading, prioritisation, deferral, and third-party loading for effects on personalised or security-sensitive content. Do not remove code solely because it is unused during initial page load; other routes or interactions may need it.
   * When changing delivery configuration stored in project files, use appropriate compression and caching for assets and avoid unnecessary redirects. Use long-lived caching only when the project has a reliable way to deliver updated assets.
   * For responses controlled by project code or configuration, return HTTP status codes that reflect the response, including missing pages.

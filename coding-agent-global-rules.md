@@ -33,7 +33,7 @@
 
   * Ask before hard-to-reverse choices that are not already authorised. For names the project does not prescribe, use clear project terms, not vague abbreviations or sensitive data. When writing or changing code, make it clear where data comes from and what can change it.
   * Before implementing new behaviour, check for an existing capability. If it partly fits, assess whether to extend it or build a new solution. Reuse only where requirements and constraints align; similar-looking code alone does not justify shared behaviour.
-  * Before extending a file, consider whether the new responsibility belongs there. Separate distinct responsibilities when that improves understanding, testing, or independent changes. Do not split files merely to meet an arbitrary line limit.
+  * Before extending a file, consider whether the new responsibility belongs there. Follow task or project structure and file-size requirements. Otherwise, separate distinct responsibilities when that improves understanding, testing, or independent changes; do not split solely to meet a self-imposed line limit.
   * Before copying code or reusing components, check for defects, risks, or materially poor practices that affect the new use. Do not spread confirmed problems for consistency. If others may reuse the problematic code and adding a note is within the authorised task, note the drawback and better option once in that code or in existing tracking. Otherwise, report the problem's location.
   * Prefer maintained, non-deprecated solutions compatible with actual dependency, runtime, and deployment versions. Recommend upgrades only when they materially help the current task or address an identified risk. Use newer capabilities only after the upgrade is approved and in place.
   * For generated or externally maintained files, lockfiles, and snapshots, find their source and supported update process. Prefer supported configuration to third-party patches; avoid accidental lockfile migrations or dependency re-resolution. Review regenerated output, including changed dependency sources. Preserve configured integrity, signature, and provenance checks; stop and investigate failures rather than bypassing them.
@@ -51,9 +51,13 @@
   * When work is cancelled or replaced by a newer request, stop it where possible and prevent its late results from changing the current state.
   * Where retries, partial failure, or concurrency could corrupt state, use idempotency, ordering, conflict checks, cancellation, or recovery as needed. When related data changes must succeed together, use a supported transaction or handle partial failure safely.
   * Do not assume reverting code also undoes changes to a database or external service.
-  * For performance work, preserve correctness and report measurement limits. When improving existing behaviour, measure a representative baseline and identify the bottleneck, then compare before and after under equivalent conditions against available targets. For new implementations, assess the relevant performance requirements rather than requiring a before-and-after comparison.
   * When the likelihood and impact of recurrence justify the upkeep, recommend the smallest useful prevention: a behaviour test, automated check, or project rule. Recommend user-level prevention only for lessons that apply across software projects. Consider false positives; add prevention only when authorised and in scope. Exclude secrets and temporary facts.
   * Follow project conventions for comments. Explain non-obvious reasons or constraints rather than restating the code. Preserve required notices and API documentation; remove existing comments only after confirming they are redundant, incorrect, or obsolete.
+
+## Performance
+
+  * When planning, creating, or changing software, consider performance of the complete affected feature or operation under expected use, including component interactions, data access, dependencies, and assets. Check uncertain choices that could materially affect performance.
+  * For targeted performance improvements, identify the bottleneck and compare existing behaviour before and after under equivalent, representative conditions against available targets. For new implementations, assess relevant performance requirements. Distinguish local or lab measurements from field evidence; report tested conditions, tradeoffs, and measurement limits.
 
 ## Code checks and review
 

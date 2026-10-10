@@ -142,7 +142,7 @@ function renderChoices() {
     fieldset.append(legend, description, choices);
     if (group.id === 'environment') {
       const hostControl = textElement('div', 'host-os-control', '');
-      const hostLabel = textElement('label', '', 'Host operating system (optional)');
+      const hostLabel = textElement('label', '', 'Your agent’s main operating system (optional)');
       hostLabel.htmlFor = 'host-os';
       const hostSelect = document.createElement('select');
       hostSelect.id = 'host-os';
@@ -152,7 +152,7 @@ function renderChoices() {
         option.value = choice.id;
         hostSelect.append(option);
       }
-      const help = textElement('p', 'group-description', 'Choosing a host selects its rules below. Add other OSs for remote machines, virtual machines, containers, or WSL. Leave the host unspecified if it varies or you are unsure.');
+      const help = textElement('p', 'group-description', 'This selects guidance for the main environment (host). Select other systems below only for additional environments your agent accesses. Leave this unspecified if it varies or you are unsure.');
       help.id = 'host-os-help';
       hostSelect.setAttribute('aria-describedby', help.id);
       hostSelect.addEventListener('change', () => {
@@ -170,9 +170,14 @@ function renderChoices() {
     if (group.collapsible) {
       const disclosure = textElement('details', 'group-disclosure', '');
       disclosure.id = `group-${group.id}`;
-      const summary = textElement('summary', '', group.title);
+      const summary = textElement('summary', '', '');
+      const heading = textElement('span', 'group-summary-heading', '');
+      heading.append(textElement('span', '', group.title));
       const count = textElement('span', 'group-count', '0 selected');
-      summary.append(' ', count);
+      heading.append(' ', count);
+      const examples = textElement('span', 'group-examples', group.summary);
+      examples.id = `group-examples-${group.id}`;
+      summary.append(heading, examples);
       disclosure.append(summary, fieldset);
       Object.assign(view, { disclosure, count });
       container = disclosure;
@@ -257,7 +262,10 @@ function updateSelection() {
   element('selection-summary').replaceChildren(...chosen.map((rule) => {
     const role = !rule.environment ? '' : rule.id === hostOS ? ' (host OS)'
       : hostOS === 'unspecified' ? ' (OS role unspecified)' : ' (additional OS)';
-    return textElement('li', '', `${rule.label}${role}`);
+    const item = textElement('li', '', '');
+    item.append(textElement('strong', '', `${rule.label}${role}`),
+      textElement('span', 'selection-purpose', rule.purpose));
+    return item;
   }));
   if (!chosen.length) element('selection-summary').append(textElement('li', '', 'No rules selected'));
   status.textContent = chosen.length

@@ -17,8 +17,8 @@ Choose how to start:
 
 | Agent setup | Load these files | Covers |
 | --- | --- | --- |
-| General tasks | [General rules](agent-global-rules.md) | Research, files, documents, media, and general safety for any task. |
-| Software development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) | Software planning, implementation, maintenance, and static code checks. |
+| General tasks | [General rules](agent-global-rules.md) | Research, files, documents, media, safety, and basic efficiency for generated code and assets. |
+| Software development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) | Software planning, implementation, whole-feature performance, maintenance, and static code checks. |
 | Web development | [General](agent-global-rules.md) + [coding](coding-agent-global-rules.md) + [web](web-development-rules.md) | Browser behaviour, resource loading, and web security. |
 | Software testing | [General](agent-global-rules.md) + [software testing](optional/software-testing-rules.md) | Focused tests and browser verification, with our coding rules or your own. |
 
@@ -68,7 +68,7 @@ Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That fi
 
 For personal instructions across projects, see [Set up global rules](#set-up-global-rules). It links to official setup guides and distinguishes direct `AGENTS.md` support from imports and project-level support.
 
-Loaded rules are standing instructions, not skills to invoke. Only relevant guidance applies; mentioning audits, tests, or tools does not request them. Browser checks must match the work, risk, stage, and project requirements.
+Loaded rules are standing instructions, not skills to invoke. The agent should recognise relevant conditions from context and apply the guidance without reminders. This does not expand the task or grant approval; mentioning audits, tests, or tools does not request them. Checks must match the work, risk, stage, and project requirements.
 
 ### Set up global rules
 
@@ -120,7 +120,7 @@ For renamed or replaced products, follow the current product's guide: [Windsurf 
 
 ### General behaviour
 
-[General rules](agent-global-rules.md) are the recommended baseline for development and non-development work. They cover reusable behaviour and safety; the categories below add context only when the task needs it.
+[General rules](agent-global-rules.md) are the recommended baseline for development and non-development work. They cover reusable behaviour, safety, and basic efficiency for code and assets, including throwaway pages. The categories below add context only when the task needs it.
 
 ### Operating systems
 
@@ -139,11 +139,10 @@ These add-ons can accompany any setup, including General tasks without coding ru
 
 Choose only the areas your agent needs. None requires a Git repository, and each can complement your own instructions:
 
-- [Coding and maintenance](coding-agent-global-rules.md): shared implementation guidance for web, mobile, desktop, and other software, including lint, type, and static-analysis checks.
-- [Web development](web-development-rules.md): browser-specific implementation and security guidance.
+- [Coding and maintenance](coding-agent-global-rules.md): shared implementation guidance for web, native apps, and other software, including whole-feature performance, lint, type, and static-analysis checks. Performance applies to the complete affected feature or operation, not just individual files.
+- [Web development](web-development-rules.md): browser-specific implementation, resource-loading safeguards, and security guidance.
 - [Software testing](optional/software-testing-rules.md): test quality and proportionate browser verification. It does not trigger a full test suite or audit just because it is loaded. General retains the basic expectations to verify outcomes and report unchecked work honestly.
 - [Browser animations](optional/browser-animation-rules.md): preserve application state and animation lifecycles when creating or changing live web motion. Not needed for web work without animation or for video exports.
-- [Web performance](optional/web-performance-rules.md): investigate and measure relevant performance changes without treating a local result as proof for all users.
 - [Internationalization and localization](optional/internationalization-localization-rules.md): prepare software and product interfaces for different languages and regions, including translations and text direction. It is not for ordinary message or document translation.
 
 ### Creative media
@@ -182,9 +181,11 @@ When replacing an earlier version of `coding-agent-global-rules.md`, retain equi
 
 Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional browser-animation rules only when relevant. The former standalone accessibility file is no longer needed; implementation safeguards remain in Coding and assessment boundaries are in Software testing.
 
+The former standalone web-performance rules are also no longer needed. Basic efficiency is in General, software performance assessment is in Coding, and browser-loading safeguards are in Web. Remove older copied performance guidance when replacing it to avoid duplicates; none of these defaults requests an unrelated audit.
+
 ### What if they conflict with my project rules or skills?
 
-These are defaults, not a replacement for project requirements or your agent's instruction hierarchy. Resolve conflicts before adopting them. Keep project-specific tools, commands, and conventions in project instructions, and detailed procedures in skills or references. Project rules and skills cannot waive required approval, security, or privacy protections.
+These are gap-filling defaults, not a competing project policy. Follow your agent's instruction hierarchy and applicable task or project requirements for implementation and workflow choices. Resolve remaining material conflicts before adopting rules. Keep project-specific tools, commands, and conventions in project instructions, and detailed procedures in skills or references. Project rules and skills cannot waive required approval, security, or privacy protections.
 
 ### How should a team use these rules?
 

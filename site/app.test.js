@@ -159,6 +159,56 @@ test('an explicitly empty saved selection stays empty after reload', () => {
   assert.equal(restored.get('copy-prompt').disabled, true);
 });
 
+test('saved links flag a retired set without losing other choices', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=general,coding,web,web-performance,mac&scope=project&host=mac');
+  const ids = catalog.RULES.filter(rule => page.get(`rule-${rule.id}`).checked).map(rule => rule.id);
+  assert.deepEqual(ids, ['general', 'coding', 'web', 'mac']);
+  assert.equal(page.get('host-os').value, 'mac');
+  assert.equal(page.get('rule-scope').querySelector('input:checked').value, 'project');
+  assert.equal(page.get('link-warning').hidden, false);
+  assert.match(page.get('link-warning').textContent, /unavailable/);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids, 'project', 'mac'));
+  assert.ok(!page.get('setup-link').value.includes('web-performance'));
+});
+
+test('shows purpose examples before a category is opened without selecting its rules', () => {
+  const page = boot('https://example.test/agent-rulebook/');
+  for (const group of catalog.RULE_GROUPS.filter(group => group.collapsible)) {
+    const disclosure = page.get(`group-${group.id}`);
+    assert.ok(!disclosure.open);
+    const summary = disclosure.children[0];
+    assert.equal(summary.tag, 'summary');
+    assert.ok(summary.children.includes(page.get(`group-examples-${group.id}`)));
+    assert.equal(page.get(`group-examples-${group.id}`).textContent, group.summary);
+    assert.ok(group.rules.every(rule => !page.get(`rule-${rule.id}`).checked));
+  }
+});
+
+test('selected guidance explains its purpose and remains independently optional', () => {
+  const page = boot('https://example.test/agent-rulebook/');
+  const summary = page.get('selection-summary');
+  const general = catalog.RULES.find(rule => rule.id === 'general');
+  assert.equal(summary.children.length, 1);
+  assert.ok(summary.textContent.includes(general.purpose));
+
+  page.get('rule-general').checked = false;
+  page.get('rule-general').dispatch('change');
+  page.get('rule-web').checked = true;
+  page.get('rule-web').dispatch('change');
+  const web = catalog.RULES.find(rule => rule.id === 'web');
+  assert.equal(summary.children.length, 1);
+  assert.ok(summary.textContent.includes(web.label));
+  assert.ok(summary.textContent.includes(web.purpose));
+  assert.equal(page.get('rule-coding').checked, false);
+  assert.equal(page.get('rule-browser-use').checked, false);
+  assert.equal(page.get('rule-testing').checked, false);
+  assert.equal(page.get('rule-general').checked, false);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web']));
+
+  page.get('clear-selection').dispatch('click');
+  assert.equal(summary.textContent, 'No rules selected');
+});
+
 test('mobile shortcut returns to selection while the prompt section is visible', () => {
   const page = boot('https://example.test/agent-rulebook/');
   const link = page.get('mobile-review-link');
