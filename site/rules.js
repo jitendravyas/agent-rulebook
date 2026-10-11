@@ -301,6 +301,8 @@ export function buildReviewPrompt(selectedIds, scope = 'personal', hostOS = 'uns
     '',
     'Preserve the scope, conditions, and exceptions of adopted guidance. Keep each module heading with its applicability line. When combining files, place Personalize last under `# Personalize`; keep `## Personalize` for General alone.',
     '',
+    'Use source links only to perform this review. In adopted instructions, include the rule text without repository branding, source links, repository paths, or tracking metadata such as commit IDs or sync comments. Keep any required license notices separately from active instructions.',
+    '',
     'Show proposed changes and ask for my approval before editing, installing, or activating instructions. Preserve unrelated instructions and required license notices.',
   ].join('\n');
 }

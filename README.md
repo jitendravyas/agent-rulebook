@@ -54,6 +54,8 @@ Choose individual sets; opening a group selects nothing. General is selected by 
 
 The agent needs access to the public links and relevant instructions. The website never reads or uploads your private instructions, project files, or agent settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
+Source links are for the review, not your installed instructions. The prompt asks the agent to omit repository branding, source links, paths, and tracking metadata from adopted rule text, keeping required license notices separately.
+
 Bookmark the page address or use **Copy setup link** to save selected sets, host OS, and scope. These choices also appear in the prompt. Links restore choices, not a fixed rule version; prompts always link to public `main`. Older links leave the host unspecified and may warn about unavailable choices. Local preview links work only on the serving machine; share the hosted address with others.
 
 The website's **Read the source rules** section links to the original Markdown files, this README, and the license. People, crawlers, and agents can follow them without JavaScript.

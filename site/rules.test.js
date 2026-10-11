@@ -143,6 +143,22 @@ test('retains every selected source once and keeps the license footer removed', 
   assert.ok(!prompt.endsWith('\n'));
 });
 
+test('keeps repository references out of adopted instructions, not out of the review', () => {
+  for (const scope of ['personal', 'project']) {
+    for (const ids of [['general'], RULES.map(rule => rule.id)]) {
+      const prompt = buildReviewPrompt(ids, scope);
+      assert.ok(prompt.includes('Use source links only to perform this review.'));
+      assert.ok(prompt.includes('rule text without repository branding, source links, repository paths, or tracking metadata such as commit IDs or sync comments'));
+      assert.ok(prompt.includes('Keep any required license notices separately from active instructions.'));
+      assert.ok(prompt.includes('Preserve unrelated instructions and required license notices.'));
+      for (const id of ids) {
+        const rule = RULES.find(rule => rule.id === id);
+        assert.equal(prompt.split(ruleSourceURL(rule)).length - 1, 1);
+      }
+    }
+  }
+});
+
 test('shorter prompts retain review-only, privacy, scope, and uncertainty boundaries', () => {
   for (const scope of ['personal', 'project']) {
     const prompt = buildReviewPrompt(['general', 'mac'], scope, 'mac');
