@@ -60,6 +60,18 @@ test('review prompt recommends relevant loading without making safety optional',
   assert.match(prompt, /Keep required approval, security, and privacy protections active/);
 });
 
+test('review prompt preserves adopted rule conditions and Personalize placement', () => {
+  for (const scope of ['personal', 'project']) {
+    for (const ids of [['general'], ['general', 'coding', 'web', 'browser-use']]) {
+      const prompt = buildReviewPrompt(ids, scope);
+      assert.match(prompt, /Preserve the scope, conditions, and exceptions of adopted guidance/);
+      assert.match(prompt, /Keep each module heading with its applicability line/);
+      assert.match(prompt, /When combining files, place Personalize last under `# Personalize`/);
+      assert.match(prompt, /keep `## Personalize` for General alone/);
+    }
+  }
+});
+
 test('static source links and categories match the live catalog', () => {
   const section = html.match(/<section\b[^>]*id="source-rules"[^>]*>([\s\S]*?)<\/section>/)?.[1];
   assert.ok(section, 'Missing no-JavaScript source list');

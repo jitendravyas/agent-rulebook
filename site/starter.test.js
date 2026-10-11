@@ -162,7 +162,18 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.match(html, /General alone can be enough/);
   assert.match(html, /keep General or equivalent safety guidance active/);
   assert.match(html, /An “Apply when” sentence does not keep unused text out of context/);
-  assert.match(html, /README\.md#choose-general-then-relevant-add-ons/);
+  const guideURL = html.match(/<a href="([^"]+)">module-loading guide<\/a>/)?.[1];
+  assert.equal(guideURL, 'https://github.com/jitendravyas/agent-rulebook#choose-general-then-relevant-add-ons');
+});
+
+test('website workflow checks instruction and draft changes on pushes and pull requests', () => {
+  const workflow = read('.github/workflows/website.yml');
+  for (const event of ['push', 'pull_request']) {
+    const section = workflow.match(new RegExp(`^  ${event}:\n([\\s\\S]*?)(?=^  \\w+:|^\\S|(?![\\s\\S]))`, 'm'))?.[1];
+    assert.ok(section, `${event} has a trigger configuration`);
+    assert.match(section, /^      - AGENTS\.md$/m, `${event} covers AGENTS.md`);
+    assert.match(section, /^      - 'drafts\/\*\*'$/m, `${event} covers drafts`);
+  }
 });
 
 test('shared coding guidance has one canonical file and presets use it', () => {

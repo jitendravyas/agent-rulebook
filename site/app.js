@@ -152,11 +152,10 @@ function renderChoices() {
         option.value = choice.id;
         hostSelect.append(option);
       }
-      const help = textElement('p', 'group-description', 'This selects guidance for the main environment (host). Select other systems below only for additional environments your agent accesses. Leave this unspecified if it varies or you are unsure.');
+      const help = textElement('p', 'group-description', 'This selects guidance for the main environment (host). Select other systems below only for additional environments your agent accesses. Leave this unspecified if it varies or you are unsure. Changing the host keeps selected OS rules; uncheck any you no longer need.');
       help.id = 'host-os-help';
       hostSelect.setAttribute('aria-describedby', help.id);
       hostSelect.addEventListener('change', () => {
-        selected.delete(hostOS);
         hostOS = hostSelect.value;
         if (hostOS !== 'unspecified') selected.add(hostOS);
         clearLinkWarnings('host', 'rules', 'legacy');

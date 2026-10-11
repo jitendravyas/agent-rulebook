@@ -299,6 +299,8 @@ export function buildReviewPrompt(selectedIds, scope = 'personal', hostOS = 'uns
     '',
     'Briefly propose the smallest worthwhile edits, where they belong, and why they help. Keep always-loaded instructions focused; recommend specialized modules only for relevant work, using supported conditional loading where appropriate. Keep required approval, security, and privacy protections active. Explain material conflicts, duplicates, tradeoffs, and verification gaps, not every rule. Say if no change is useful; do not promise to eliminate all conflicts.',
     '',
+    'Preserve the scope, conditions, and exceptions of adopted guidance. Keep each module heading with its applicability line. When combining files, place Personalize last under `# Personalize`; keep `## Personalize` for General alone.',
+    '',
     'Show proposed changes and ask for my approval before editing, installing, or activating instructions. Preserve unrelated instructions and required license notices.',
   ].join('\n');
 }

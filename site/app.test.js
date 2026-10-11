@@ -159,6 +159,62 @@ test('an explicitly empty saved selection stays empty after reload', () => {
   assert.equal(restored.get('copy-prompt').disabled, true);
 });
 
+test('changing or clearing the host preserves manually selected OS rules in controls, links, and prompts', () => {
+  for (const rule of catalog.OS_RULES) {
+    const page = boot('https://example.test/agent-rulebook/?rules=general&host=unspecified');
+    const input = page.get(`rule-${rule.id}`);
+    input.checked = true;
+    input.dispatch('change');
+    const host = page.get('host-os');
+    host.value = rule.id;
+    host.dispatch('change');
+    assert.equal(input.disabled, true);
+
+    const other = catalog.OS_RULES.find(candidate => candidate.id !== rule.id);
+    for (const nextHost of [other.id, 'unspecified']) {
+      host.value = nextHost;
+      host.dispatch('change');
+      assert.equal(input.checked, true, `${rule.id} stays selected when the host is ${nextHost}`);
+      assert.equal(input.disabled, false);
+      assert.match(page.get(`role-${rule.id}`).textContent,
+        nextHost === 'unspecified' ? /OS role not specified/ : /Additional OS/);
+      const saved = page.get('setup-link').value;
+      assert.ok(new URL(saved).searchParams.get('rules').split(',').includes(rule.id));
+      assert.equal(new URL(saved).searchParams.get('host'), nextHost);
+      const ids = catalog.RULES.filter(candidate => page.get(`rule-${candidate.id}`).checked)
+        .map(candidate => candidate.id);
+      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids, 'personal', nextHost));
+      const restored = boot(saved);
+      assert.equal(restored.get(`rule-${rule.id}`).checked, true);
+      assert.equal(restored.get('prompt-preview').value, page.get('prompt-preview').value);
+    }
+
+    input.checked = false;
+    input.dispatch('change');
+    assert.ok(!page.get('prompt-preview').value.includes(catalog.ruleSourceURL(rule)));
+    assert.ok(!new URL(page.get('setup-link').value).searchParams.get('rules').split(',').includes(rule.id));
+  }
+});
+
+test('host changes retain selected OS guidance until it is explicitly unchecked or cleared', () => {
+  const page = boot('https://example.test/agent-rulebook/');
+  const host = page.get('host-os');
+  host.value = 'mac';
+  host.dispatch('change');
+  host.value = 'linux';
+  host.dispatch('change');
+  assert.equal(page.get('rule-mac').checked, true);
+  assert.equal(page.get('rule-mac').disabled, false);
+  assert.equal(page.get('rule-linux').checked, true);
+  assert.equal(page.get('rule-linux').disabled, true);
+  assert.match(page.get('prompt-preview').value, /Additional operating systems \(not the host\): macOS\./);
+
+  page.get('clear-selection').dispatch('click');
+  assert.equal(host.value, 'unspecified');
+  assert.ok(catalog.OS_RULES.every(rule => !page.get(`rule-${rule.id}`).checked));
+  assert.equal(page.get('prompt-preview').value, '');
+});
+
 test('saved links flag a retired set without losing other choices', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,coding,web,web-performance,mac&scope=project&host=mac');
   const ids = catalog.RULES.filter(rule => page.get(`rule-${rule.id}`).checked).map(rule => rule.id);
