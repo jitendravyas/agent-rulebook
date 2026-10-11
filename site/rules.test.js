@@ -65,7 +65,8 @@ test('review prompt preserves adopted rule conditions and Personalize placement'
     for (const ids of [['general'], ['general', 'coding', 'web', 'browser-use']]) {
       const prompt = buildReviewPrompt(ids, scope);
       assert.match(prompt, /Preserve the scope, conditions, and exceptions of adopted guidance/);
-      assert.match(prompt, /Keep each module heading with its applicability line/);
+      assert.match(prompt, /For every adopted module or excerpt, copy the source heading and applicability line unchanged/);
+      assert.match(prompt, /put the line directly below the heading, even when adopting only a few bullets/);
       assert.match(prompt, /When combining files, place Personalize last under `# Personalize`/);
       assert.match(prompt, /keep `## Personalize` for General alone/);
     }
@@ -105,7 +106,7 @@ test('identifies one host and additional operating systems in either scope', () 
     assert.ok(prompt.includes('Host operating system: macOS.'));
     assert.ok(prompt.includes('Additional operating systems (not the host): Windows, Linux.'));
     assert.ok(prompt.includes('ask for my approval before editing, installing, or activating instructions'));
-    assert.equal((prompt.match(/https:\/\/raw\.githubusercontent\.com\//g) || []).length, 4);
+    assert.equal((prompt.match(/https:\/\/raw\.githubusercontent\.com\//g) || []).length, 5);
   }
 });
 
@@ -143,13 +144,28 @@ test('retains every selected source once and keeps the license footer removed', 
   assert.ok(!prompt.endsWith('\n'));
 });
 
+test('checks the source license separately before proposing adoption in either scope', () => {
+  const licenseURL = 'https://raw.githubusercontent.com/jitendravyas/agent-rulebook/main/LICENSE';
+  for (const scope of ['personal', 'project']) {
+    for (const ids of [['general'], ['browser-use'], RULES.map(rule => rule.id)]) {
+      const prompt = buildReviewPrompt(ids, scope);
+      assert.ok(prompt.includes(`Read the source license separately before proposing adoption: ${licenseURL}.`));
+      assert.equal(prompt.split(licenseURL).length - 1, 1);
+      assert.ok(prompt.includes('Do not infer license requirements from missing notices in individual rule files.'));
+      assert.ok(prompt.includes('propose any required copyright and permission notices in a separate file beside the instructions, never inside active rules'));
+      assert.ok(prompt.includes('Report unread or unclear licensing before adopting.'));
+      assert.ok(prompt.indexOf('Read the source license') < prompt.indexOf('Show proposed changes and ask for my approval'));
+    }
+  }
+});
+
 test('keeps repository references out of adopted instructions, not out of the review', () => {
   for (const scope of ['personal', 'project']) {
     for (const ids of [['general'], RULES.map(rule => rule.id)]) {
       const prompt = buildReviewPrompt(ids, scope);
       assert.ok(prompt.includes('Use source links only to perform this review.'));
       assert.ok(prompt.includes('rule text without repository branding, source links, repository paths, or tracking metadata such as commit IDs or sync comments'));
-      assert.ok(prompt.includes('Keep any required license notices separately from active instructions.'));
+      assert.ok(prompt.includes('copyright and permission notices in a separate file beside the instructions, never inside active rules'));
       assert.ok(prompt.includes('Preserve unrelated instructions and required license notices.'));
       for (const id of ids) {
         const rule = RULES.find(rule => rule.id === id);

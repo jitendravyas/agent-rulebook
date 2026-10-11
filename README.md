@@ -54,7 +54,9 @@ Choose individual sets; opening a group selects nothing. General is selected by 
 
 The agent needs access to the public links and relevant instructions. The website never reads or uploads your private instructions, project files, or agent settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
-Source links are for the review, not your installed instructions. The prompt asks the agent to omit repository branding, source links, paths, and tracking metadata from adopted rule text, keeping required license notices separately.
+The prompt asks the agent to preserve each adopted module's source heading and applicability line, even when adopting only a few bullets. It must read the source license separately and propose any required copyright and permission notices in a separate file beside the instructions.
+
+Source links are for the review, not your installed instructions. Adopted rule text must omit repository branding, source links, paths, and tracking metadata. Required license notices stay outside active rules.
 
 Bookmark the page address or use **Copy setup link** to save selected sets, host OS, and scope. These choices also appear in the prompt. Links restore choices, not a fixed rule version; prompts always link to public `main`. Older links leave the host unspecified and may warn about unavailable choices. Local preview links work only on the serving machine; share the hosted address with others.
 

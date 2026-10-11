@@ -299,9 +299,11 @@ export function buildReviewPrompt(selectedIds, scope = 'personal', hostOS = 'uns
     '',
     'Briefly propose the smallest worthwhile edits, where they belong, and why they help. Keep always-loaded instructions focused; recommend specialized modules only for relevant work, using supported conditional loading where appropriate. Keep required approval, security, and privacy protections active. Explain material conflicts, duplicates, tradeoffs, and verification gaps, not every rule. Say if no change is useful; do not promise to eliminate all conflicts.',
     '',
-    'Preserve the scope, conditions, and exceptions of adopted guidance. Keep each module heading with its applicability line. When combining files, place Personalize last under `# Personalize`; keep `## Personalize` for General alone.',
+    'Preserve the scope, conditions, and exceptions of adopted guidance. For every adopted module or excerpt, copy the source heading and applicability line unchanged; put the line directly below the heading, even when adopting only a few bullets. When combining files, place Personalize last under `# Personalize`; keep `## Personalize` for General alone.',
     '',
-    'Use source links only to perform this review. In adopted instructions, include the rule text without repository branding, source links, repository paths, or tracking metadata such as commit IDs or sync comments. Keep any required license notices separately from active instructions.',
+    `Read the source license separately before proposing adoption: ${new URL('LICENSE', SOURCE_ROOT).href}. Do not infer license requirements from missing notices in individual rule files. For copied or adapted text, propose any required copyright and permission notices in a separate file beside the instructions, never inside active rules. Report unread or unclear licensing before adopting.`,
+    '',
+    'Use source links only to perform this review. In adopted instructions, include the rule text without repository branding, source links, repository paths, or tracking metadata such as commit IDs or sync comments.',
     '',
     'Show proposed changes and ask for my approval before editing, installing, or activating instructions. Preserve unrelated instructions and required license notices.',
   ].join('\n');
