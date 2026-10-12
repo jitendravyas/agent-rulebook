@@ -73,6 +73,29 @@ test('review prompt preserves adopted rule conditions and Personalize placement'
   }
 });
 
+test('review prompt requires complete source reads and reports unresolved truncation', () => {
+  for (const scope of ['personal', 'project']) {
+    for (const ids of [['general'], ['browser-use'], RULES.map(rule => rule.id)]) {
+      const prompt = buildReviewPrompt(ids, scope);
+      assert.ok(prompt.includes('For each source, including the license, check for incomplete or truncated output'));
+      assert.ok(prompt.includes('Retrieve missing text or the full source before proposing adoption.'));
+      assert.ok(prompt.includes('If completeness cannot be confirmed, report the gap and do not adopt from that source.'));
+      assert.ok(prompt.indexOf('check for incomplete or truncated output') < prompt.indexOf('Briefly propose the smallest worthwhile edits'));
+    }
+  }
+});
+
+test('review prompt checks adopted headings and applicability against originals before and after saving', () => {
+  for (const scope of ['personal', 'project']) {
+    for (const ids of [['general'], ['browser-use'], RULES.map(rule => rule.id)]) {
+      const prompt = buildReviewPrompt(ids, scope);
+      assert.ok(prompt.includes('Before proposing edits and again before saving approved changes, compare every adopted heading and applicability line character for character with the complete original source text.'));
+      assert.ok(prompt.includes('Correct mismatches; do not reinterpret or reword those lines.'));
+      assert.ok(prompt.includes('After saving, read the files back and repeat this comparison; report any remaining mismatch rather than claiming completion.'));
+    }
+  }
+});
+
 test('static source links and categories match the live catalog', () => {
   const section = html.match(/<section\b[^>]*id="source-rules"[^>]*>([\s\S]*?)<\/section>/)?.[1];
   assert.ok(section, 'Missing no-JavaScript source list');

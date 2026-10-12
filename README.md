@@ -54,7 +54,7 @@ Choose individual sets; opening a group selects nothing. General is selected by 
 
 The agent needs access to the public links and relevant instructions. The website never reads or uploads your private instructions, project files, or agent settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
-The prompt asks the agent to preserve each adopted module's source heading and applicability line, even when adopting only a few bullets. It must read the source license separately and propose any required copyright and permission notices in a separate file beside the instructions.
+The prompt asks the agent to check for incomplete or truncated sources, retrieve missing text, or report sources it cannot fully read. It must compare each adopted module's heading and applicability line with the originals before proposing or saving edits, then check the saved files. This applies even when adopting only a few bullets. It must read the source license separately and propose any required copyright and permission notices in a separate file beside the instructions.
 
 Source links are for the review, not your installed instructions. Adopted rule text must omit repository branding, source links, paths, and tracking metadata. Required license notices stay outside active rules.
 
