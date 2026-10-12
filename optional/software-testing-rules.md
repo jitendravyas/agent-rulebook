@@ -2,8 +2,6 @@
 
 Apply when testing software or verifying software changes, including temporary and standalone work; match checks to the task, risk, stage, and supported environments, without unrelated tests or audits.
 
-Updated: 2026-10-11
-
 ## Software checks
 
   * Use the test environment specified for the check, whether local or remote. Otherwise, prefer a relevant established environment when suitable. Isolate checks that could affect shared state or real data. Check that inherited settings do not redirect isolated tests to real or shared resources. Self-contained checks need no additional services or isolation unless project policy requires them.

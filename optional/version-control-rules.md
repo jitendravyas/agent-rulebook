@@ -2,8 +2,6 @@
 
 Apply when using version control for an authorized task, including non-software work.
 
-Updated: 2026-10-10
-
 ## Reviewing and preserving work
 
   * When asked to review a branch or proposed version-controlled changes, or to submit them for review or merging, check the comparison base and full diff within the requested review or submission scope, plus directly affected context. Account separately for relevant uncommitted changes; the working-tree diff alone is insufficient.

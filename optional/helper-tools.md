@@ -1,7 +1,5 @@
 # Optional helper-tool reference
 
-Updated: 2026-10-11
-
 Consult relevant entries only when choosing a tool could materially improve the current task. Do not load this reference for every request or treat it as an installation list. The reusable rules do not depend on these tools.
 
   * Check availability in the current environment; a tool listed here may not be installed.

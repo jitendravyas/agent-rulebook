@@ -2,8 +2,7 @@
 
 Apply only to authorized iOS or iPadOS app work and their platform-specific integrations in cross-platform projects.
 
-Updated: 2026-10-10
-
+  * Unless the action and target are already authorized within the current scope, ask before changing app signing, app store settings, or minimum platform or software development kit (SDK) versions.
   * For changes using platform APIs, check availability across the project's supported operating-system versions, not just the SDK used to build. Preserve deployment-target compatibility through runtime availability checks or supported alternatives.
   * When changing app or scene lifecycle behavior, handle backgrounding, suspension, and system termination without losing state the product should retain. Do not assume in-memory state survives a new launch.
   * When work must continue after the app enters the background, choose a supported iOS or iPadOS execution mechanism for that work. Handle system-imposed time limits, cancellation, and interruption; an ordinary task or timer does not guarantee continued execution.

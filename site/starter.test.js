@@ -24,7 +24,7 @@ test('General is compact, neutral, and excludes software-specific workflow', () 
   assert.doesNotMatch(general, /agent-info\.json|\/Users\/|C:\\|modern-web-guidance|Chrome DevTools|\bMCP\b/);
 });
 
-test('rules and the helper reference have one valid update date near the title, without version labels', () => {
+test('rules and the helper reference use Git revisions instead of manual date or version labels', () => {
   const paths = [
     ...RULES.map(rule => rule.path),
     'optional/helper-tools.md',
@@ -34,18 +34,13 @@ test('rules and the helper reference have one valid update date near the title, 
   ];
   for (const path of paths) {
     const content = read(path);
-    const dates = [...content.matchAll(/^Updated: (.+)$/gm)];
-    assert.equal(dates.length, 1, `${path} has exactly one update date`);
-    const date = dates[0][1];
-    assert.match(date, /^\d{4}-\d{2}-\d{2}$/, `${path} uses YYYY-MM-DD`);
-    const parsed = new Date(`${date}T00:00:00Z`);
-    assert.ok(!Number.isNaN(parsed.getTime()), `${path} has a valid date`);
-    assert.equal(parsed.toISOString().slice(0, 10), date, `${path} has a real calendar date`);
-    assert.match(content.split('\n').slice(0, 7).join('\n'), /^# [^\n]+\n[\s\S]*\nUpdated: \d{4}-\d{2}-\d{2}(?:\n|$)/);
+    assert.match(content, /^# [^\n]+\n\n/, `${path} starts with its title`);
+    assert.ok(!/^Updated:/m.test(content), `${path} does not use a manual update date`);
     assert.doesNotMatch(content, /^Version:/m, `${path} does not use a separate version label`);
   }
   const readme = read('README.md');
-  assert.match(readme, /Each rule file, including drafts, has an `Updated: YYYY-MM-DD` date/);
+  assert.match(readme, /Use the source Git commit for an exact revision/);
+  assert.doesNotMatch(readme, /Updated:|update date|version\/date/);
   assert.ok(!/Both files are versioned|retain the version\/date|General and Coding files now include a version/.test(readme), 'README does not describe the removed version labels');
 });
 
@@ -88,14 +83,18 @@ test('grouped approval rules retain dependency safeguards and software exception
   for (const category of [
     'Changing dependency, runtime, or package-manager requirements',
     'Changing existing public application programming interfaces (APIs), shared schemas, or data contracts',
-    'Changing app permissions, entitlements, signing, or store settings',
-    'Changing minimum platform or software development kit (SDK) versions',
+    'Changing app permissions or entitlements',
     'Deploying software', 'Applying migrations to existing persistent or shared stores',
   ]) {
     assert.ok(approvals.includes(`  * ${category}.`), `approval remains required for: ${category}`);
   }
   assert.match(approvals, /Authorized new-project setup and confirmed disposable test stores need no separate migration approval/);
   assert.match(approvals, /Reverting code does not undo database or service changes/);
+  assert.doesNotMatch(approvals, /signing|store settings|minimum platform|software development kit/);
+  for (const path of ['drafts/ios-development-rules.md', 'drafts/android-development-rules.md']) {
+    assert.ok(read(path).includes('Unless the action and target are already authorized within the current scope, ask before changing app signing, app store settings, or minimum platform or software development kit (SDK) versions.'), `${path} retains app-specific approvals and their exception`);
+  }
+  assert.match(read('coding-agent-global-rules.md'), /Preserve compatibility for existing stored formats and consumers that cannot update together/);
 });
 
 test('repository prose uses American spelling while source paths stay unchanged', () => {
@@ -201,5 +200,5 @@ test('README setup advice and eight scenario checks stay separate from agent rul
   assert.match(helper, /^# Optional helper-tool reference\n/);
   assert.match(helper, /Do not load this reference for every request/);
   assert.ok(!RULES.some(rule => rule.path === 'optional/helper-tools.md'));
-  assert.match(read('README.md'), /Its update date records edits, not verification of every tool or requirement/);
+  assert.match(read('README.md'), /Git history records edits, not verification of every tool or requirement/);
 });

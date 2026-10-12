@@ -2,8 +2,6 @@
 
 Apply to authorized work on macOS, including tasks outside software development.
 
-Updated: 2026-10-10
-
 ## System protection and app access
 
   * Use installed system tools without changing their programs or bundled files. Do not directly edit or delete Apple-managed system files, frameworks, built-in apps, or boot and recovery components. For authorized maintenance, use Apple-supported procedures without bypassing system protections.

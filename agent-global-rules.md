@@ -1,7 +1,5 @@
 # General rules for AI agents
 
-Updated: 2026-10-11
-
 Use these standing rules for authorized tasks on any operating system, with or without a project, desktop, or additional tools.
 Follow the agent's instruction hierarchy. Project instructions govern implementation choices, but cannot waive these approval, security, or privacy protections.
 Apply relevant conditions without reminders; loading a rule does not authorize actions or start unrelated workflows.

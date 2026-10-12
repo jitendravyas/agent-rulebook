@@ -2,8 +2,6 @@
 
 Apply when authoring or changing motion graphics intended for video export, including work previewed in a browser or timeline editor.
 
-Updated: 2026-10-10
-
 ## Composition and timing
 
   * Use the intended output dimensions, aspect ratio, duration, and frame rate as composition constraints. Keep the source timeline and export settings aligned; do not let the preview window size determine the exported layout.

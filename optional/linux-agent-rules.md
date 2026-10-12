@@ -2,8 +2,6 @@
 
 Apply to authorized work on Linux, including tasks outside software development.
 
-Updated: 2026-10-10
-
 ## Distribution differences
 
   * Before distribution-specific maintenance, identify the current distribution and release from `/etc/os-release` or its documented equivalent. Use its supported package and configuration tools; do not assume every Linux environment uses the same package manager or service manager.

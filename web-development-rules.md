@@ -2,8 +2,6 @@
 
 Apply when developing, changing, reviewing, or testing browser-rendered content, behavior, or supporting web endpoints, including temporary pages and embedded browsers. Using a website or creating a temporary page for a non-development task does not by itself trigger a web-development workflow.
 
-Updated: 2026-10-10
-
 ## Web scope and browser compatibility
 
   * Before using a browser feature with uncertain support or removing a fallback, identify supported browsers and embedded runtimes from the task, project instructions, configuration, or usage data. Reuse targets already established by the user or project. Check current compatibility; general compatibility summaries do not replace project policy. If the target remains unclear and support matters, propose a target for approval.
@@ -22,7 +20,6 @@ Updated: 2026-10-10
 ## Content and identifiers
 
   * Preserve existing content bindings when changing titles or text alternatives. Do not insert document-level markup into embedded fragments.
-  * When creating or changing web content, follow task or project conventions for marking text explicitly designated as non-translatable. For browser translation, use `translate="no"` where applicable. Keep exclusions narrow and surrounding text translatable. Do not disable whole-page translation merely to protect a few names or terms.
   * When copying or repeating page elements, keep identifiers unique within their document object model (DOM) tree and keep references pointing to the intended elements.
 
 ## Style changes

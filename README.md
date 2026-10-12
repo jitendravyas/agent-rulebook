@@ -15,7 +15,7 @@ Choose how to start:
 
 ## Choose General, then relevant add-ons
 
-Start with [General rules](agent-global-rules.md) for safety, approvals, privacy, verification, and communication. They work without a project, desktop, plugins, or skills. Add [Coding rules](coding-agent-global-rules.md) only for software development. Each rule file, including drafts, has an `Updated: YYYY-MM-DD` date to help identify updates. Use the source Git commit for an exact revision.
+Start with [General rules](agent-global-rules.md) for safety, approvals, privacy, verification, and communication. They work without a project, desktop, plugins, or skills. Add [Coding rules](coding-agent-global-rules.md) only for software development. Use the source Git commit for an exact revision.
 
 Append only the add-ons relevant to your intended activities. Keep their applicability lines when copying. They can complement General or equivalent existing guidance; no file imports or activates another file. The existing files remain the source, with no duplicate starter bundle.
 
@@ -92,7 +92,7 @@ Loaded rules are standing instructions, not skills to invoke. The agent should r
 
 ### Safe setup
 
-This advice is for the person installing, not instructions to load into the agent. Rules guide behavior; they cannot enforce it or guarantee safety. Follow [How to use](#how-to-use) to choose, merge, save, and confirm loading. Review updates before replacing active rules, retain each file's update date, and keep the MIT license notice when reusing the files.
+This advice is for the person installing, not instructions to load into the agent. Rules guide behavior; they cannot enforce it or guarantee safety. Follow [How to use](#how-to-use) to choose, merge, save, and confirm loading. Review updates before replacing active rules and keep the MIT license notice when reusing the files.
 
 - **Enable available controls.** Use approval prompts for destructive actions, installations, external writes, and access beyond the task. Prefer a sandbox restricted to the task directory and necessary network access. Do not disable controls because the rules ask for approval. If controls are unavailable, start with disposable data and restrict account permissions.
 - **Protect Git commits from secrets.** If you use Git, configure an approved secret scanner through a global pre-commit hook. Check the effective hooks configuration and preserve or compose with existing hooks. Test with synthetic examples, never real credentials, and confirm coverage for new, changed, and non-text files. Local hooks can be bypassed and do not inspect other contributors' pushes or all outgoing history; use server-side push protection or continuous integration (CI) checks where available.
@@ -186,7 +186,7 @@ Choose only the areas your agent needs. None requires a Git repository, and each
 
 ### Tool reference
 
-The dated [helper-tool reference](optional/helper-tools.md) covers utilities, integrations, and operating-system capabilities for research, browser use, files, and other tasks. It includes Windows and Linux diagnostics, Spotlight, text recognition, Shortcuts, and Apple Intelligence, with version conditions where needed. These tools are optional, not assumed to be installed. Provide relevant entries for a task or use supported conditional loading; do not load the whole reference in every session. No rule file imports it automatically. Its update date records edits, not verification of every tool or requirement.
+The [helper-tool reference](optional/helper-tools.md) covers utilities, integrations, and operating-system capabilities for research, browser use, files, and other tasks. It includes Windows and Linux diagnostics, Spotlight, text recognition, Shortcuts, and Apple Intelligence, with version conditions where needed. These tools are optional, not assumed to be installed. Provide relevant entries for a task or use supported conditional loading; do not load the whole reference in every session. No rule file imports it automatically. Git history records edits, not verification of every tool or requirement.
 
 </details>
 
@@ -206,7 +206,7 @@ Select fewer relevant sections, load sections conditionally where supported, or 
 
 ### How do I migrate from older rule files?
 
-All reusable rule files, including drafts, now include an update date. Replace old copied guidance rather than appending another copy, preserving personal preferences and essential safety protections.
+Replace old copied guidance rather than appending another copy, preserving personal preferences and essential safety protections.
 
 `coding-agent-global-rules.md` remains a separate opt-in file. General does not include its software-specific guidance. Website links preserve General and Coding as separate choices; review the changed sources before adopting them.
 

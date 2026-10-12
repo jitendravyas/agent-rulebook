@@ -2,8 +2,6 @@
 
 Apply only to software development, including temporary or standalone software. Using a helper script or website for another task does not itself require a development workflow.
 
-Updated: 2026-10-10
-
 ## Project inspection and planning
 
 * Inspect current code, configuration, documentation, and relevant history in the intended workspace. Follow established conventions and boundaries; explain necessary material departures.
@@ -15,8 +13,7 @@ Updated: 2026-10-10
 * Unless the action and target are already authorized within the current scope, ask before:
   * Changing dependency, runtime, or package-manager requirements.
   * Changing existing public application programming interfaces (APIs), shared schemas, or data contracts.
-  * Changing app permissions, entitlements, signing, or store settings.
-  * Changing minimum platform or software development kit (SDK) versions.
+  * Changing app permissions or entitlements.
   * Deploying software.
   * Applying migrations to existing persistent or shared stores. Authorized new-project setup and confirmed disposable test stores need no separate migration approval. Reverting code does not undo database or service changes.
 
@@ -34,7 +31,7 @@ Updated: 2026-10-10
 * Update generated files, lockfiles, and snapshots through their source and supported process. Avoid accidental dependency re-resolution; review regenerated output and sources. Preserve integrity, signatures, and provenance checks; investigate failures rather than bypassing them.
 * Keep environment-specific values in established configuration. Declare approved dependencies and versions instead of relying on global installations. Preserve defaults unless changes are required.
 * Use stable identifiers, not translated labels or formatted text, for actions and data. Preserve Unicode without corruption; bytes and code units are not user-visible character counts. Follow explicit validation and normalization requirements.
-* Preserve locale, right-to-left and mixed text direction, and accessibility using established platform mechanisms. Add languages or translation infrastructure only when required. Check affected input methods and assistive-technology behavior against task or project requirements.
+* Preserve locale, right-to-left and mixed text direction, and accessibility using established platform mechanisms. Check affected input methods and assistive-technology behavior against task or project requirements.
 * Handle relevant initial, loading, empty, success, validation, permission, failure, slow-network, offline, retry, and cancellation states. Preserve recoverable input and make the next action clear.
 * Remove task-obsoleted code and task-created disposable intermediates when no longer needed; retain deliverables and requested previews. Preserve unrelated notes and dead code; do not replace required work with an unfinished-work note.
 * Preserve compatibility for existing stored formats and consumers that cannot update together; keep compatibility paths only while needed.
