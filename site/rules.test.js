@@ -147,6 +147,14 @@ test('the retired performance set is not offered or linked in review prompts', (
   assert.throws(() => buildReviewPrompt(['web-performance']), /Unknown rule id/);
 });
 
+test('creative media is absent from the website while its rule file remains available', () => {
+  assert.ok(!RULE_GROUPS.some(group => group.id === 'media'));
+  assert.ok(!RULES.some(rule => rule.id === 'motion-video'));
+  assert.doesNotMatch(html, /Creative media|data-rule-id="motion-video"/);
+  assert.ok(existsSync(new URL('optional/motion-video-rules.md', repository)));
+  assert.throws(() => buildReviewPrompt(['motion-video']), /Unknown rule id/);
+});
+
 test('lists selected operating systems without assigning host roles', () => {
   const prompt = buildReviewPrompt(['general', 'mac', 'linux', 'windows']);
   assert.ok(prompt.includes('Operating systems to consider: macOS, Windows, Linux.'));

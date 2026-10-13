@@ -374,7 +374,7 @@ test('OS choices have one label, help after the checkboxes, and no dropdown or h
 });
 
 test('saved links flag a retired set without losing other choices', () => {
-  const page = boot('https://example.test/agent-rulebook/?rules=general,coding,web,web-performance,mac&scope=project&host=mac');
+  const page = boot('https://example.test/agent-rulebook/?rules=general,coding,web,web-performance,motion-video,mac&scope=project&host=mac');
   const ids = catalog.RULES.filter(rule => page.get(`rule-${rule.id}`).checked).map(rule => rule.id);
   assert.deepEqual(ids, ['general', 'coding', 'web', 'mac']);
   assert.equal(page.get('rule-mac').disabled, false);
@@ -382,6 +382,7 @@ test('saved links flag a retired set without losing other choices', () => {
   assert.match(page.get('link-warning').textContent, /unavailable/);
   assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids));
   assert.ok(!page.get('setup-link').value.includes('web-performance'));
+  assert.ok(!page.get('setup-link').value.includes('motion-video'));
 });
 
 test('legacy host parameters are ignored without changing selected rules', () => {

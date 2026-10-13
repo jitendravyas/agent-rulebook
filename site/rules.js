@@ -123,16 +123,6 @@ const BROWSER_ANIMATION_RULE = {
   path: 'optional/browser-animation-rules.md',
 };
 
-const MOTION_VIDEO_RULE = {
-  id: 'motion-video',
-  title: 'Motion graphics video rules',
-  label: 'Create animated videos for export',
-  description:
-    'Composition, timing, assets, and export for animated videos such as MP4. Not for animation running inside a website.',
-  purpose: 'Creating animated video for export, separate from browser animation.',
-  path: 'optional/motion-video-rules.md',
-};
-
 const I18N_RULE = {
   id: 'i18n',
   title: 'Internationalization and localization rules',
@@ -167,7 +157,6 @@ export const RULES = [
   BROWSER_USE_RULE,
   VERSION_CONTROL_RULE,
   BROWSER_ANIMATION_RULE,
-  MOTION_VIDEO_RULE,
   I18N_RULE,
   AUTHORING_RULE,
 ];
@@ -210,14 +199,6 @@ export const RULE_GROUPS = [
       BROWSER_ANIMATION_RULE,
       I18N_RULE,
     ],
-  },
-  {
-    id: 'media',
-    title: 'Creative media',
-    summary: 'Create animated video for export, not motion inside a website.',
-    description: 'For animated video intended for export, separate from motion inside a website. Choose it only for video work.',
-    collapsible: true,
-    rules: [MOTION_VIDEO_RULE],
   },
   {
     id: 'authoring',
