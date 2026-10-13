@@ -41,7 +41,7 @@ Apply only to software development, including temporary or standalone software. 
 
 ## Performance
 
-* Consider performance of the complete affected operation, including interactions, data access, dependencies, and assets. Check uncertain choices with material impact. For performance fixes, identify the bottleneck and compare representative equivalent conditions against available targets; assess requirements for new work. Distinguish local measurements from real-use evidence and report tradeoffs and limits.
+* Consider performance of the complete affected operation, including interactions, data access, dependencies, and assets. Check uncertain choices that could significantly affect performance. For performance fixes, identify the bottleneck and compare representative results under equivalent conditions against available targets. For new work, assess the performance requirements. Distinguish local measurements from real-use evidence and report tradeoffs and limits.
 
 ## Code checks and review
 
