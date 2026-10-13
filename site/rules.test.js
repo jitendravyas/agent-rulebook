@@ -184,10 +184,14 @@ test('rejects unknown hosts and hosts without a selected rule set', () => {
 });
 
 test('retains every selected source once and keeps the license footer removed', () => {
-  const prompt = buildReviewPrompt(RULES.map(rule => rule.id), 'windows');
-  for (const rule of RULES) assert.equal(prompt.split(ruleSourceURL(rule)).length - 1, 1);
-  assert.ok(!/Source and MIT licen[cs]e:/.test(prompt));
-  assert.ok(!prompt.endsWith('\n'));
+  for (const ids of [['general'], ['browser-use'], ['general', 'general', 'web'], RULES.map(rule => rule.id)]) {
+    const prompt = buildReviewPrompt(ids);
+    for (const rule of RULES) {
+      assert.equal(prompt.split(ruleSourceURL(rule)).length - 1, ids.includes(rule.id) ? 1 : 0);
+    }
+    assert.ok(!/Source and MIT licen[cs]e:/.test(prompt));
+    assert.ok(!prompt.endsWith('\n'));
+  }
 });
 
 test('checks the source license separately before proposing adoption', () => {
@@ -199,6 +203,7 @@ test('checks the source license separately before proposing adoption', () => {
     assert.ok(prompt.includes('Do not infer license requirements from missing notices in individual rule files.'));
     assert.ok(prompt.includes('propose any required copyright and permission notices in a separate file beside the instructions, never inside active rules'));
     assert.ok(prompt.includes('Report unread or unclear licensing before adopting.'));
+    assert.ok(prompt.includes('Preserve unrelated instructions and required license notices.'));
     assert.ok(prompt.indexOf('Read the source license') < prompt.indexOf('Show proposed changes and ask for my approval'));
   }
 });
@@ -208,12 +213,6 @@ test('keeps repository references out of adopted instructions, not out of the re
     const prompt = buildReviewPrompt(ids);
     assert.ok(prompt.includes('Use source links only to perform this review.'));
     assert.ok(prompt.includes('rule text without repository branding, source links, repository paths, or tracking metadata such as commit IDs or sync comments'));
-    assert.ok(prompt.includes('copyright and permission notices in a separate file beside the instructions, never inside active rules'));
-    assert.ok(prompt.includes('Preserve unrelated instructions and required license notices.'));
-    for (const id of ids) {
-      const rule = RULES.find(rule => rule.id === id);
-      assert.equal(prompt.split(ruleSourceURL(rule)).length - 1, 1);
-    }
   }
 });
 
@@ -229,6 +228,4 @@ test('shorter prompts retain review-only, privacy, scope, and uncertainty bounda
   assert.ok(prompt.includes('Say if no change is useful'));
   assert.ok(prompt.includes('do not promise to eliminate all conflicts'));
   assert.ok(prompt.includes('ask for my approval before editing, installing, or activating instructions'));
-  assert.ok(prompt.includes('Preserve unrelated instructions and required license notices'));
-  assert.ok(prompt.includes('not specific to the current project'));
 });

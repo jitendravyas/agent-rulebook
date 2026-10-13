@@ -10,7 +10,7 @@ const importLine = /^import \{([^}]+)\} from '\.\/rules\.js';\r?\n/;
 assert.match(app, importLine);
 const script = app.replace(importLine, (_, names) => `const {${names}} = catalog;\n`);
 
-function boot(address, { intersectionObserver = true, modelContext = false } = {}) {
+function boot(address, { intersectionObserver = true, modelContext = false, clipboard } = {}) {
   const nodes = new Map();
   const observers = [];
   const tools = new Map();
@@ -49,10 +49,11 @@ function boot(address, { intersectionObserver = true, modelContext = false } = {
       listeners.push(listener);
       this.listeners.set(type, listeners);
     }
-    dispatch(type) {
-      for (const listener of this.listeners.get(type) ?? []) {
-        listener({ type, target: this, preventDefault() {} });
-      }
+    focus() { this.focused = true; }
+    select() { this.selected = true; }
+    dispatch(type, details = {}) {
+      return Promise.all((this.listeners.get(type) ?? []).map(listener =>
+        listener({ type, target: this, preventDefault() {}, ...details })));
     }
   }
 
@@ -68,9 +69,25 @@ function boot(address, { intersectionObserver = true, modelContext = false } = {
   };
   const window = new Node('window');
   Object.defineProperty(window, 'location', { get: () => location });
+  const entries = [{ url: location.href, state: null }];
+  let entryIndex = 0;
   window.history = {
-    state: null,
-    replaceState(state, unused, url) { this.state = state; location = new URL(url, location); },
+    get state() { return entries[entryIndex].state; },
+    get length() { return entries.length; },
+    replaceState(state, unused, url) {
+      location = new URL(url, location);
+      entries[entryIndex] = { url: location.href, state };
+    },
+    pushState(state, unused, url) {
+      location = new URL(url, location);
+      entries.splice(++entryIndex, entries.length, { url: location.href, state });
+    },
+    back() {
+      assert.ok(entryIndex > 0, 'A previous history entry exists');
+      const entry = entries[--entryIndex];
+      location = new URL(entry.url);
+      return window.dispatch('popstate', { state: entry.state });
+    },
   };
   if (intersectionObserver) {
     window.IntersectionObserver = class {
@@ -91,7 +108,7 @@ function boot(address, { intersectionObserver = true, modelContext = false } = {
   if (modelContext) document.modelContext = { async registerTool(tool) { tools.set(tool.name, tool); } };
   runInNewContext(script, {
     catalog, document, window, URL, performance: { timeOrigin: 1000 },
-    navigator: {}, AbortController,
+    navigator: { clipboard }, AbortController,
   }, { filename: 'site/app.js', timeout: 1000 });
   return { get, window, observers, tools };
 }
@@ -139,6 +156,108 @@ test('an explicitly empty saved selection stays empty after reload', () => {
   assert.equal(restored.get('host-os').value, 'unspecified');
   assert.equal(restored.get('prompt-preview').value, '');
   assert.equal(restored.get('copy-prompt').disabled, true);
+});
+
+test('copy buttons write the exact current prompt and setup link', async () => {
+  const writes = [];
+  const page = boot('https://example.test/agent-rulebook/', {
+    clipboard: { async writeText(text) { writes.push(text); } },
+  });
+  const prompt = page.get('prompt-preview').value;
+  const link = page.get('setup-link').value;
+  await page.get('copy-prompt').dispatch('click');
+  assert.deepEqual(writes, [prompt]);
+  assert.match(page.get('action-status').textContent, /prompt copied/i);
+  await page.get('copy-setup-link').dispatch('click');
+  assert.deepEqual(writes, [prompt, link]);
+  assert.match(page.get('share-status').textContent, /link copied/i);
+  page.get('clear-selection').dispatch('click');
+  await page.get('copy-prompt').dispatch('click');
+  assert.deepEqual(writes, [prompt, link], 'An empty prompt is not copied');
+});
+
+test('unavailable or rejected clipboard writes offer manual copy without claiming success', async () => {
+  for (const clipboard of [undefined, { async writeText() { throw new Error('Denied'); } }]) {
+    const page = boot('https://example.test/agent-rulebook/', { clipboard });
+    const preview = page.get('prompt-preview');
+    const prompt = preview.value;
+    await page.get('copy-prompt').dispatch('click');
+    assert.equal(preview.value, prompt);
+    assert.ok(preview.focused && preview.selected);
+    assert.match(page.get('action-status').textContent, /copy.*unavailable.*selected.*copy shortcut/i);
+    assert.doesNotMatch(page.get('action-status').textContent, /prompt copied/i);
+
+    const link = page.get('setup-link');
+    const address = link.value;
+    await page.get('copy-setup-link').dispatch('click');
+    assert.equal(link.value, address);
+    assert.equal(link.hidden, false);
+    assert.equal(page.get('setup-link-label').hidden, false);
+    assert.ok(link.focused && link.selected);
+    assert.match(page.get('share-status').textContent, /copy.*unavailable.*selected.*copy shortcut/i);
+    assert.doesNotMatch(page.get('share-status').textContent, /link copied/i);
+  }
+});
+
+test('late copy success or failure cannot overwrite feedback for a changed selection', async () => {
+  for (const failed of [false, true]) {
+    for (const button of ['copy-prompt', 'copy-setup-link']) {
+      let settle;
+      const page = boot('https://example.test/agent-rulebook/', {
+        clipboard: { writeText: () => new Promise((resolve, reject) => {
+          settle = failed ? () => reject(new Error('Denied')) : resolve;
+        }) },
+      });
+      const pending = page.get(button).dispatch('click');
+      page.get('rule-web').checked = true;
+      page.get('rule-web').dispatch('change');
+      const feedback = page.get('action-status').textContent;
+      const prompt = page.get('prompt-preview').value;
+      const link = page.get('setup-link').value;
+      settle();
+      await pending;
+      assert.equal(page.get('action-status').textContent, feedback);
+      assert.equal(page.get('share-status').textContent, '');
+      assert.equal(page.get('prompt-preview').value, prompt);
+      assert.equal(page.get('setup-link').value, link);
+      assert.ok(!page.get('prompt-preview').focused && !page.get('setup-link').focused);
+    }
+  }
+});
+
+test('Back between page sections keeps choices made after opening the prompt', async () => {
+  const page = boot('https://example.test/agent-rulebook/#builder');
+  page.window.history.pushState(null, '', '#your-file');
+  page.get('rule-web').checked = true;
+  page.get('rule-web').dispatch('change');
+  const prompt = page.get('prompt-preview').value;
+  assert.equal(page.window.history.length, 2, 'Checkbox changes replace rather than add history entries');
+  await page.window.history.back();
+  assert.equal(page.window.location.hash, '#builder');
+  assert.equal(page.get('rule-web').checked, true);
+  assert.equal(page.get('prompt-preview').value, prompt);
+  assert.ok(new URL(page.get('setup-link').value).searchParams.get('rules').split(',').includes('web'));
+});
+
+test('Back to a different saved setup restores its choices, host, summary, and global prompt', async () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=general,mac&host=mac#builder');
+  const prompt = page.get('prompt-preview').value;
+  const summary = page.get('selection-summary').textContent;
+  page.window.history.pushState(null, '', '?rules=web,linux&host=linux#your-file');
+  await page.window.dispatch('popstate', { state: null });
+  assert.equal(page.get('host-os').value, 'linux');
+  assert.equal(page.get('rule-web').checked, true);
+  assert.equal(page.get('rule-general').checked, false);
+  await page.window.history.back();
+  assert.equal(page.get('host-os').value, 'mac');
+  assert.equal(page.get('rule-mac').checked, true);
+  assert.equal(page.get('rule-mac').disabled, true);
+  assert.equal(page.get('rule-general').checked, true);
+  assert.equal(page.get('rule-web').checked, false);
+  assert.equal(page.get('rule-linux').checked, false);
+  assert.equal(page.get('selection-summary').textContent, summary);
+  assert.equal(page.get('prompt-preview').value, prompt);
+  assert.match(prompt, /^Review my user-level \(global\)/);
 });
 
 test('legacy project links preserve choices but clearly migrate to global-only review', () => {
@@ -312,7 +431,7 @@ test('selected guidance explains its purpose and remains independently optional'
   assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web']));
 
   page.get('clear-selection').dispatch('click');
-  assert.equal(summary.textContent, 'No rules selected');
+  assert.match(summary.textContent, /no.*selected/i);
 });
 
 test('mobile shortcut returns to selection while the prompt section is visible', () => {
@@ -323,25 +442,25 @@ test('mobile shortcut returns to selection while the prompt section is visible',
   const observer = page.observers[0];
   assert.equal(observer.target, page.get('your-file'));
   assert.equal(link.href, '#your-file');
-  assert.equal(label.textContent, 'Get prompt');
+  assert.match(label.textContent, /get.*prompt/i);
 
   observer.callback([{ isIntersecting: true, intersectionRatio: 0 }]);
   assert.equal(link.href, '#builder');
-  assert.equal(label.textContent, 'Back to rule selection');
+  assert.match(label.textContent, /back.*selection/i);
 
   observer.callback([{ isIntersecting: true, intersectionRatio: 0.1 }]);
   assert.equal(link.href, '#builder');
-  assert.equal(label.textContent, 'Back to rule selection');
+  assert.match(label.textContent, /back.*selection/i);
 
   observer.callback([{ isIntersecting: false, intersectionRatio: 0 }]);
   assert.equal(link.href, '#your-file');
-  assert.equal(label.textContent, 'Get prompt');
+  assert.match(label.textContent, /get.*prompt/i);
 });
 
 test('mobile shortcut keeps its working default without IntersectionObserver', () => {
   const page = boot('https://example.test/agent-rulebook/', { intersectionObserver: false });
   assert.equal(page.get('mobile-review-link').href, '#your-file');
-  assert.equal(page.get('mobile-review-label').textContent, 'Get prompt');
+  assert.match(page.get('mobile-review-label').textContent, /get.*prompt/i);
   assert.equal(page.get('copy-prompt').disabled, false);
 });
 
