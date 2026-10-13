@@ -46,4 +46,4 @@ Apply only to software development, including temporary or standalone software. 
 ## Code checks and review
 
 * Check that static analysis covers changed paths, file types, and intended rules, respecting intentional exclusions. Fix in-scope findings at source. Use only narrow, justified, project-allowed suppressions or type-check bypasses; explain them and ask before policy changes. Coverage gaps alone do not justify new tools.
-* Verify review findings against current requirements and code. Fix required in-scope issues and report others with evidence. Recommend the smallest useful recurrence prevention only when benefit justifies upkeep and false positives; add it only when authorized. Global prevention must apply across projects, without secrets or temporary facts.
+* Verify review findings against current requirements and code. Fix required in-scope issues and report others with evidence. Recommend the smallest useful recurrence prevention only when benefit justifies upkeep and false positives; add it only when authorized.

@@ -15,13 +15,13 @@ Choose how to start:
 
 ## Choose General, then relevant add-ons
 
-Start with [General essentials](agent-global-rules.md) for scope, safety, approvals, privacy, and honest verification. They work without a project, desktop, plugins, or skills. [Communication](optional/communication-rules.md) and [Tools and execution](optional/tools-execution-rules.md) are separate optional choices, including for non-development work. Add [Coding rules](coding-agent-global-rules.md) only for software development. Use the source Git commit for an exact revision.
+Start with [General essentials](agent-global-rules.md) for scope, safety, approvals, privacy, and honest verification. They work without a project, desktop, plugins, or skills. Use the source Git commit for an exact revision.
 
-Append only the add-ons relevant to your intended activities. Keep their applicability lines when copying. They can complement General or equivalent existing guidance; no file imports or activates another file. The existing files remain the source, with no duplicate starter bundle.
+Append only relevant add-ons and keep their applicability lines when copying. They can complement General or equivalent existing guidance; no file imports or activates another file.
 
 **Do not load the whole collection by default.** Keep General, or equivalent safety guidance, active. Add only modules for work that agent actually does. For example, research and documents need no Coding or Web rules; building a website does not automatically need animation, localization, or desktop-operation rules.
 
-Keep these reusable defaults in your agent's global (user-level) instructions. Select optional modules for activities that agent does; use supported conditional loading where available. Keep project-specific commands, tools, and requirements in project instructions, not global rules. An “Apply when” sentence limits behavior, not context use: its text still loads. Separate files save context only when irrelevant files stay unloaded.
+Keep these reusable defaults in your agent's global (user-level) instructions. Keep project-specific commands, tools, and requirements in project instructions, not global rules.
 
 | Agent setup | Load these files | Covers |
 | --- | --- | --- |
@@ -34,9 +34,16 @@ Keep these reusable defaults in your agent's global (user-level) instructions. S
 | Version control, including non-code files | General + [version control](optional/version-control-rules.md) | Reviewing changes, preserving work, identities, commits, pushes, and exposed history. |
 | Browser or desktop operation | General + [computer use](optional/browser-computer-use-rules.md) | Sessions, tabs, focus, and interface interaction for any task. |
 
-For fresh installs, General is a suggested baseline; software and activity-specific guidance is opt-in. When updating existing instructions, compare before merging and avoid duplicate versions. Project instructions govern implementation choices, not waivers of required approval or safety. "Global" means reusable across tasks or projects, not permission to act everywhere.
+"Global" means reusable across tasks or projects, not permission to act everywhere. Project instructions govern implementation choices, not waivers of required approval or safety.
 
 When combining files, keep General first, selected add-ons next, and move General's **Personalize** section, including any preferences already added, to the end. Change its heading to `# Personalize` so it is separate from every add-on. Keep `## Personalize` when using General alone. Keep each add-on's heading and applicability line together. Add personal preferences or an optional private context-file instruction under Personalize.
+
+<details>
+<summary>Instruction loading and size</summary>
+
+Select fewer relevant sections or use supported conditional loading. An “Apply when” sentence limits behavior, not context use: its text still loads. Separate files save context only when irrelevant files stay unloaded. Imports alone do not reduce context use or bypass a combined loading limit. Check your agent's supported limit and recheck the total when instructions change. Keep essential safety and approval boundaries active.
+
+</details>
 
 American English is used consistently in the supplied rules; it does not prescribe how agents must write your content.
 
@@ -50,7 +57,7 @@ The [website](https://jitendravyas.github.io/agent-rulebook/) creates a prompt t
 
 Choose individual sets; opening a group selects nothing. General is selected by default. It can be deselected when reviewing add-ons against equivalent instructions you already have. Coding is a separate choice, not automatically included.
 
-1. **Choose rules to review.** OS guidance is optional. Select only operating systems your agent actually accesses. Choose one host OS where it runs commands or operates apps; this selects its OS rules. Add other systems only if the agent accesses them too. For example, an agent running entirely on a Linux server needs Linux guidance, not macOS guidance just because you connect from a Mac. Each set applies only within its scope.
+1. **Choose rules to review.** OS guidance is optional. Select only operating systems your agent actually accesses. Choose one host OS where it runs commands or operates apps; this selects its OS rules. Each set applies only within its scope.
 2. **Copy your review prompt.** Read the full prompt. It reviews global instructions only and keeps recommendations reusable across tasks and projects.
 3. **Ask your agent to review.** Paste the prompt into a conversation. The agent compares the references with your accessible global instructions and relevant skills, skips duplicates and unsuitable guidance, flags conflicts, and proposes worthwhile edits. Project instruction files are not editing targets. It must ask before editing and may recommend no changes.
 
@@ -60,7 +67,7 @@ The prompt asks the agent to check for incomplete or truncated sources, retrieve
 
 Source links are for the review, not your installed instructions. Adopted rule text must omit repository branding, source links, paths, and tracking metadata. Required license notices stay outside active rules.
 
-Bookmark the page address or use **Copy setup link** to save selected sets and host OS. These choices also appear in the prompt. Links restore choices, not a fixed rule version; prompts always link to public `main`. Older project-review links keep their selections but show a notice that review is now global-only. Older links without a host leave it unspecified and may warn about unavailable choices. Local preview links work only on the serving machine; share the hosted address with others.
+Bookmark the page address or use **Copy setup link** to save selected sets and host OS. Links restore choices, not a fixed rule version; prompts always link to public `main`. Local preview links work only on the serving machine; share the hosted address with others.
 
 The website's **Read the source rules** section links to the original Markdown files, this README, and the license. People, crawlers, and agents can follow them without JavaScript.
 
@@ -211,11 +218,14 @@ If one agent handles mixed work, your selected rules can stay loaded. Each appli
 
 ### What if the rules are too large?
 
-Select fewer relevant sections, load sections conditionally where supported, or adjust a supported loading-limit setting. The split saves context only when you omit an irrelevant add-on; selecting all modules still combines all their text. A condition inside a copied rule does not stop that text from using context. Imports organize files, but save context only if the agent leaves irrelevant text unloaded. Splitting files does not bypass a combined loading limit; increasing the limit does not reduce context use. Keep essential safety and approval boundaries in the instructions that load for the relevant work. Recheck the total when the rules or your existing instructions change.
+Use a smaller relevant selection. See the [module-loading guide](#choose-general-then-relevant-add-ons) for loading controls and limits; keep essential safety and approval boundaries active.
 
 ### How do I migrate from older rule files?
 
 Replace old copied guidance rather than appending another copy, preserving personal preferences and essential safety protections.
+
+<details>
+<summary>Changes to older files and saved links</summary>
 
 General has been split without removing its guidance. The existing `agent-global-rules.md` file and `general` website selection now cover essentials. Reply-style and tool-efficiency guidance moved into the optional Communication and Tools and execution files. Choose both add-ons only if you want those parts of the former General file; saved General-only links do not silently select them. Replace the old General text rather than keeping it alongside the split files. Selecting all three does not reduce context use.
 
@@ -224,6 +234,10 @@ General has been split without removing its guidance. The existing `agent-global
 Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional browser-animation rules only when relevant. The former standalone accessibility file is no longer needed; implementation safeguards remain in Coding and assessment boundaries are in Software testing.
 
 The former standalone web-performance rules are also no longer needed. Basic resource-efficiency guidance is in Tools and execution, software performance assessment is in Coding, and browser-loading safeguards are in Web. Remove older copied performance guidance when replacing it to avoid duplicates; none of these defaults requests an unrelated audit.
+
+Older project-review links keep their selections but show a notice that review is now global-only. Older links without a host leave it unspecified and may warn about unavailable choices.
+
+</details>
 
 ### What if they conflict with my project rules or skills?
 

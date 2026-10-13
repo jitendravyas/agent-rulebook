@@ -118,7 +118,7 @@ const BROWSER_ANIMATION_RULE = {
   title: 'Browser animation rules',
   label: 'Animate websites or web apps',
   description:
-    'Motion within a running web page, including animation state and accessibility. Not for exported video.',
+    'Animation state, lifecycle, and interrupted motion in a running web page. Not for exported video.',
   purpose: 'Changing motion in live web interfaces, not exported video.',
   path: 'optional/browser-animation-rules.md',
 };
@@ -136,7 +136,7 @@ const MOTION_VIDEO_RULE = {
 const I18N_RULE = {
   id: 'i18n',
   title: 'Internationalization and localization rules',
-  label: 'Build software for different languages',
+  label: 'Support human languages and regions',
   description:
     'Language and regional support in software, including right-to-left interfaces. Not for ordinary message or document translation.',
   purpose: 'Building software for different languages and regions, not ordinary document translation.',
@@ -187,7 +187,7 @@ export const RULE_GROUPS = [
     id: 'general',
     title: 'General behavior',
     summary: 'Start with essential safety; choose reply and explanation guidance separately.',
-    description: `General essentials are the suggested safety baseline. “${COMMUNICATION_RULE.label}” is optional. Select “${CODING_RULE.label}” only for software work. Review other sets alone if you already have equivalent safety guidance; do not load the whole collection by default.`,
+    description: `For software tasks, also see “${CODING_RULE.label}” below.`,
     rules: [GENERAL_RULE, COMMUNICATION_RULE],
   },
   {
