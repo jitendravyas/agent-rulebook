@@ -74,7 +74,6 @@ test('review prompts target global instructions and exclude project edits', () =
     assert.ok(prompt.includes('Do not edit project instruction files or copy project-specific facts into global rules.'));
     assert.doesNotMatch(prompt, /Review the agent instructions for this project only/);
   }
-  assert.throws(() => buildReviewPrompt(['general'], 'project'), /host operating system/i);
 });
 
 test('tools and communication are separate choices rather than implicit General additions', () => {
@@ -148,39 +147,38 @@ test('the retired performance set is not offered or linked in review prompts', (
   assert.throws(() => buildReviewPrompt(['web-performance']), /Unknown rule id/);
 });
 
-test('identifies one host and additional operating systems', () => {
-  const prompt = buildReviewPrompt(['general', 'mac', 'linux', 'windows'], 'mac');
-  assert.ok(prompt.includes('Host operating system: macOS.'));
-  assert.ok(prompt.includes('Additional operating systems (not the host): Windows, Linux.'));
+test('lists selected operating systems without assigning host roles', () => {
+  const prompt = buildReviewPrompt(['general', 'mac', 'linux', 'windows']);
+  assert.ok(prompt.includes('Operating systems to consider: macOS, Windows, Linux.'));
+  assert.doesNotMatch(prompt, /host|roles not specified/i);
   assert.ok(prompt.includes('ask for my approval before editing, installing, or activating instructions'));
   assert.equal((prompt.match(/https:\/\/raw\.githubusercontent\.com\//g) || []).length, 5);
 });
 
-test('does not infer a host from a single or multiple OS selections', () => {
+test('selected systems do not imply verified access and remain scoped to the target OS', () => {
   for (const ids of [['mac'], ['windows', 'linux']]) {
     const prompt = buildReviewPrompt(ids);
-    assert.ok(prompt.includes('Host operating system: not specified.'));
-    assert.ok(prompt.includes('Operating systems to consider (roles not specified):'));
-    assert.ok(!prompt.includes('Additional operating systems (not the host):'));
+    assert.ok(prompt.includes('Operating systems to consider:'));
+    assert.ok(prompt.includes('not verified details or access permission'));
+    assert.ok(prompt.includes('Confirm the target OS before applying OS-specific guidance.'));
   }
 });
 
-test('host-only selection does not invent additional environments', () => {
-  const prompt = buildReviewPrompt(['linux'], 'linux');
-  assert.ok(prompt.includes('Host operating system: Linux.'));
-  assert.ok(prompt.includes('Additional operating systems (not the host): none selected.'));
+test('a single OS choice does not invent additional environments', () => {
+  const prompt = buildReviewPrompt(['linux']);
+  assert.ok(prompt.includes('Operating systems to consider: Linux.'));
+  assert.doesNotMatch(prompt, /macOS|Windows|not specified|additional operating systems/i);
 });
 
 test('no OS selection adds no environment assumptions', () => {
-  assert.ok(!buildReviewPrompt(['general']).includes('Host operating system:'));
+  assert.ok(!buildReviewPrompt(['general']).includes('Operating systems to consider:'));
   assert.equal(buildReviewPrompt([]), '');
 });
 
-test('rejects unknown hosts and hosts without a selected rule set', () => {
-  for (const host of ['general', 'other', null, ['mac']]) {
-    assert.throws(() => buildReviewPrompt(['mac'], host), /host operating system/i);
+test('rejects unknown rule selections, including unsupported operating systems', () => {
+  for (const id of ['other', 'unsupported-os']) {
+    assert.throws(() => buildReviewPrompt(['mac', id]), /Unknown rule id/);
   }
-  assert.throws(() => buildReviewPrompt(['general'], 'mac'), /selected rule/i);
 });
 
 test('retains every selected source once and keeps the license footer removed', () => {

@@ -173,7 +173,6 @@ export const RULES = [
 ];
 
 export const OS_RULES = RULES.filter((rule) => rule.environment);
-export const HOST_OS_CHOICES = ['unspecified', ...OS_RULES.map((rule) => rule.id)];
 
 export const RULE_GROUPS = [
   {
@@ -271,17 +270,11 @@ export function ruleSourceURL(rule) {
   return new URL(rule.path, SOURCE_ROOT).href;
 }
 
-export function buildReviewPrompt(selectedIds, hostOS = 'unspecified') {
+export function buildReviewPrompt(selectedIds) {
   const ids = uniqueIds(selectedIds);
   const unknownIds = ids.filter((id) => !RULE_BY_ID.has(id));
   if (unknownIds.length > 0) {
     throw new Error(`Unknown rule id(s): ${unknownIds.join(', ')}`);
-  }
-  if (!HOST_OS_CHOICES.includes(hostOS)) {
-    throw new Error('Choose a supported host operating system or unspecified');
-  }
-  if (hostOS !== 'unspecified' && !ids.includes(hostOS)) {
-    throw new Error('The host operating system must be a selected rule set');
   }
   if (ids.length === 0) return '';
 
@@ -291,14 +284,7 @@ export function buildReviewPrompt(selectedIds, hostOS = 'unspecified') {
   const environments = OS_RULES.filter((rule) => selected.has(rule.id));
   const environmentContext = [];
   if (environments.length) {
-    if (hostOS === 'unspecified') {
-      environmentContext.push('Host operating system: not specified.',
-        `Operating systems to consider (roles not specified): ${environments.map((rule) => rule.label).join(', ')}.`);
-    } else {
-      const additional = environments.filter((rule) => rule.id !== hostOS);
-      environmentContext.push(`Host operating system: ${RULE_BY_ID.get(hostOS).label}.`,
-        `Additional operating systems (not the host): ${additional.map((rule) => rule.label).join(', ') || 'none selected'}.`);
-    }
+    environmentContext.push(`Operating systems to consider: ${environments.map((rule) => rule.label).join(', ')}.`);
     environmentContext.push('These are intended environments, not verified details or access permission. Confirm the target OS before applying OS-specific guidance.', '');
   }
 

@@ -57,7 +57,7 @@ The [website](https://jitendravyas.github.io/agent-rulebook/) creates a prompt t
 
 Choose individual sets; opening a group selects nothing. General is selected by default. It can be deselected when reviewing add-ons against equivalent instructions you already have. Coding is a separate choice, not automatically included.
 
-1. **Choose rules to review.** OS guidance is optional. Select only operating systems your agent actually accesses. Choose one host OS where it runs commands or operates apps; this selects its OS rules. Each set applies only within its scope.
+1. **Choose rules to review.** OS guidance is optional. Use the checkboxes to select only operating systems your agent actually accesses. Each set applies only within its scope.
 2. **Copy your review prompt.** Read the full prompt. It reviews global instructions only and keeps recommendations reusable across tasks and projects.
 3. **Ask your agent to review.** Paste the prompt into a conversation. The agent compares the references with your accessible global instructions and relevant skills, skips duplicates and unsuitable guidance, flags conflicts, and proposes worthwhile edits. Project instruction files are not editing targets. It must ask before editing and may recommend no changes.
 
@@ -67,7 +67,7 @@ The prompt asks the agent to check for incomplete or truncated sources, retrieve
 
 Source links are for the review, not your installed instructions. Adopted rule text must omit repository branding, source links, paths, and tracking metadata. Required license notices stay outside active rules.
 
-Bookmark the page address or use **Copy setup link** to save selected sets and host OS. Links restore choices, not a fixed rule version; prompts always link to public `main`. Local preview links work only on the serving machine; share the hosted address with others.
+Bookmark the page address or use **Copy setup link** to save selected sets. Links restore choices, not a fixed rule version; prompts always link to public `main`. Local preview links work only on the serving machine; share the hosted address with others.
 
 The website's **Read the source rules** section links to the original Markdown files, this README, and the license. People, crawlers, and agents can follow them without JavaScript.
 
@@ -235,7 +235,7 @@ Replace older copied web rules to remove the bundled animation section and detai
 
 The former standalone web-performance rules are also no longer needed. Basic resource-efficiency guidance is in Tools and execution, software performance assessment is in Coding, and browser-loading safeguards are in Web. Remove older copied performance guidance when replacing it to avoid duplicates; none of these defaults requests an unrelated audit.
 
-Older project-review links keep their selections but show a notice that review is now global-only. Older links without a host leave it unspecified and may warn about unavailable choices.
+Older project-review links keep their selections but show a notice that review is now global-only. Older host-OS parameters are ignored; selected OS rules are kept. Links may warn about unavailable choices.
 
 </details>
 

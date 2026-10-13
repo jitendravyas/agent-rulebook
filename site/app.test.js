@@ -113,35 +113,29 @@ function boot(address, { intersectionObserver = true, modelContext = false, clip
   return { get, window, observers, tools };
 }
 
-test('saved setup restores selected controls, host OS, and the global prompt', () => {
+test('saved setup restores selected controls and the global prompt without host metadata', () => {
   const first = boot('https://example.test/agent-rulebook/?unrelated=discard-from-share');
-  const host = first.get('host-os');
-  host.value = 'mac';
-  host.dispatch('change');
-  for (const id of ['web', 'linux', 'i18n']) {
+  for (const id of ['web', 'mac', 'linux', 'i18n']) {
     const input = first.get(`rule-${id}`);
     input.checked = true;
     input.dispatch('change');
   }
   const saved = first.get('setup-link').value;
-  assert.deepEqual([...new URL(saved).searchParams.keys()], ['rules', 'host']);
+  assert.deepEqual([...new URL(saved).searchParams.keys()], ['rules']);
 
   const restored = boot(saved);
   const expectedIds = ['general', 'web', 'mac', 'linux', 'i18n'];
   assert.deepEqual(catalog.RULES.filter(rule => restored.get(`rule-${rule.id}`).checked).map(rule => rule.id), expectedIds);
-  assert.equal(restored.get('host-os').value, 'mac');
-  assert.equal(restored.get('rule-mac').disabled, true);
+  assert.equal(restored.get('rule-mac').disabled, false);
   assert.equal(restored.get('rule-linux').disabled, false);
   assert.equal(restored.get('rule-coding').checked, false);
-  assert.match(restored.get('role-mac').textContent, /Host OS/);
-  assert.match(restored.get('role-linux').textContent, /Additional OS/);
   assert.equal(restored.get('rule-count').textContent, '5');
   assert.equal(restored.get('copy-prompt').disabled, false);
   assert.equal(restored.get('setup-link').value, saved);
   const prompt = restored.get('prompt-preview').value;
   assert.equal(prompt, first.get('prompt-preview').value);
-  assert.match(prompt, /Host operating system: macOS\./);
-  assert.match(prompt, /Additional operating systems \(not the host\): Linux\./);
+  assert.match(prompt, /Operating systems to consider: macOS, Linux\./);
+  assert.doesNotMatch(prompt, /host|roles not specified/i);
   assert.match(prompt.split('\n')[0], /my user-level \(global\) agent instructions/);
   for (const rule of catalog.RULES) {
     assert.equal(prompt.includes(catalog.ruleSourceURL(rule)), expectedIds.includes(rule.id));
@@ -153,7 +147,6 @@ test('an explicitly empty saved selection stays empty after reload', () => {
   first.get('clear-selection').dispatch('click');
   const restored = boot(first.get('setup-link').value);
   assert.ok(catalog.RULES.every(rule => !restored.get(`rule-${rule.id}`).checked));
-  assert.equal(restored.get('host-os').value, 'unspecified');
   assert.equal(restored.get('prompt-preview').value, '');
   assert.equal(restored.get('copy-prompt').disabled, true);
 });
@@ -239,19 +232,18 @@ test('Back between page sections keeps choices made after opening the prompt', a
   assert.ok(new URL(page.get('setup-link').value).searchParams.get('rules').split(',').includes('web'));
 });
 
-test('Back to a different saved setup restores its choices, host, summary, and global prompt', async () => {
+test('Back to a different saved setup restores its choices, summary, and global prompt', async () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,mac&host=mac#builder');
   const prompt = page.get('prompt-preview').value;
   const summary = page.get('selection-summary').textContent;
   page.window.history.pushState(null, '', '?rules=web,linux&host=linux#your-file');
   await page.window.dispatch('popstate', { state: null });
-  assert.equal(page.get('host-os').value, 'linux');
+  assert.equal(page.get('rule-linux').checked, true);
   assert.equal(page.get('rule-web').checked, true);
   assert.equal(page.get('rule-general').checked, false);
   await page.window.history.back();
-  assert.equal(page.get('host-os').value, 'mac');
   assert.equal(page.get('rule-mac').checked, true);
-  assert.equal(page.get('rule-mac').disabled, true);
+  assert.equal(page.get('rule-mac').disabled, false);
   assert.equal(page.get('rule-general').checked, true);
   assert.equal(page.get('rule-web').checked, false);
   assert.equal(page.get('rule-linux').checked, false);
@@ -266,7 +258,7 @@ test('legacy project links preserve choices but clearly migrate to global-only r
     assert.equal(page.get('rule-web').checked, true);
     assert.equal(page.get('rule-mac').checked, true);
     assert.equal(page.get('rule-general').checked, false);
-    assert.equal(page.get('host-os').value, 'mac');
+    assert.equal(page.get('rule-mac').disabled, false);
     assert.match(page.get('prompt-preview').value, /^Review my user-level \(global\)/);
     assert.match(page.get('link-warning').textContent, /now reviews global instructions only/);
     assert.ok(!new URL(page.get('setup-link').value).searchParams.has('scope'));
@@ -281,9 +273,12 @@ test('agent-facing tools only generate global reviews and reject retired scope i
   const generate = page.tools.get('generate_review_prompt');
   assert.ok(list && generate, 'Both real app tools register');
   assert.ok(!Object.hasOwn(generate.inputSchema.properties, 'scope'));
+  assert.ok(!Object.hasOwn(generate.inputSchema.properties, 'hostOS'));
   const catalogResult = list.execute({});
   assert.ok(!Object.hasOwn(catalogResult, 'scopes'));
   assert.ok(!Object.hasOwn(catalogResult.selection, 'scope'));
+  assert.ok(!Object.hasOwn(catalogResult.selection, 'hostOS'));
+  assert.ok(!Object.hasOwn(catalogResult, 'hostOSChoices'));
 
   const before = page.get('prompt-preview').value;
   for (const scope of ['personal', 'project']) {
@@ -293,14 +288,19 @@ test('agent-facing tools only generate global reviews and reject retired scope i
     assert.equal(page.get('prompt-preview').value, before);
     assert.equal(page.get('rule-web').checked, false);
   }
-  const result = generate.execute({ ruleIds: ['web', 'mac'], hostOS: 'mac' });
+  const retiredHost = generate.execute({ ruleIds: ['web', 'mac'], hostOS: 'mac' });
+  assert.equal(retiredHost.code, 'invalid_input');
+  assert.equal(page.get('prompt-preview').value, before);
+  const result = generate.execute({ ruleIds: ['web', 'mac'] });
   assert.equal(result.status, 'ready');
-  assert.equal(result.prompt, catalog.buildReviewPrompt(['web', 'mac'], 'mac'));
+  assert.equal(result.prompt, catalog.buildReviewPrompt(['web', 'mac']));
   assert.equal(page.get('prompt-preview').value, result.prompt);
   assert.equal(page.get('rule-general').checked, false);
   assert.equal(page.get('rule-coding').checked, false);
   assert.equal(page.get('rule-web').checked, true);
   assert.ok(!new URL(result.setupLink).searchParams.has('scope'));
+  assert.ok(!new URL(result.setupLink).searchParams.has('host'));
+  assert.ok(!Object.hasOwn(result, 'hostOS'));
 });
 
 test('new General add-ons remain opt-in and survive saved-link reloads', () => {
@@ -318,31 +318,26 @@ test('new General add-ons remain opt-in and survive saved-link reloads', () => {
   }
 });
 
-test('changing or clearing the host preserves manually selected OS rules in controls, links, and prompts', () => {
+test('OS checkboxes independently select and remove guidance in controls, links, and prompts', () => {
   for (const rule of catalog.OS_RULES) {
     const page = boot('https://example.test/agent-rulebook/?rules=general&host=unspecified');
     const input = page.get(`rule-${rule.id}`);
     input.checked = true;
     input.dispatch('change');
-    const host = page.get('host-os');
-    host.value = rule.id;
-    host.dispatch('change');
-    assert.equal(input.disabled, true);
+    assert.equal(input.disabled, false);
 
     const other = catalog.OS_RULES.find(candidate => candidate.id !== rule.id);
-    for (const nextHost of [other.id, 'unspecified']) {
-      host.value = nextHost;
-      host.dispatch('change');
-      assert.equal(input.checked, true, `${rule.id} stays selected when the host is ${nextHost}`);
-      assert.equal(input.disabled, false);
-      assert.match(page.get(`role-${rule.id}`).textContent,
-        nextHost === 'unspecified' ? /OS role not specified/ : /Additional OS/);
+    for (const checked of [true, false]) {
+      const otherInput = page.get(`rule-${other.id}`);
+      otherInput.checked = checked;
+      otherInput.dispatch('change');
+      assert.equal(input.checked, true, `${rule.id} is independent of ${other.id}`);
       const saved = page.get('setup-link').value;
       assert.ok(new URL(saved).searchParams.get('rules').split(',').includes(rule.id));
-      assert.equal(new URL(saved).searchParams.get('host'), nextHost);
+      assert.ok(!new URL(saved).searchParams.has('host'));
       const ids = catalog.RULES.filter(candidate => page.get(`rule-${candidate.id}`).checked)
         .map(candidate => candidate.id);
-      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids, nextHost));
+      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids));
       const restored = boot(saved);
       assert.equal(restored.get(`rule-${rule.id}`).checked, true);
       assert.equal(restored.get('prompt-preview').value, page.get('prompt-preview').value);
@@ -355,32 +350,25 @@ test('changing or clearing the host preserves manually selected OS rules in cont
   }
 });
 
-test('host changes retain selected OS guidance until it is explicitly unchecked or cleared', () => {
+test('OS choices have one label, help after the checkboxes, and no dropdown or host badges', () => {
   const page = boot('https://example.test/agent-rulebook/');
-  const host = page.get('host-os');
-  assert.equal(host.children[0].textContent, 'Choose your agent’s operating system');
-  assert.equal(host.children[0].value, 'unspecified');
-  assert.equal(page.get('group-description-environment').textContent, 'Optional. Select only operating systems your agent actually accesses.');
-  const osHeading = page.get('os-rules-heading');
-  assert.equal(osHeading.tag, 'h3');
-  assert.equal(osHeading.textContent, 'OS rules to include');
-  const osGroup = page.get('rule-groups').children.find(group => group.children.includes(osHeading));
+  const osGroup = page.get('rule-groups').children[0];
+  const [legend, choices, help] = osGroup.children;
+  assert.equal(legend.tag, 'legend');
+  assert.equal(legend.textContent, 'Select the operating systems your agent uses');
+  assert.equal(help.id, 'group-description-environment');
+  assert.equal(help.textContent, 'Optional. Select only operating systems your agent actually accesses.');
+  assert.equal(osGroup['aria-describedby'], help.id);
+  assert.deepEqual(choices.children.map(card => card.children[0].children[0].value), ['mac', 'windows', 'linux']);
+  const descendants = node => [node, ...node.children.filter(child => typeof child === 'object').flatMap(descendants)];
+  assert.ok(!descendants(osGroup).some(node => node.tag === 'select' || node.id?.startsWith('role-')));
   assert.doesNotMatch(osGroup.textContent, /SSH|agent running remotely/i);
-  const choices = osGroup.children[osGroup.children.indexOf(osHeading) + 1];
-  assert.equal(choices.role, 'group');
-  assert.equal(choices['aria-labelledby'], osHeading.id);
-  host.value = 'mac';
-  host.dispatch('change');
-  host.value = 'linux';
-  host.dispatch('change');
-  assert.equal(page.get('rule-mac').checked, true);
-  assert.equal(page.get('rule-mac').disabled, false);
-  assert.equal(page.get('rule-linux').checked, true);
-  assert.equal(page.get('rule-linux').disabled, true);
-  assert.match(page.get('prompt-preview').value, /Additional operating systems \(not the host\): macOS\./);
-
+  for (const rule of catalog.OS_RULES) {
+    const input = page.get(`rule-${rule.id}`);
+    input.checked = true;
+    input.dispatch('change');
+  }
   page.get('clear-selection').dispatch('click');
-  assert.equal(host.value, 'unspecified');
   assert.ok(catalog.OS_RULES.every(rule => !page.get(`rule-${rule.id}`).checked));
   assert.equal(page.get('prompt-preview').value, '');
 });
@@ -389,11 +377,23 @@ test('saved links flag a retired set without losing other choices', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,coding,web,web-performance,mac&scope=project&host=mac');
   const ids = catalog.RULES.filter(rule => page.get(`rule-${rule.id}`).checked).map(rule => rule.id);
   assert.deepEqual(ids, ['general', 'coding', 'web', 'mac']);
-  assert.equal(page.get('host-os').value, 'mac');
+  assert.equal(page.get('rule-mac').disabled, false);
   assert.equal(page.get('link-warning').hidden, false);
   assert.match(page.get('link-warning').textContent, /unavailable/);
-  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids, 'mac'));
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids));
   assert.ok(!page.get('setup-link').value.includes('web-performance'));
+});
+
+test('legacy host parameters are ignored without changing selected rules', () => {
+  for (const host of ['mac', 'linux', 'unspecified', 'other', 'mac&host=windows']) {
+    const page = boot(`https://example.test/agent-rulebook/?rules=general,mac&host=${host}`);
+    assert.equal(page.get('rule-mac').checked, true);
+    assert.equal(page.get('rule-linux').checked, false);
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['general', 'mac']));
+    assert.equal(page.get('link-warning').hidden, true);
+    assert.ok(!page.window.location.search.includes('host='));
+    assert.ok(!new URL(page.get('setup-link').value).searchParams.has('host'));
+  }
 });
 
 test('a saved coding-only choice remains Coding without silently adding General', () => {
