@@ -40,9 +40,9 @@ test('every selectable rule explains its purpose and categories include visible 
   assert.equal(development.title, 'Software and web development');
   assert.match(development.summary, /building, changing, or testing software/);
   assert.match(development.description, /not merely browsing websites/);
-  assert.match(development.description, /an HTML report presenting research can use General alone/);
-  assert.match(development.description, /building an interactive website uses General plus/);
-  assert.match(development.description, /temporary pages when the task is to develop them/);
+  assert.match(development.description, /An HTML report presenting research can use General alone/);
+  assert.match(development.description, /For an interactive website, choose General/);
+  assert.match(development.description, /For development, including temporary pages/);
 });
 
 test('selection guidance uses the visible software rule labels', () => {
