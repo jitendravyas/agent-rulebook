@@ -200,9 +200,9 @@ export const RULE_GROUPS = [
   },
   {
     id: 'development',
-    title: 'Software development',
-    summary: 'Build software or websites, test changes, or add animation and language support.',
-    description: `For software work, choose “${CODING_RULE.label}”. Add “${WEB_RULE.label}” for web work and “${TESTING_RULE.label}” for testing. Choose animation or language support only when relevant, and skip sets your instructions already cover.`,
+    title: 'Software and web development',
+    summary: 'For building, changing, or testing software: native apps, websites, and web apps.',
+    description: `Choose these for development, not merely browsing websites or using an HTML preview. This includes temporary pages when the task is to develop them. Start with “${CODING_RULE.label}”; add “${WEB_RULE.label}” for web development and “${TESTING_RULE.label}” for testing. Animation and language support are optional. Skip sets your instructions already cover.`,
     collapsible: true,
     rules: [
       CODING_RULE,

@@ -36,6 +36,11 @@ test('every selectable rule explains its purpose and categories include visible 
     assert.ok(group.summary.trim().length, `Missing category examples: ${group.id}`);
   }
   assert.equal(RULE_GROUPS[0].id, 'environment');
+  const development = RULE_GROUPS.find(group => group.id === 'development');
+  assert.equal(development.title, 'Software and web development');
+  assert.match(development.summary, /building, changing, or testing software/);
+  assert.match(development.description, /not merely browsing websites or using an HTML preview/);
+  assert.match(development.description, /temporary pages when the task is to develop them/);
 });
 
 test('selection guidance uses the visible software rule labels', () => {
