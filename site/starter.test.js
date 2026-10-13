@@ -185,6 +185,9 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.doesNotMatch(readme, /Choose global instructions or instructions for a specific project|opening the project first for a project review/);
   const html = read('index.html');
   assert.match(html, /The prompt reviews your global \(user-level\) instructions only/);
+  assert.match(html, /<p id="selection-defaults">General is a suggested starting point\. All other modules are optional\.<\/p>/);
+  assert.ok(html.indexOf('id="selection-defaults"') < html.indexOf('id="rule-form"'));
+  assert.match(html, /aria-describedby="selection-defaults selection-help selection-notice"/);
   assert.doesNotMatch(html, /name="scope"|id="rule-scope"|Instructions for a specific project/);
   assert.match(html, /General essentials alone can be enough/);
   assert.match(html, /keep General or equivalent safety guidance active/);
