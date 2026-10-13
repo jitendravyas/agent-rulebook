@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Choose AI agent rules and copy a prompt to review them against your existing instructions. Find useful additions, duplicates, and conflicts before making changes.">
+  <meta name="description" content="Choose optional global AI agent rules and copy a prompt to review your user-level instructions. Find useful additions, duplicates, and conflicts before making changes.">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#101716">
   <title>Agent Rulebook | Find Rules That Fit Your Agent</title>
@@ -13,11 +13,11 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Agent Rulebook">
   <meta property="og:title" content="Agent Rulebook | Find Rules That Fit Your Agent">
-  <meta property="og:description" content="Select rule sets and copy a review prompt. Let your agent compare them with your existing instructions and propose only worthwhile changes. Free, with no account needed.">
+  <meta property="og:description" content="Select optional global rule sets and copy a prompt to review your user-level instructions. Your agent proposes useful changes; you decide what to keep. Free, with no account needed.">
   <meta property="og:url" content="https://jitendravyas.github.io/agent-rulebook/">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Agent Rulebook | Find Rules That Fit Your Agent">
-  <meta name="twitter:description" content="Select rule sets and copy a review prompt. Let your agent compare them with your existing instructions and propose only worthwhile changes. Free, with no account needed.">
+  <meta name="twitter:description" content="Select optional global rule sets and copy a prompt to review your user-level instructions. Your agent proposes useful changes; you decide what to keep. Free, with no account needed.">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -25,7 +25,7 @@
       "@id": "https://jitendravyas.github.io/agent-rulebook/#application",
       "name": "Agent Rulebook",
       "url": "https://jitendravyas.github.io/agent-rulebook/",
-      "description": "A free browser-based tool that creates a prompt with selected public rule links for an agent to review against existing instructions before proposing changes.",
+      "description": "A free browser-based tool that creates a prompt with selected public rule links for an agent to review global user-level instructions before proposing changes.",
       "applicationCategory": "ProductivityApplication",
       "operatingSystem": "Any",
       "browserRequirements": "JavaScript is required to generate a review prompt. Individual Markdown files can be read without JavaScript.",
@@ -67,7 +67,7 @@
       <div class="intro-copy">
         <p class="eyebrow">Your agent. Your ground rules.</p>
         <h1 id="page-title">Find the rules<br>that <span>fit your agent.</span></h1>
-        <p>Choose rule sets and copy a prompt. Your agent compares them with your existing instructions and suggests useful changes. You decide what to keep.</p>
+        <p>Choose global rule sets and copy a prompt. Your agent reviews your existing user-level instructions and suggests useful changes across tasks and projects. You decide what to keep.</p>
         <div class="intro-actions">
           <a class="button primary builder-link" href="#builder">Choose rules to review <span aria-hidden="true">↓</span></a>
           <a class="intro-guide" href="https://github.com/jitendravyas/agent-rulebook#how-to-use">How to use the rules</a>
@@ -144,26 +144,13 @@
       <section id="your-file" class="output" aria-labelledby="output-title" tabindex="-1">
         <div class="socket-rail" aria-hidden="true"></div>
         <div class="output-heading"><h2 id="output-title">2. Copy your review prompt</h2><span class="file-type">Prompt</span></div>
-        <p class="output-description">The prompt contains public rule links and asks your agent to compare them with your instructions.</p>
+        <p class="output-description">The prompt reviews your global (user-level) instructions only. These are reusable defaults across tasks and projects, not a project's specific policies.</p>
         <p id="local-prompt-note" class="notice" hidden>Local preview: this prompt links to published rules on GitHub, not unpublished edits in this checkout.</p>
         <div class="metrics">
           <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
         </div>
         <h3 class="selection-caption">What your selection covers</h3>
         <ul id="selection-summary" class="selection-summary"></ul>
-        <fieldset id="rule-scope" class="scope-options" aria-describedby="scope-help scope-start-help">
-          <legend>Instructions to review</legend>
-          <p id="scope-help" class="preview-help">Global instructions apply across tasks and projects. Project instructions apply only to one project.</p>
-          <p id="scope-start-help" class="preview-help">Already working on a project? Start by reviewing instructions for that project. Choose global instructions only for guidance you want across all your work. You do not need every rule set; your agent will suggest what fits your existing instructions.</p>
-          <label>
-            <input type="radio" name="scope" value="personal" checked>
-            <span>My global instructions</span>
-          </label>
-          <label>
-            <input type="radio" name="scope" value="project">
-            <span>Instructions for a specific project</span>
-          </label>
-        </fieldset>
         <div class="preview-heading"><label for="prompt-preview">Your review prompt</label><span>Exact copy contents</span></div>
         <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
         <p id="preview-help" class="preview-help">Read the full prompt before copying. Your agent must show proposed changes and ask for your approval before editing instructions.</p>
@@ -173,7 +160,7 @@
         <output id="action-status" class="action-status" aria-live="polite" aria-atomic="true"></output>
         <details class="setup-sharing">
           <summary>Save or share this setup</summary>
-          <p>Your choices stay in the address. Bookmark it or copy a link to this selection and usage scope.</p>
+          <p>Your choices stay in the address. Bookmark it or copy a link to this selection and host operating system.</p>
           <button id="copy-setup-link" class="text-button" type="button">Copy setup link</button>
           <label id="setup-link-label" for="setup-link" hidden>Setup link</label>
           <input id="setup-link" class="setup-link" type="text" readonly hidden>
@@ -183,10 +170,10 @@
         </details>
         <section class="next-step" aria-labelledby="use-rules-title">
           <h3 id="use-rules-title">3. Ask your agent to review</h3>
-          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. For a project review, open that project first.</p>
-          <p>Your agent needs access to the public links and your relevant instructions. It will be asked to flag conflicts, skip duplicates, and explain proposed edits.</p>
+          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. Ask it to review your global instructions, not to edit project instructions.</p>
+          <p>Your agent needs access to the public links and your global instructions. It will be asked to flag conflicts, skip duplicates, and explain proposed edits.</p>
           <p>This website does not read or upload your existing instructions. Review the suggestions yourself; an agent may miss a conflict or recommend no changes.</p>
-          <p>When adopting rules, keep General or equivalent safety guidance active. Load specialized modules only where needed, using project instructions or supported conditional loading. An “Apply when” sentence does not keep unused text out of context. Imports organize files but save context only when irrelevant text stays unloaded.</p>
+          <p>When adopting rules, keep General or equivalent safety guidance active. Choose optional global modules for activities your agent does; use supported conditional loading where available. Keep project-specific requirements in project instructions. An “Apply when” sentence does not keep unused text out of context. Imports organize files but save context only when irrelevant text stays unloaded.</p>
           <p>A file can load completely and still contain too much guidance. Check your agent’s limits and recommendations, then try a low-risk task. See the <a href="https://github.com/jitendravyas/agent-rulebook#choose-general-then-relevant-add-ons">module-loading guide</a>.</p>
         </section>
         <a class="back-to-selection" href="#builder">Back to rule selection</a>

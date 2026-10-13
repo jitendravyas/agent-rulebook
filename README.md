@@ -1,6 +1,6 @@
 # Agent Rulebook
 
-Reusable instructions to help AI agents stay within scope, protect existing work, check results, and explain them clearly. Use them with one agent or several for everyday tasks, small experiments, or established software projects. They do not prescribe an operating system, framework, or agent.
+Reusable global instructions to help AI agents stay within scope, protect existing work, check results, and explain them clearly. Use them as user-level defaults across everyday tasks, small experiments, or software projects. Optional modules cover relevant activities; they do not replace a project's specific requirements or prescribe an operating system, framework, or agent.
 
 These rules are for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalization fields, and reading or uploading a file does not by itself activate it as standing instructions.
 
@@ -21,7 +21,7 @@ Append only the add-ons relevant to your intended activities. Keep their applica
 
 **Do not load the whole collection by default.** Keep General, or equivalent safety guidance, active. Add only modules for work that agent actually does. For example, research and documents need no Coding or Web rules; building a website does not automatically need animation, localization, or desktop-operation rules.
 
-Keep broadly useful guidance at user level. Put specialized guidance in the relevant project or use your agent's supported conditional loading. If that agent regularly does the same kind of work, the relevant modules can stay loaded. An “Apply when” sentence limits behavior, not context use: its text still loads. Separate files save context only when irrelevant files stay unloaded.
+Keep these reusable defaults in your agent's global (user-level) instructions. Select optional modules for activities that agent does; use supported conditional loading where available. Keep project-specific commands, tools, and requirements in project instructions, not global rules. An “Apply when” sentence limits behavior, not context use: its text still loads. Separate files save context only when irrelevant files stay unloaded.
 
 | Agent setup | Load these files | Covers |
 | --- | --- | --- |
@@ -46,13 +46,13 @@ These rules change over time and have not been tested with every agent, model, o
 
 ## Use the review prompt builder
 
-The [website](https://jitendravyas.github.io/agent-rulebook/) creates a review prompt with links to your selected public rules. It does not merge rules, install anything, or change agent settings. It updates when changes reach `main`.
+The [website](https://jitendravyas.github.io/agent-rulebook/) creates a prompt to review your global (user-level) instructions, with links to your selected public rules. It does not review or edit project instruction files, merge rules, install anything, or change agent settings. It updates when changes reach `main`.
 
 Choose individual sets; opening a group selects nothing. General is selected by default. It can be deselected when reviewing add-ons against equivalent instructions you already have. Coding is a separate choice, not automatically included.
 
 1. **Choose rules to review.** Choose one host OS where the agent runs commands or operates apps, not necessarily the device viewing the website. This selects its OS rules. Leave it unspecified if unsure; add other operating systems for remote machines, virtual machines, containers, or WSL. Each set applies only within its scope.
-2. **Copy your review prompt.** Choose global instructions or instructions for a specific project. This sets review context, not installation location. Read the full prompt before copying.
-3. **Ask your agent to review.** Paste the prompt into a conversation, opening the project first for a project review. The agent compares the references with instructions and skills it can inspect, skips duplicates and unsuitable guidance, flags conflicts, and proposes worthwhile edits. It must ask before editing and may recommend no changes.
+2. **Copy your review prompt.** Read the full prompt. It reviews global instructions only and keeps recommendations reusable across tasks and projects.
+3. **Ask your agent to review.** Paste the prompt into a conversation. The agent compares the references with your accessible global instructions and relevant skills, skips duplicates and unsuitable guidance, flags conflicts, and proposes worthwhile edits. Project instruction files are not editing targets. It must ask before editing and may recommend no changes.
 
 The agent needs access to the public links and relevant instructions. The website never reads or uploads your private instructions, project files, or agent settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
@@ -60,7 +60,7 @@ The prompt asks the agent to check for incomplete or truncated sources, retrieve
 
 Source links are for the review, not your installed instructions. Adopted rule text must omit repository branding, source links, paths, and tracking metadata. Required license notices stay outside active rules.
 
-Bookmark the page address or use **Copy setup link** to save selected sets, host OS, and scope. These choices also appear in the prompt. Links restore choices, not a fixed rule version; prompts always link to public `main`. Older links leave the host unspecified and may warn about unavailable choices. Local preview links work only on the serving machine; share the hosted address with others.
+Bookmark the page address or use **Copy setup link** to save selected sets and host OS. These choices also appear in the prompt. Links restore choices, not a fixed rule version; prompts always link to public `main`. Older project-review links keep their selections but show a notice that review is now global-only. Older links without a host leave it unspecified and may warn about unavailable choices. Local preview links work only on the serving machine; share the hosted address with others.
 
 The website's **Read the source rules** section links to the original Markdown files, this README, and the license. People, crawlers, and agents can follow them without JavaScript.
 
@@ -83,14 +83,14 @@ Copy rule text you decide to adopt, whether you used the website or reviewed the
 
 For example, [Claude Code recommends keeping each `CLAUDE.md` under 200 lines](https://code.claude.com/docs/en/memory#write-effective-instructions). This is a recommendation, not a hard line limit or a target for other agents. Its imports load at startup too, so splitting the same text into imported files does not reduce context use.
 
-1. **Choose the scope.** Use your agent's user-level instructions for your own work across projects, or a project's instruction file for that project and its contributors.
+1. **Find your global instruction location.** Use the user-level file or settings your agent supports for defaults across tasks and projects. Support for project instructions alone does not confirm global loading.
 2. **Review alongside your existing instructions.** Remove duplicates and resolve conflicts before changing active instructions. Preserve your own guidance, project requirements, safety boundaries, and each rule's conditions and exceptions.
-3. **Save the reviewed rules.** Merge the selected content into your agent's supported instruction file, such as an `AGENTS.md` or `CLAUDE.md`, or into Cursor's User Rules under Customize → Rules. Use the filename, location, and format your agent requires. You can combine rules or keep them in separate files using supported imports or loading controls; an ordinary Markdown link is not a universal import. No package installation is needed.
+3. **Save the reviewed global rules.** Merge the selected content into your agent's supported user-level instruction file, such as a global `AGENTS.md` or `CLAUDE.md`, or into Cursor's User Rules under Customize → Rules. Use the filename, location, and format your agent requires. You can combine rules or keep them in separate files using supported imports or loading controls; an ordinary Markdown link is not a universal import. No package installation is needed.
 4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available, including whether referenced files loaded. Cloning this repository or saving files in an arbitrary folder does not activate them.
 
 Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That file is only for agents maintaining this repository.
 
-For personal instructions across projects, see [Set up global rules](#set-up-global-rules). It links to official setup guides and distinguishes direct `AGENTS.md` support from imports and project-level support.
+See [Set up global rules](#set-up-global-rules) for official setup guides. The table distinguishes global loading from imports and project-only support so you can choose the right location.
 
 Loaded rules are standing instructions, not skills to invoke. The agent should recognize relevant conditions from context and apply the guidance without reminders. This does not expand the task or grant approval; mentioning audits, tests, or tools does not request them. Checks must match the work, risk, stage, and project requirements.
 
@@ -231,7 +231,7 @@ These are gap-filling defaults, not a competing project policy. Follow your agen
 
 ### How should a team use these rules?
 
-Your user-level rules do not affect teammates' agents. Agree on a shared subset, keep it in the project's version-controlled instructions, and confirm each agent loads it. Keep personal preferences at user level.
+Your global rules do not affect teammates' agents. Each teammate can review and adopt an agreed reusable subset in their own user-level instructions. Keep project-specific team requirements in the project's instructions, separate from these global defaults.
 
 Record the source commit and agree who reviews updates. Rules do not enforce behavior; use automated checks and permission controls for requirements that need enforcement.
 

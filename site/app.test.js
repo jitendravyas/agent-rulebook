@@ -10,9 +10,10 @@ const importLine = /^import \{([^}]+)\} from '\.\/rules\.js';\r?\n/;
 assert.match(app, importLine);
 const script = app.replace(importLine, (_, names) => `const {${names}} = catalog;\n`);
 
-function boot(address, { intersectionObserver = true } = {}) {
+function boot(address, { intersectionObserver = true, modelContext = false } = {}) {
   const nodes = new Map();
   const observers = [];
+  const tools = new Map();
   let location = new URL(address);
 
   // This DOM double runs the actual app and event handlers, not layout or browser APIs.
@@ -43,14 +44,6 @@ function boot(address, { intersectionObserver = true } = {}) {
       this.children.splice(index, 0, child);
     }
     replaceChildren(...children) { this.children = children; this.text = ''; }
-    querySelectorAll(selector) {
-      assert.equal(selector, 'input');
-      return this.children.filter(node => node.tag === 'input');
-    }
-    querySelector(selector) {
-      assert.equal(selector, 'input:checked');
-      return this.querySelectorAll('input').find(input => input.checked) ?? null;
-    }
     addEventListener(type, listener) {
       const listeners = this.listeners.get(type) ?? [];
       listeners.push(listener);
@@ -73,13 +66,6 @@ function boot(address, { intersectionObserver = true } = {}) {
     assert.ok(nodes.has(id), `Missing page control: ${id}`);
     return nodes.get(id);
   };
-  const scope = html.match(/<fieldset\b[^>]*id="rule-scope"[^>]*>([\s\S]*?)<\/fieldset>/)?.[1];
-  assert.ok(scope);
-  for (const [markup] of scope.matchAll(/<input\b[^>]*>/g)) {
-    const input = new Node('input');
-    for (const [key, value] of attributes(markup)) input[key] = value;
-    get('rule-scope').append(input);
-  }
   const window = new Node('window');
   Object.defineProperty(window, 'location', { get: () => location });
   window.history = {
@@ -102,50 +88,46 @@ function boot(address, { intersectionObserver = true } = {}) {
     createElement: tag => new Node(tag),
     createElementNS: (namespace, tag) => new Node(tag),
   });
+  if (modelContext) document.modelContext = { async registerTool(tool) { tools.set(tool.name, tool); } };
   runInNewContext(script, {
     catalog, document, window, URL, performance: { timeOrigin: 1000 },
     navigator: {}, AbortController,
   }, { filename: 'site/app.js', timeout: 1000 });
-  return { get, window, observers };
+  return { get, window, observers, tools };
 }
 
-test('saved setup restores selected controls, host OS, scope, and the exact prompt', () => {
-  for (const scope of ['personal', 'project']) {
-    const first = boot('https://example.test/agent-rulebook/?unrelated=discard-from-share');
-    const host = first.get('host-os');
-    host.value = 'mac';
-    host.dispatch('change');
-    for (const id of ['web', 'linux', 'i18n']) {
-      const input = first.get(`rule-${id}`);
-      input.checked = true;
-      input.dispatch('change');
-    }
-    for (const input of first.get('rule-scope').querySelectorAll('input')) input.checked = input.value === scope;
-    first.get('rule-scope').dispatch('change');
-    const saved = first.get('setup-link').value;
-    assert.deepEqual([...new URL(saved).searchParams.keys()], ['rules', 'scope', 'host']);
+test('saved setup restores selected controls, host OS, and the global prompt', () => {
+  const first = boot('https://example.test/agent-rulebook/?unrelated=discard-from-share');
+  const host = first.get('host-os');
+  host.value = 'mac';
+  host.dispatch('change');
+  for (const id of ['web', 'linux', 'i18n']) {
+    const input = first.get(`rule-${id}`);
+    input.checked = true;
+    input.dispatch('change');
+  }
+  const saved = first.get('setup-link').value;
+  assert.deepEqual([...new URL(saved).searchParams.keys()], ['rules', 'host']);
 
-    const restored = boot(saved);
-    const expectedIds = ['general', 'web', 'mac', 'linux', 'i18n'];
-    assert.deepEqual(catalog.RULES.filter(rule => restored.get(`rule-${rule.id}`).checked).map(rule => rule.id), expectedIds);
-    assert.equal(restored.get('host-os').value, 'mac');
-    assert.equal(restored.get('rule-mac').disabled, true);
-    assert.equal(restored.get('rule-linux').disabled, false);
-    assert.equal(restored.get('rule-coding').checked, false);
-    assert.equal(restored.get('rule-scope').querySelector('input:checked').value, scope);
-    assert.match(restored.get('role-mac').textContent, /Host OS/);
-    assert.match(restored.get('role-linux').textContent, /Additional OS/);
-    assert.equal(restored.get('rule-count').textContent, '5');
-    assert.equal(restored.get('copy-prompt').disabled, false);
-    assert.equal(restored.get('setup-link').value, saved);
-    const prompt = restored.get('prompt-preview').value;
-    assert.equal(prompt, first.get('prompt-preview').value);
-    assert.match(prompt, /Host operating system: macOS\./);
-    assert.match(prompt, /Additional operating systems \(not the host\): Linux\./);
-    assert.match(prompt.split('\n')[0], scope === 'project' ? /instructions for this project/ : /my user-level \(global\) agent instructions/);
-    for (const rule of catalog.RULES) {
-      assert.equal(prompt.includes(catalog.ruleSourceURL(rule)), expectedIds.includes(rule.id));
-    }
+  const restored = boot(saved);
+  const expectedIds = ['general', 'web', 'mac', 'linux', 'i18n'];
+  assert.deepEqual(catalog.RULES.filter(rule => restored.get(`rule-${rule.id}`).checked).map(rule => rule.id), expectedIds);
+  assert.equal(restored.get('host-os').value, 'mac');
+  assert.equal(restored.get('rule-mac').disabled, true);
+  assert.equal(restored.get('rule-linux').disabled, false);
+  assert.equal(restored.get('rule-coding').checked, false);
+  assert.match(restored.get('role-mac').textContent, /Host OS/);
+  assert.match(restored.get('role-linux').textContent, /Additional OS/);
+  assert.equal(restored.get('rule-count').textContent, '5');
+  assert.equal(restored.get('copy-prompt').disabled, false);
+  assert.equal(restored.get('setup-link').value, saved);
+  const prompt = restored.get('prompt-preview').value;
+  assert.equal(prompt, first.get('prompt-preview').value);
+  assert.match(prompt, /Host operating system: macOS\./);
+  assert.match(prompt, /Additional operating systems \(not the host\): Linux\./);
+  assert.match(prompt.split('\n')[0], /my user-level \(global\) agent instructions/);
+  for (const rule of catalog.RULES) {
+    assert.equal(prompt.includes(catalog.ruleSourceURL(rule)), expectedIds.includes(rule.id));
   }
 });
 
@@ -159,6 +141,49 @@ test('an explicitly empty saved selection stays empty after reload', () => {
   assert.equal(restored.get('copy-prompt').disabled, true);
 });
 
+test('legacy project links preserve choices but clearly migrate to global-only review', () => {
+  for (const scopeQuery of ['scope=project', 'scope=other', 'scope=project&scope=personal']) {
+    const page = boot(`https://example.test/agent-rulebook/?rules=web,mac&${scopeQuery}&host=mac`);
+    assert.equal(page.get('rule-web').checked, true);
+    assert.equal(page.get('rule-mac').checked, true);
+    assert.equal(page.get('rule-general').checked, false);
+    assert.equal(page.get('host-os').value, 'mac');
+    assert.match(page.get('prompt-preview').value, /^Review my user-level \(global\)/);
+    assert.match(page.get('link-warning').textContent, /now reviews global instructions only/);
+    assert.ok(!new URL(page.get('setup-link').value).searchParams.has('scope'));
+    assert.ok(!page.window.location.search.includes('scope='));
+  }
+});
+
+test('agent-facing tools only generate global reviews and reject retired scope inputs', async () => {
+  const page = boot('https://example.test/agent-rulebook/', { modelContext: true });
+  await new Promise(setImmediate);
+  const list = page.tools.get('list_rule_sets');
+  const generate = page.tools.get('generate_review_prompt');
+  assert.ok(list && generate, 'Both real app tools register');
+  assert.ok(!Object.hasOwn(generate.inputSchema.properties, 'scope'));
+  const catalogResult = list.execute({});
+  assert.ok(!Object.hasOwn(catalogResult, 'scopes'));
+  assert.ok(!Object.hasOwn(catalogResult.selection, 'scope'));
+
+  const before = page.get('prompt-preview').value;
+  for (const scope of ['personal', 'project']) {
+    const rejected = generate.execute({ ruleIds: ['web'], scope });
+    assert.equal(rejected.status, 'error');
+    assert.equal(rejected.code, 'invalid_input');
+    assert.equal(page.get('prompt-preview').value, before);
+    assert.equal(page.get('rule-web').checked, false);
+  }
+  const result = generate.execute({ ruleIds: ['web', 'mac'], hostOS: 'mac' });
+  assert.equal(result.status, 'ready');
+  assert.equal(result.prompt, catalog.buildReviewPrompt(['web', 'mac'], 'mac'));
+  assert.equal(page.get('prompt-preview').value, result.prompt);
+  assert.equal(page.get('rule-general').checked, false);
+  assert.equal(page.get('rule-coding').checked, false);
+  assert.equal(page.get('rule-web').checked, true);
+  assert.ok(!new URL(result.setupLink).searchParams.has('scope'));
+});
+
 test('new General add-ons remain opt-in and survive saved-link reloads', () => {
   const generalOnly = boot('https://example.test/agent-rulebook/?rules=general');
   for (const id of ['tools-execution', 'communication']) assert.equal(generalOnly.get(`rule-${id}`).checked, false);
@@ -166,7 +191,7 @@ test('new General add-ons remain opt-in and survive saved-link reloads', () => {
     const page = boot(`https://example.test/agent-rulebook/?rules=tools-execution,communication&scope=${scope}`);
     assert.equal(page.get('rule-general').checked, false);
     assert.equal(page.get('rule-count').textContent, '2');
-    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['tools-execution', 'communication'], scope));
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['tools-execution', 'communication']));
     const restored = boot(page.get('setup-link').value);
     for (const id of ['tools-execution', 'communication']) assert.equal(restored.get(`rule-${id}`).checked, true);
     assert.equal(restored.get('rule-general').checked, false);
@@ -198,7 +223,7 @@ test('changing or clearing the host preserves manually selected OS rules in cont
       assert.equal(new URL(saved).searchParams.get('host'), nextHost);
       const ids = catalog.RULES.filter(candidate => page.get(`rule-${candidate.id}`).checked)
         .map(candidate => candidate.id);
-      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids, 'personal', nextHost));
+      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids, nextHost));
       const restored = boot(saved);
       assert.equal(restored.get(`rule-${rule.id}`).checked, true);
       assert.equal(restored.get('prompt-preview').value, page.get('prompt-preview').value);
@@ -235,10 +260,9 @@ test('saved links flag a retired set without losing other choices', () => {
   const ids = catalog.RULES.filter(rule => page.get(`rule-${rule.id}`).checked).map(rule => rule.id);
   assert.deepEqual(ids, ['general', 'coding', 'web', 'mac']);
   assert.equal(page.get('host-os').value, 'mac');
-  assert.equal(page.get('rule-scope').querySelector('input:checked').value, 'project');
   assert.equal(page.get('link-warning').hidden, false);
   assert.match(page.get('link-warning').textContent, /unavailable/);
-  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids, 'project', 'mac'));
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids, 'mac'));
   assert.ok(!page.get('setup-link').value.includes('web-performance'));
 });
 
@@ -247,8 +271,9 @@ test('a saved coding-only choice remains Coding without silently adding General'
   assert.equal(page.get('rule-general').checked, false);
   assert.equal(page.get('rule-coding').checked, true);
   assert.equal(page.get('rule-count').textContent, '1');
-  assert.equal(page.get('link-warning').hidden, true);
-  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['coding'], 'project'));
+  assert.equal(page.get('link-warning').hidden, false);
+  assert.match(page.get('link-warning').textContent, /global instructions only/);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['coding']));
   assert.equal(new URL(page.get('setup-link').value).searchParams.get('rules'), 'coding');
 });
 

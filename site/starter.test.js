@@ -179,7 +179,13 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.match(readme, /Keep General, or equivalent safety guidance, active/);
   assert.match(readme, /An “Apply when” sentence limits behavior, not context use/);
   assert.match(readme, /Separate files save context only when irrelevant files stay unloaded/);
+  assert.match(readme, /Reusable global instructions/);
+  assert.match(readme, /It reviews global instructions only/);
+  assert.match(readme, /Keep project-specific commands, tools, and requirements in project instructions, not global rules/);
+  assert.doesNotMatch(readme, /Choose global instructions or instructions for a specific project|opening the project first for a project review/);
   const html = read('index.html');
+  assert.match(html, /The prompt reviews your global \(user-level\) instructions only/);
+  assert.doesNotMatch(html, /name="scope"|id="rule-scope"|Instructions for a specific project/);
   assert.match(html, /General essentials alone can be enough/);
   assert.match(html, /keep General or equivalent safety guidance active/);
   assert.match(html, /An “Apply when” sentence does not keep unused text out of context/);
