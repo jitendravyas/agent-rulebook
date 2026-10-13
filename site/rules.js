@@ -180,7 +180,7 @@ export const RULE_GROUPS = [
     id: 'environment',
     title: 'Operating systems',
     summary: 'Optional safety guidance for operating systems your agent actually accesses.',
-    description: 'Optional. Select only operating systems your agent actually accesses, not simply the system you use to connect to it.',
+    description: 'Optional. Select only operating systems your agent actually accesses.',
     rules: OS_RULES,
   },
   {

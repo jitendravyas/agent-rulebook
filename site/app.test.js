@@ -360,14 +360,12 @@ test('host changes retain selected OS guidance until it is explicitly unchecked 
   const host = page.get('host-os');
   assert.equal(host.children[0].textContent, 'Choose your agent’s operating system');
   assert.equal(host.children[0].value, 'unspecified');
-  assert.match(page.get('group-description-environment').textContent, /only operating systems your agent actually accesses/i);
-  assert.match(page.get('remote-commands-help').textContent, /local agent using SSH.*include.*remote OS rules.*local OS rules/i);
-  assert.match(page.get('remote-agent-help').textContent, /agent running remotely.*configure.*rules.*remote machine/i);
-  assert.match(page.get('remote-agent-help').textContent, /connecting from a device does not mean the agent accesses it/i);
+  assert.equal(page.get('group-description-environment').textContent, 'Optional. Select only operating systems your agent actually accesses.');
   const osHeading = page.get('os-rules-heading');
   assert.equal(osHeading.tag, 'h3');
   assert.equal(osHeading.textContent, 'OS rules to include');
   const osGroup = page.get('rule-groups').children.find(group => group.children.includes(osHeading));
+  assert.doesNotMatch(osGroup.textContent, /SSH|agent running remotely/i);
   const choices = osGroup.children[osGroup.children.indexOf(osHeading) + 1];
   assert.equal(choices.role, 'group');
   assert.equal(choices['aria-labelledby'], osHeading.id);
