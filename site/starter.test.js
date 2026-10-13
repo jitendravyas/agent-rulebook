@@ -190,6 +190,9 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.match(html, /aria-describedby="selection-defaults selection-help selection-notice"/);
   assert.doesNotMatch(html, /name="scope"|id="rule-scope"|Instructions for a specific project/);
   assert.match(html, /General essentials alone can be enough/);
+  const nextStep = html.match(/<section class="next-step"[^>]*>([\s\S]*?)<\/section>/)?.[1];
+  assert.ok(nextStep.includes('If you don’t have global instructions yet, ask your agent to propose a new setup in its supported global location. Approve it before saving.'));
+  assert.match(nextStep, /any existing global instructions/);
   assert.match(html, /keep General or equivalent safety guidance active/);
   assert.match(html, /An “Apply when” sentence does not keep unused text out of context/);
   const guideURL = html.match(/<a href="([^"]+)">module-loading guide<\/a>/)?.[1];
