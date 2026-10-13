@@ -77,7 +77,9 @@ Local previews still generate prompts linking to public `main`. They do not incl
 
 Copy rule text you decide to adopt, whether you used the website or reviewed the files yourself. Do not copy the builder's review prompt into an instruction file.
 
-**Check how your agent loads instructions before copying.** There is no universal maximum rule-file size. Agents may have per-file limits, combined loading limits, or recommendations rather than hard limits. Content beyond an applicable loading limit may be omitted. Check your agent's current documentation for the applicable limit.
+**Check how your agent loads instructions before copying.** There is no universal maximum rule-file size. Agents may have per-file limits, combined loading limits, or recommendations rather than hard limits. Content beyond an applicable loading limit may be omitted. Check your agent's current documentation for the applicable limit. Loading a file in full does not mean its size is effective: unnecessary guidance consumes context and can make instructions harder to follow.
+
+For example, [Claude Code recommends keeping each `CLAUDE.md` under 200 lines](https://code.claude.com/docs/en/memory#write-effective-instructions). This is a recommendation, not a hard line limit or a target for other agents. Its imports load at startup too, so splitting the same text into imported files does not reduce context use.
 
 1. **Choose the scope.** Use your agent's user-level instructions for your own work across projects, or a project's instruction file for that project and its contributors.
 2. **Review alongside your existing instructions.** Remove duplicates and resolve conflicts before changing active instructions. Preserve your own guidance, project requirements, safety boundaries, and each rule's conditions and exceptions.
@@ -202,7 +204,7 @@ If one agent handles mixed work, your selected rules can stay loaded. Each appli
 
 ### What if the rules are too large?
 
-Select fewer relevant sections, load sections conditionally where supported, or adjust a supported loading-limit setting. The split saves context only when you omit an irrelevant add-on; selecting all modules still combines all their text. A condition inside a copied rule does not stop that text from using context. Splitting files does not bypass a combined loading limit; increasing the limit does not reduce context use. Keep essential safety and approval boundaries in the instructions that load for the relevant work. Recheck the total when the rules or your existing instructions change.
+Select fewer relevant sections, load sections conditionally where supported, or adjust a supported loading-limit setting. The split saves context only when you omit an irrelevant add-on; selecting all modules still combines all their text. A condition inside a copied rule does not stop that text from using context. Imports organize files, but save context only if the agent leaves irrelevant text unloaded. Splitting files does not bypass a combined loading limit; increasing the limit does not reduce context use. Keep essential safety and approval boundaries in the instructions that load for the relevant work. Recheck the total when the rules or your existing instructions change.
 
 ### How do I migrate from older rule files?
 
