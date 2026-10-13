@@ -146,8 +146,16 @@ function renderChoices() {
         option.value = choice.id;
         hostSelect.append(option);
       }
-      const help = textElement('p', 'group-description', 'Choose the main system where your agent runs commands or operates apps (the host). This selects its OS rules. Add other systems only if the agent also accesses them; connecting from a device does not mean the agent accesses it. Changing the host keeps selected OS rules; uncheck any you no longer need.');
+      const help = textElement('p', 'group-description', 'Choose the main system where your agent runs commands or operates apps (the host). This selects its OS rules. Changing the host keeps selected OS rules; uncheck any you no longer need.');
       help.id = 'host-os-help';
+      const remoteCommands = textElement('p', 'group-description', '');
+      remoteCommands.id = 'remote-commands-help';
+      remoteCommands.append(textElement('strong', '', 'Local agent using SSH: '),
+        'Include the remote OS rules here alongside its local OS rules. Do not assume SSH loads instructions from the remote machine.');
+      const remoteAgent = textElement('p', 'group-description', '');
+      remoteAgent.id = 'remote-agent-help';
+      remoteAgent.append(textElement('strong', '', 'Agent running remotely: '),
+        'Configure that agent’s OS rules on the remote machine. Connecting from a device does not mean the agent accesses it.');
       hostSelect.setAttribute('aria-describedby', help.id);
       hostSelect.addEventListener('change', () => {
         hostOS = hostSelect.value;
@@ -155,7 +163,7 @@ function renderChoices() {
         clearLinkWarnings('host', 'rules', 'legacy');
         updateSelection();
       });
-      hostControl.append(hostLabel, hostSelect, help);
+      hostControl.append(hostLabel, hostSelect, help, remoteCommands, remoteAgent);
       fieldset.insertBefore(hostControl, choices);
       const osHeading = textElement('h3', 'os-rules-heading', 'OS rules to include');
       osHeading.id = 'os-rules-heading';
