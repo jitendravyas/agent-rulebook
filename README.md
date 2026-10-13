@@ -50,7 +50,7 @@ The [website](https://jitendravyas.github.io/agent-rulebook/) creates a prompt t
 
 Choose individual sets; opening a group selects nothing. General is selected by default. It can be deselected when reviewing add-ons against equivalent instructions you already have. Coding is a separate choice, not automatically included.
 
-1. **Choose rules to review.** Choose one host OS where the agent runs commands or operates apps, not necessarily the device viewing the website. This selects its OS rules. Leave it unspecified if unsure; add other operating systems for remote machines, virtual machines, containers, or WSL. Each set applies only within its scope.
+1. **Choose rules to review.** OS guidance is optional. Select only operating systems your agent actually accesses. Choose one host OS where it runs commands or operates apps; this selects its OS rules. Add other systems only if the agent accesses them too. For example, an agent running entirely on a Linux server needs Linux guidance, not macOS guidance just because you connect from a Mac. Each set applies only within its scope.
 2. **Copy your review prompt.** Read the full prompt. It reviews global instructions only and keeps recommendations reusable across tasks and projects.
 3. **Ask your agent to review.** Paste the prompt into a conversation. The agent compares the references with your accessible global instructions and relevant skills, skips duplicates and unsuitable guidance, flags conflicts, and proposes worthwhile edits. Project instruction files are not editing targets. It must ask before editing and may recommend no changes.
 

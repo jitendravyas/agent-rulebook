@@ -141,12 +141,12 @@ function renderChoices() {
       const hostSelect = document.createElement('select');
       hostSelect.id = 'host-os';
       hostSelect.name = 'host';
-      for (const choice of [{ id: 'unspecified', label: 'Not sure / not specified' }, ...OS_RULES]) {
+      for (const choice of [{ id: 'unspecified', label: 'Choose your agent’s operating system' }, ...OS_RULES]) {
         const option = textElement('option', '', choice.label);
         option.value = choice.id;
         hostSelect.append(option);
       }
-      const help = textElement('p', 'group-description', 'This selects guidance for the main environment (host). Select other systems below only for additional environments your agent accesses. Leave this unspecified if it varies or you are unsure. Changing the host keeps selected OS rules; uncheck any you no longer need.');
+      const help = textElement('p', 'group-description', 'Choose the main system where your agent runs commands or operates apps (the host). This selects its OS rules. Add other systems only if the agent also accesses them; connecting from a device does not mean the agent accesses it. Changing the host keeps selected OS rules; uncheck any you no longer need.');
       help.id = 'host-os-help';
       hostSelect.setAttribute('aria-describedby', help.id);
       hostSelect.addEventListener('change', () => {

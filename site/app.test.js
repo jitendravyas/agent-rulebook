@@ -358,6 +358,10 @@ test('changing or clearing the host preserves manually selected OS rules in cont
 test('host changes retain selected OS guidance until it is explicitly unchecked or cleared', () => {
   const page = boot('https://example.test/agent-rulebook/');
   const host = page.get('host-os');
+  assert.equal(host.children[0].textContent, 'Choose your agent’s operating system');
+  assert.equal(host.children[0].value, 'unspecified');
+  assert.match(page.get('group-description-environment').textContent, /only operating systems your agent actually accesses/i);
+  assert.match(page.get('host-os-help').textContent, /connecting from a device does not mean the agent accesses it/i);
   host.value = 'mac';
   host.dispatch('change');
   host.value = 'linux';

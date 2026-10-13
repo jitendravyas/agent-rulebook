@@ -179,8 +179,8 @@ export const RULE_GROUPS = [
   {
     id: 'environment',
     title: 'Operating systems',
-    summary: 'Optional: choose the main environment your agent works in; add other environments only when it accesses them.',
-    description: 'Optional. Choose the main environment where your agent runs commands or operates apps, not necessarily the device viewing this website. Add other environments only when it accesses them.',
+    summary: 'Optional safety guidance for operating systems your agent actually accesses.',
+    description: 'Optional. Select only operating systems your agent actually accesses, not simply the system you use to connect to it.',
     rules: OS_RULES,
   },
   {
