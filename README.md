@@ -15,7 +15,7 @@ Choose how to start:
 
 ## Choose General, then relevant add-ons
 
-Start with [General rules](agent-global-rules.md) for safety, approvals, privacy, verification, and communication. They work without a project, desktop, plugins, or skills. Add [Coding rules](coding-agent-global-rules.md) only for software development. Use the source Git commit for an exact revision.
+Start with [General essentials](agent-global-rules.md) for scope, safety, approvals, privacy, and honest verification. They work without a project, desktop, plugins, or skills. [Communication](optional/communication-rules.md) and [Tools and execution](optional/tools-execution-rules.md) are separate optional choices, including for non-development work. Add [Coding rules](coding-agent-global-rules.md) only for software development. Use the source Git commit for an exact revision.
 
 Append only the add-ons relevant to your intended activities. Keep their applicability lines when copying. They can complement General or equivalent existing guidance; no file imports or activates another file. The existing files remain the source, with no duplicate starter bundle.
 
@@ -25,7 +25,9 @@ Keep broadly useful guidance at user level. Put specialized guidance in the rele
 
 | Agent setup | Load these files | Covers |
 | --- | --- | --- |
-| Any task | [General](agent-global-rules.md) | Scope, approvals, safety, privacy, verification, communication, and basic efficiency. |
+| Any task | [General essentials](agent-global-rules.md) | Scope, approvals, safety, privacy, verification, and honest reporting. |
+| Reply and explanation preferences | General + [Communication](optional/communication-rules.md), when useful | Clear replies, appropriate detail, rewriting, dictation tolerance, and recommendations. |
+| Tool selection and task efficiency | General + [Tools and execution](optional/tools-execution-rules.md), when useful | Tool selection, documentation lookup, resource use, process startup, and file-reference maintenance. |
 | Software development | General + [Coding](coding-agent-global-rules.md) | Software implementation, security, maintenance, performance, and static checks. |
 | Web development | General + Coding + [web](web-development-rules.md) | Browser-specific implementation, resource loading, and web security. |
 | Software testing and browser verification | General + [testing](optional/software-testing-rules.md) | Focused tests and proportionate browser verification. |
@@ -153,7 +155,12 @@ For renamed or replaced products, follow the current product's guide: [Windsurf 
 
 ### General behavior
 
-[General rules](agent-global-rules.md) are useful for development and everyday work. They cover safety, approvals, verification, communication, and basic efficiency, not software-specific implementation. The categories below add context only when the task needs it.
+[General essentials](agent-global-rules.md) are useful for development and everyday work. They keep scope, approvals, security, privacy, destructive-action safeguards, essential execution protections, verification, and honest reporting together. They do not contain software-specific implementation guidance.
+
+- [Communication](optional/communication-rules.md): optional reply-style, explanation, and rewriting guidance. It does not contain the essential requirements to report risks, blockers, or verification gaps honestly.
+- [Tools and execution](optional/tools-execution-rules.md): optional guidance for choosing tools and working efficiently. Essential safeguards for access, temporary work, retries, process ownership, and delegation stay in General.
+
+Select either, both, or neither when your existing instructions already cover them. The categories below add context only when the task needs it.
 
 ### Operating systems
 
@@ -210,11 +217,13 @@ Select fewer relevant sections, load sections conditionally where supported, or 
 
 Replace old copied guidance rather than appending another copy, preserving personal preferences and essential safety protections.
 
+General has been split without removing its guidance. The existing `agent-global-rules.md` file and `general` website selection now cover essentials. Reply-style and tool-efficiency guidance moved into the optional Communication and Tools and execution files. Choose both add-ons only if you want those parts of the former General file; saved General-only links do not silently select them. Replace the old General text rather than keeping it alongside the split files. Selecting all three does not reduce context use.
+
 `coding-agent-global-rules.md` remains a separate opt-in file. General does not include its software-specific guidance. Website links preserve General and Coding as separate choices; review the changed sources before adopting them.
 
 Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional browser-animation rules only when relevant. The former standalone accessibility file is no longer needed; implementation safeguards remain in Coding and assessment boundaries are in Software testing.
 
-The former standalone web-performance rules are also no longer needed. Basic efficiency is in General, software performance assessment is in Coding, and browser-loading safeguards are in Web. Remove older copied performance guidance when replacing it to avoid duplicates; none of these defaults requests an unrelated audit.
+The former standalone web-performance rules are also no longer needed. Basic resource-efficiency guidance is in Tools and execution, software performance assessment is in Coding, and browser-loading safeguards are in Web. Remove older copied performance guidance when replacing it to avoid duplicates; none of these defaults requests an unrelated audit.
 
 ### What if they conflict with my project rules or skills?
 

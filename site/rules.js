@@ -2,12 +2,32 @@ const SOURCE_ROOT = 'https://raw.githubusercontent.com/jitendravyas/agent-rulebo
 
 const GENERAL_RULE = {
   id: 'general',
-  title: 'General agent rules',
-  label: 'General: useful for any task',
+  title: 'General essentials for AI agents',
+  label: 'General essentials: safety and scope',
   description:
-    'Safety, approvals, privacy, verification, and clear replies for everyday tasks. No software-development workflow required.',
-  purpose: 'General safety and behavior for research, documents, files, media, or development. No plugins or project required.',
+    'Scope, approvals, security, privacy, and honest verification for any task. Tool-efficiency and reply-style guidance are separate choices.',
+  purpose: 'Essential safety, scope, and verification for everyday work or development. No plugins or project required.',
   path: 'agent-global-rules.md',
+};
+
+const TOOLS_EXECUTION_RULE = {
+  id: 'tools-execution',
+  title: 'Tools and execution rules',
+  label: 'Choose tools and work efficiently',
+  description:
+    'Tool selection, documentation lookup, efficient resource use, process startup, and file-reference maintenance. Not a new permission policy.',
+  purpose: 'Efficiency guidance when using tools or managing task processes and files.',
+  path: 'optional/tools-execution-rules.md',
+};
+
+const COMMUNICATION_RULE = {
+  id: 'communication',
+  title: 'Communication rules',
+  label: 'Improve replies and explanations',
+  description:
+    'Clear replies, appropriate detail, rewriting, dictation tolerance, and evidence-based recommendations. Optional if your existing guidance already covers these.',
+  purpose: 'Reply style and explanations, separate from essential safety and honest reporting.',
+  path: 'optional/communication-rules.md',
 };
 
 const CODING_RULE = {
@@ -136,6 +156,8 @@ const AUTHORING_RULE = {
 // Keep source order stable when the display categories change.
 export const RULES = [
   GENERAL_RULE,
+  TOOLS_EXECUTION_RULE,
+  COMMUNICATION_RULE,
   CODING_RULE,
   WEB_RULE,
   TESTING_RULE,
@@ -164,17 +186,17 @@ export const RULE_GROUPS = [
   {
     id: 'general',
     title: 'General behavior',
-    summary: 'A starting point for any task; review against your existing instructions when updating.',
-    description: `General alone can suit everyday tasks. Select “${CODING_RULE.label}” only for software work. Review other sets alone if you already have equivalent general safety guidance; do not load the whole collection by default.`,
-    rules: [GENERAL_RULE],
+    summary: 'Start with essential safety; choose reply and explanation guidance separately.',
+    description: `General essentials are the suggested safety baseline. “${COMMUNICATION_RULE.label}” is optional. Select “${CODING_RULE.label}” only for software work. Review other sets alone if you already have equivalent safety guidance; do not load the whole collection by default.`,
+    rules: [GENERAL_RULE, COMMUNICATION_RULE],
   },
   {
     id: 'tools',
     title: 'Tools and interfaces',
-    summary: 'Operate browsers or desktop apps, or work with version-controlled repositories.',
-    description: 'For everyday tasks as well as development. Select either or both, only when your agent needs them.',
+    summary: 'Choose tools efficiently, operate browsers or desktop apps, or use version control.',
+    description: 'For everyday tasks as well as development. Choose tool-efficiency, browser-operation, and version-control guidance independently when useful.',
     collapsible: true,
-    rules: [BROWSER_USE_RULE, VERSION_CONTROL_RULE],
+    rules: [TOOLS_EXECUTION_RULE, BROWSER_USE_RULE, VERSION_CONTROL_RULE],
   },
   {
     id: 'development',

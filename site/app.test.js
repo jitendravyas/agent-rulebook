@@ -159,6 +159,21 @@ test('an explicitly empty saved selection stays empty after reload', () => {
   assert.equal(restored.get('copy-prompt').disabled, true);
 });
 
+test('new General add-ons remain opt-in and survive saved-link reloads', () => {
+  const generalOnly = boot('https://example.test/agent-rulebook/?rules=general');
+  for (const id of ['tools-execution', 'communication']) assert.equal(generalOnly.get(`rule-${id}`).checked, false);
+  for (const scope of ['personal', 'project']) {
+    const page = boot(`https://example.test/agent-rulebook/?rules=tools-execution,communication&scope=${scope}`);
+    assert.equal(page.get('rule-general').checked, false);
+    assert.equal(page.get('rule-count').textContent, '2');
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['tools-execution', 'communication'], scope));
+    const restored = boot(page.get('setup-link').value);
+    for (const id of ['tools-execution', 'communication']) assert.equal(restored.get(`rule-${id}`).checked, true);
+    assert.equal(restored.get('rule-general').checked, false);
+    assert.equal(restored.get('prompt-preview').value, page.get('prompt-preview').value);
+  }
+});
+
 test('changing or clearing the host preserves manually selected OS rules in controls, links, and prompts', () => {
   for (const rule of catalog.OS_RULES) {
     const page = boot('https://example.test/agent-rulebook/?rules=general&host=unspecified');

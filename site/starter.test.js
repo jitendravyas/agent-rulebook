@@ -6,6 +6,8 @@ import { PRESETS, RULE_GROUPS, RULES } from './rules.js';
 const root = new URL('../', import.meta.url);
 const read = path => readFileSync(new URL(path, root), 'utf8');
 const modules = [
+  'optional/tools-execution-rules.md',
+  'optional/communication-rules.md',
   'coding-agent-global-rules.md',
   'web-development-rules.md',
   'optional/software-testing-rules.md',
@@ -61,6 +63,26 @@ test('General covers unattended approval, persistent memory, and final self-revi
   assert.match(completion, /omissions, unintended edits, and obsolete task-created output/);
   assert.doesNotMatch(read('optional/version-control-rules.md'), /Before using restore, checkout, clean, reset, stash/);
   assert.match(general, /Before destructive actions or cleanup, verify exact targets and full scope/);
+});
+
+test('General keeps safety-critical execution guidance while communication and efficiency are optional', () => {
+  const general = read('agent-global-rules.md');
+  for (const safeguard of [
+    'Search narrowly, not across the whole home folder or device',
+    'Never replace private dependencies with public ones silently',
+    'Stop only your temporary processes',
+    'Delegation cannot expand authority',
+    'When attempts make no useful progress, pause affected work',
+    'Establish recovery for partial or inconsistent changes',
+    'During long work, report blockers',
+    'Keep them in permitted temporary locations, out of source and version control',
+  ]) assert.ok(general.includes(safeguard), `General retains: ${safeguard}`);
+  assert.doesNotMatch(general, /Simple status questions usually need one sentence|Prefer existing tools for repetitive or mechanical work/);
+  assert.match(read('optional/communication-rules.md'), /Simple status questions usually need one sentence/);
+  assert.match(read('optional/tools-execution-rules.md'), /Prefer existing tools for repetitive or mechanical work/);
+  const combined = [general, read('optional/tools-execution-rules.md'), read('optional/communication-rules.md')];
+  const bullets = combined.flatMap(content => content.split('\n').filter(line => /^\s*\* /.test(line)).map(line => line.trim()));
+  assert.equal(new Set(bullets).size, bullets.length, 'The split does not copy a bullet into multiple modules');
 });
 
 test('grouped approval rules retain dependency safeguards and software exceptions', () => {
@@ -158,7 +180,7 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.match(readme, /An “Apply when” sentence limits behavior, not context use/);
   assert.match(readme, /Separate files save context only when irrelevant files stay unloaded/);
   const html = read('index.html');
-  assert.match(html, /General alone can be enough/);
+  assert.match(html, /General essentials alone can be enough/);
   assert.match(html, /keep General or equivalent safety guidance active/);
   assert.match(html, /An “Apply when” sentence does not keep unused text out of context/);
   const guideURL = html.match(/<a href="([^"]+)">module-loading guide<\/a>/)?.[1];

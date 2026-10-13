@@ -60,6 +60,20 @@ test('review prompt recommends relevant loading without making safety optional',
   assert.match(prompt, /Keep required approval, security, and privacy protections active/);
 });
 
+test('tools and communication are separate choices rather than implicit General additions', () => {
+  const general = RULES.find(rule => rule.id === 'general');
+  assert.equal(general.path, 'agent-global-rules.md');
+  const generalOnly = buildReviewPrompt(['general']);
+  for (const id of ['tools-execution', 'communication']) {
+    const rule = RULES.find(candidate => candidate.id === id);
+    assert.ok(rule, `${id} is selectable`);
+    assert.ok(!generalOnly.includes(ruleSourceURL(rule)), `${id} is not loaded implicitly`);
+    const standalone = buildReviewPrompt([id]);
+    assert.ok(standalone.includes(ruleSourceURL(rule)));
+    assert.ok(!standalone.includes(ruleSourceURL(general)));
+  }
+});
+
 test('review prompt preserves adopted rule conditions and Personalize placement', () => {
   for (const scope of ['personal', 'project']) {
     for (const ids of [['general'], ['general', 'coding', 'web', 'browser-use']]) {
