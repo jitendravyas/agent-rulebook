@@ -157,6 +157,11 @@ function renderChoices() {
       });
       hostControl.append(hostLabel, hostSelect, help);
       fieldset.insertBefore(hostControl, choices);
+      const osHeading = textElement('h3', 'os-rules-heading', 'OS rules to include');
+      osHeading.id = 'os-rules-heading';
+      fieldset.insertBefore(osHeading, choices);
+      choices.setAttribute('role', 'group');
+      choices.setAttribute('aria-labelledby', osHeading.id);
     }
     const view = { group };
     let container = fieldset;

@@ -362,6 +362,13 @@ test('host changes retain selected OS guidance until it is explicitly unchecked 
   assert.equal(host.children[0].value, 'unspecified');
   assert.match(page.get('group-description-environment').textContent, /only operating systems your agent actually accesses/i);
   assert.match(page.get('host-os-help').textContent, /connecting from a device does not mean the agent accesses it/i);
+  const osHeading = page.get('os-rules-heading');
+  assert.equal(osHeading.tag, 'h3');
+  assert.equal(osHeading.textContent, 'OS rules to include');
+  const osGroup = page.get('rule-groups').children.find(group => group.children.includes(osHeading));
+  const choices = osGroup.children[osGroup.children.indexOf(osHeading) + 1];
+  assert.equal(choices.role, 'group');
+  assert.equal(choices['aria-labelledby'], osHeading.id);
   host.value = 'mac';
   host.dispatch('change');
   host.value = 'linux';
