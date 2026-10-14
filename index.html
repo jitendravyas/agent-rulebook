@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Choose optional global AI agent rules and copy a prompt to review your user-level instructions. Find useful additions, duplicates, and conflicts before making changes.">
+  <meta name="description" content="Select global defaults and project-specific AI agent rules together. Copy a prompt that reviews each rule at its recommended location for useful additions, duplicates, and conflicts.">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#101716">
   <title>Agent Rulebook | Find Rules That Fit Your Agent</title>
@@ -13,11 +13,11 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Agent Rulebook">
   <meta property="og:title" content="Agent Rulebook | Find Rules That Fit Your Agent">
-  <meta property="og:description" content="Select optional global rule sets and copy a prompt to review your user-level instructions. Your agent proposes useful changes; you decide what to keep. Free, with no account needed.">
+  <meta property="og:description" content="Select global defaults and project additions together. Your agent proposes edits separately for each location; you approve what to keep. Free, with no account needed.">
   <meta property="og:url" content="https://jitendravyas.github.io/agent-rulebook/">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Agent Rulebook | Find Rules That Fit Your Agent">
-  <meta name="twitter:description" content="Select optional global rule sets and copy a prompt to review your user-level instructions. Your agent proposes useful changes; you decide what to keep. Free, with no account needed.">
+  <meta name="twitter:description" content="Select global defaults and project additions together. Your agent proposes edits separately for each location; you approve what to keep. Free, with no account needed.">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -25,7 +25,7 @@
       "@id": "https://jitendravyas.github.io/agent-rulebook/#application",
       "name": "Agent Rulebook",
       "url": "https://jitendravyas.github.io/agent-rulebook/",
-      "description": "A free browser-based tool that creates a prompt with selected public rule links for an agent to review global user-level instructions before proposing changes.",
+      "description": "A free browser-based tool that creates a prompt with selected public rule links grouped by global and project destination before proposing changes.",
       "applicationCategory": "ProductivityApplication",
       "operatingSystem": "Any",
       "browserRequirements": "JavaScript is required to generate a review prompt. Individual Markdown files can be read without JavaScript.",
@@ -67,7 +67,7 @@
       <div class="intro-copy">
         <p class="eyebrow">Your agent. Your ground rules.</p>
         <h1 id="page-title">Find the rules<br>that <span>fit your agent.</span></h1>
-        <p>Choose global rule sets and copy a prompt. Your agent reviews your existing user-level instructions and suggests useful changes across tasks and projects. You decide what to keep.</p>
+          <p>Choose global defaults and relevant project additions, then copy a review prompt. Your agent checks each location separately and proposes useful changes. You decide what to keep.</p>
         <div class="intro-actions">
           <a class="button primary builder-link" href="#builder">Choose rules to review <span aria-hidden="true">↓</span></a>
           <a class="intro-guide" href="https://github.com/jitendravyas/agent-rulebook#how-to-use">How to use the rules</a>
@@ -125,27 +125,27 @@
     <div id="builder" class="builder" tabindex="-1" hidden>
       <section class="choices" aria-labelledby="choose-title">
         <div class="section-heading">
-          <h2 id="choose-title">1. Choose rules to review</h2>
+          <h2 id="choose-title" tabindex="-1">Choose your agent’s guidance</h2>
           <button class="text-button" id="clear-selection" type="button">Clear selection</button>
         </div>
-        <div class="selection-guide" aria-labelledby="selection-guide-title">
-          <h3 id="selection-guide-title">Not sure what to choose?</h3>
-          <p id="selection-defaults">General is a suggested starting point. All other modules are optional.</p>
-          <p id="selection-help">General essentials alone can be enough for research, documents, and everyday tasks. For software work, add “Build or maintain software”. Do not select the whole collection by default.</p>
+        <div class="selection-guide">
+          <p id="selection-defaults">General is selected by default. You can uncheck it. All other modules are optional.</p>
+          <p>Select from either group or both. General and OS safety are global defaults. Your agent proposes placement for optional activities; project additions go in the relevant project. Each set is independent; General is not required.</p>
         </div>
-        <p id="selection-notice" class="section-description">Selection adds public rule links to the prompt; it does not install or activate rules.</p>
         <p id="link-warning" class="notice" role="status" hidden></p>
-        <form id="rule-form" aria-label="Rule selection" aria-describedby="selection-defaults selection-help selection-notice">
+        <form id="rule-form" aria-label="Rule selection" aria-describedby="selection-defaults">
           <div id="rule-groups"></div>
-          <a class="review-selection" href="#your-file">Get your review prompt <span aria-hidden="true">→</span></a>
+          <button id="preview-prompt" class="button primary review-selection" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt <span aria-hidden="true">→</span></button>
+          <p id="empty-selection-note" class="section-description" role="status" hidden>Select at least one rule set to preview a prompt.</p>
         </form>
-        <p class="selection-footnote">Only published rule sets are linked. Drafts, helper-tool references, and repository-maintenance instructions are not included.</p>
+        <p class="selection-footnote">Nothing is installed or activated here.</p>
       </section>
 
-      <section id="your-file" class="output" aria-labelledby="output-title" tabindex="-1">
+      <section id="your-file" class="output" aria-labelledby="output-title" tabindex="-1" hidden>
         <div class="socket-rail" aria-hidden="true"></div>
         <div class="output-heading"><h2 id="output-title">2. Copy your review prompt</h2><span class="file-type">Prompt</span></div>
-        <p class="output-description">The prompt reviews your global (user-level) instructions only. These are reusable defaults across tasks and projects, not a project's specific policies.</p>
+        <p id="output-scope" class="output-description">The prompt groups each selected rule by its global or project destination.</p>
+        <p id="selection-notice" class="section-description">Your agent combines useful guidance, removes duplicates, and preserves scope and safeguards before you approve changes.</p>
         <p id="local-prompt-note" class="notice" hidden>Local preview: this prompt links to published rules on GitHub, not unpublished edits in this checkout.</p>
         <div class="metrics">
           <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
@@ -171,17 +171,18 @@
         </details>
         <section class="next-step" aria-labelledby="use-rules-title">
           <h3 id="use-rules-title">3. Ask your agent to review</h3>
-          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. Ask it to review your global instructions, not to edit project instructions.</p>
-          <p>If you don’t have global instructions yet, ask your agent to propose a new setup in its supported global location. Approve it before saving.</p>
-          <p>Your agent needs access to the public links and any existing global instructions.</p>
+          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. If you selected project additions, open the intended project first. Your agent reviews each group at its labeled location and confirms activity placement from your intended use.</p>
+          <p>If you don’t have instructions yet, ask your agent to propose supported locations for the selected groups. Approve edits separately for each location before saving.</p>
+          <p>Your agent needs access to the public links and the instructions being reviewed.</p>
           <p>This website does not read or upload your existing instructions. Review the suggestions yourself; an agent may miss a conflict or recommend no changes.</p>
           <details>
             <summary>Advanced guidance</summary>
-            <p>When adopting rules, keep General or equivalent safety guidance active. Choose optional global modules for activities your agent does; use supported conditional loading where available. Keep project-specific requirements in project instructions. An “Apply when” sentence does not keep unused text out of context. Imports organize files but save context only when irrelevant text stays unloaded.</p>
-            <p>A file can load completely and still contain too much guidance. Check your agent’s limits and recommendations, then try a low-risk task. See the <a href="https://github.com/jitendravyas/agent-rulebook#choose-general-then-relevant-add-ons">module-loading guide</a>.</p>
+            <p>General can be enough for everyday tasks. An HTML report presenting research can use General alone; developing an interactive website can benefit from software and web guidance. Apple and Android app guidance is optional and applies to the apps you build, not the operating system your agent uses.</p>
+            <p>Preserve required approval, security, and privacy protections. Global defaults apply across tasks; optional activity placement depends on intended use. Web, Apple, Android, testing, animation, and localization additions belong in relevant projects or supported conditional loading. An “Apply when” sentence does not keep unused text out of context. Imports save context only when irrelevant text stays unloaded.</p>
+            <p>A file can load completely and still contain too much guidance. Check your agent’s limits and recommendations, then try a low-risk task. See the <a href="https://github.com/jitendravyas/agent-rulebook#choose-only-relevant-rule-sets">module-loading guide</a>.</p>
           </details>
         </section>
-        <a class="back-to-selection" href="#builder">Back to rule selection</a>
+        <a id="back-to-selection" class="back-to-selection" href="#builder">Back to rule selection</a>
       </section>
     </div>
     <section id="source-rules" class="source-rules" aria-labelledby="source-rules-title" tabindex="-1">
@@ -190,37 +191,35 @@
       <details>
         <summary>Browse individual Markdown files</summary>
         <!-- Keep these categories and links aligned with site/rules.js. -->
-        <h3>Operating systems</h3>
+        <h3>Operating system rules</h3>
         <ul>
-          <li><a data-rule-id="mac" href="./optional/macos-agent-rules.md" type="text/markdown">macOS agent rules</a></li>
-          <li><a data-rule-id="windows" href="./optional/windows-agent-rules.md" type="text/markdown">Windows agent rules</a></li>
-          <li><a data-rule-id="linux" href="./optional/linux-agent-rules.md" type="text/markdown">Linux agent rules</a></li>
+          <li><a data-rule-id="mac" href="./global/macos-agent-rules.md" type="text/markdown">macOS agent rules</a></li>
+          <li><a data-rule-id="windows" href="./global/windows-agent-rules.md" type="text/markdown">Windows agent rules</a></li>
+          <li><a data-rule-id="linux" href="./global/linux-agent-rules.md" type="text/markdown">Linux agent rules</a></li>
         </ul>
-        <h3>General behavior</h3>
+        <h3>General and optional activities</h3>
         <ul>
-          <li><a data-rule-id="general" href="./agent-global-rules.md" type="text/markdown">General essentials for AI agents</a></li>
-          <li><a data-rule-id="communication" href="./optional/communication-rules.md" type="text/markdown">Communication rules</a></li>
+          <li><a data-rule-id="general" href="./global/general-rules.md" type="text/markdown">General essentials for AI agents</a></li>
+          <li><a data-rule-id="coding" href="./global/coding-rules.md" type="text/markdown">Coding-agent rules</a></li>
+          <li><a data-rule-id="version-control" href="./global/version-control-rules.md" type="text/markdown">Version-control rules</a></li>
+          <li><a data-rule-id="authoring" href="./global/agent-workflow-authoring-rules.md" type="text/markdown">Agent workflow authoring rules</a></li>
         </ul>
-        <h3>Tools and interfaces</h3>
+        <h3>Project-specific additions</h3>
         <ul>
-          <li><a data-rule-id="tools-execution" href="./optional/tools-execution-rules.md" type="text/markdown">Tools and execution rules</a></li>
-          <li><a data-rule-id="browser-use" href="./optional/browser-computer-use-rules.md" type="text/markdown">Browser and computer-use rules</a></li>
-          <li><a data-rule-id="version-control" href="./optional/version-control-rules.md" type="text/markdown">Version-control rules</a></li>
+          <li><a data-rule-id="web" href="./project/web-development-rules.md" type="text/markdown">Web development rules</a></li>
+          <li><a data-rule-id="apple-apps" href="./project/apple-app-development-rules.md" type="text/markdown">Apple app development rules</a></li>
+          <li><a data-rule-id="android-apps" href="./project/android-app-development-rules.md" type="text/markdown">Android app development rules</a></li>
+          <li><a data-rule-id="testing" href="./project/software-testing-rules.md" type="text/markdown">Software testing rules</a></li>
+          <li><a data-rule-id="browser-verification" href="./project/browser-verification-rules.md" type="text/markdown">Browser verification rules</a></li>
+          <li><a data-rule-id="ui-animation" href="./project/interactive-ui-animation-rules.md" type="text/markdown">Interactive UI animation rules</a></li>
+          <li><a data-rule-id="i18n" href="./project/internationalization-localization-rules.md" type="text/markdown">Internationalization and localization rules</a></li>
         </ul>
-        <h3>Software and web development</h3>
+        <h3>Optional agent capabilities</h3>
         <ul>
-          <li><a data-rule-id="coding" href="./coding-agent-global-rules.md" type="text/markdown">Coding-agent rules</a></li>
-          <li><a data-rule-id="web" href="./web-development-rules.md" type="text/markdown">Web development rules</a></li>
-          <li><a data-rule-id="testing" href="./optional/software-testing-rules.md" type="text/markdown">Software testing rules</a></li>
-          <li><a data-rule-id="browser-animation" href="./optional/browser-animation-rules.md" type="text/markdown">Browser animation rules</a></li>
-          <li><a data-rule-id="i18n" href="./optional/internationalization-localization-rules.md" type="text/markdown">Internationalization and localization rules</a></li>
-        </ul>
-        <h3>Agent instructions</h3>
-        <ul>
-          <li><a data-rule-id="authoring" href="./optional/agent-workflow-authoring-rules.md" type="text/markdown">Agent workflow authoring rules</a></li>
+          <li><a data-rule-id="browser-use" href="./global/browser-computer-use-rules.md" type="text/markdown">Browser and computer-use rules</a></li>
         </ul>
       </details>
-      <p>Start with General essentials. For software work, add “Build or maintain software”. Read the <a href="https://github.com/jitendravyas/agent-rulebook#safe-setup">safe setup advice</a> and <a href="./README.md" type="text/markdown">usage guide</a>. Retain the <a href="./LICENSE" rel="license">MIT license</a> when reusing the rules.</p>
+      <p>General is a suggested starting point. For software work, consider “Software development basics”. Read the <a href="https://github.com/jitendravyas/agent-rulebook#safe-setup">safe setup advice</a> and <a href="./README.md" type="text/markdown">usage guide</a>. Retain the <a href="./LICENSE" rel="license">MIT license</a> when reusing the rules.</p>
     </section>
     <section class="closing-note" aria-labelledby="before-use-title">
       <h2 id="before-use-title">A starting point, not a guarantee.</h2>
@@ -232,7 +231,7 @@
   </div>
   <nav id="mobile-review" class="mobile-review" aria-label="Rule builder shortcuts" hidden>
     <span><strong id="mobile-rule-count">0</strong> selected</span>
-    <a id="mobile-review-link" href="#your-file"><span id="mobile-review-label">Get prompt</span> <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+    <a id="mobile-review-link" href="#your-file"><span id="mobile-review-label">Preview prompt</span> <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
   </nav>
 </body>
 </html>

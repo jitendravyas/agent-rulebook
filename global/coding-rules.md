@@ -5,7 +5,7 @@ Apply only to software development, including temporary or standalone software. 
 ## Project inspection and planning
 
 * Inspect current code, configuration, documentation, and relevant history in the intended workspace. Follow established conventions and boundaries; explain necessary material departures.
-* Check required or pinned dependency, runtime, and tool versions before version-sensitive work. Do not assume execution, build, and target environments match. If a required version is unavailable or requirements materially conflict, stop that operation and report stale guidance; do not silently substitute. Otherwise use supported project commands.
+* Check required or pinned dependency, runtime, and tool versions before version-sensitive work. Do not assume execution, build, and target environments match. If a required version is unavailable or requirements materially conflict, stop that operation and report the missing version or conflicting requirements; do not silently substitute. Otherwise use supported project commands.
 * Resolve important integration uncertainty with a small working path before a larger implementation. For parallel work, coordinate or isolate shared outputs, ports, databases, and accounts; separate checkouts alone do not isolate them.
 
 ## Software-specific approvals
@@ -33,7 +33,7 @@ Apply only to software development, including temporary or standalone software. 
 * Use stable identifiers, not translated labels or formatted text, for actions and data. Preserve Unicode without corruption; bytes and code units are not user-visible character counts. Follow explicit validation and normalization requirements.
 * Preserve locale, right-to-left and mixed text direction, and accessibility using established platform mechanisms. Check affected input methods and assistive-technology behavior against task or project requirements.
 * Handle relevant initial, loading, empty, success, validation, permission, failure, slow-network, offline, retry, and cancellation states. Preserve recoverable input and make the next action clear.
-* Remove task-obsoleted code and task-created disposable intermediates when no longer needed; retain deliverables and requested previews. Preserve unrelated notes and dead code; do not replace required work with an unfinished-work note.
+* Remove task-obsoleted code when no longer needed, without deleting required deliverables or unrelated code and notes. Do not replace required work with an unfinished-work note.
 * Preserve compatibility for existing stored formats and consumers that cannot update together; keep compatibility paths only while needed.
 * Handle or propagate failures with useful sanitized context; do not turn errors into success. Fallbacks must preserve required behavior. Release owned resources on completion, failure, or cancellation, without releasing shared resources still in use.
 * Coordinate retries with lower layers. Prevent canceled or replaced work from applying stale results. Where needed, use duplicate prevention, ordering, conflict checks, transactions, or recovery so retries and partial failures do not corrupt state.
@@ -46,4 +46,4 @@ Apply only to software development, including temporary or standalone software. 
 ## Code checks and review
 
 * Check that static analysis covers changed paths, file types, and intended rules, respecting intentional exclusions. Fix in-scope findings at source. Use only narrow, justified, project-allowed suppressions or type-check bypasses; explain them and ask before policy changes. Coverage gaps alone do not justify new tools.
-* Verify review findings against current requirements and code. Fix required in-scope issues and report others with evidence. Recommend the smallest useful recurrence prevention only when benefit justifies upkeep and false positives; add it only when authorized.
+* Verify review findings against current requirements and code before acting on them. Recommend the smallest useful recurrence prevention only when benefit justifies upkeep and false positives; add it only when authorized.

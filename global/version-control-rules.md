@@ -7,7 +7,7 @@ Apply when using version control for an authorized task, including non-software 
   * When asked to review a branch or proposed version-controlled changes, or to submit them for review or merging, check the comparison base and full diff within the requested review or submission scope, plus directly affected context. Account separately for relevant uncommitted changes; the working-tree diff alone is insufficient.
   * Resolve version-control conflicts by inspecting both versions, preserving intended content and behavior, and rerunning affected checks.
   * Before version-controlled handoff, compare task-owned changes with the starting state, including added, generated, renamed, and deleted paths; identify unrelated changes. Scope follows the request, not original authorship.
-  * In version-controlled work, retain requested deliverables, but do not stage temporary or local-only output by default. Follow established conventions for generated files; ask only if the tracking decision remains unclear after inspection. Recommend narrow ignores for recurring local output, adding them only in scope. Never ignore files to hide them from review; ignores do not protect secrets or tracked files.
+  * Do not stage temporary or local-only output by default. Follow established conventions for generated files; ask only if the tracking decision remains unclear after inspection. Recommend narrow ignores for recurring local output, adding them only in scope. Never ignore files to hide them from review; ignores do not protect secrets or tracked files.
 
 ## Committing and pushing
 
