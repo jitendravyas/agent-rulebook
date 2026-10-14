@@ -166,6 +166,14 @@ test('choices show each purpose, put OS first, and keep details available on dem
   assert.deepEqual(page.get('rule-groups').children.map(group => group.id), [
     'rule-group-environment', 'rule-group-general', 'rule-group-development', 'rule-group-capabilities',
   ]);
+  for (const group of catalog.RULE_GROUPS) {
+    const fieldset = page.get(`rule-group-${group.id}`);
+    const description = page.get(`group-description-${group.id}`);
+    assert.equal(description.textContent, group.description);
+    assert.equal(description.hidden, false);
+    assert.ok(fieldset.contains(description), `${group.id} displays its description`);
+    assert.equal(fieldset['aria-describedby'], description.id);
+  }
   assert.deepEqual(catalog.RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'coding', 'version-control', 'authoring']);
   assert.equal(page.get('rule-general').checked, true);
   assert.match(page.get('description-browser-use').textContent, /For agents with browser or desktop control tools/);

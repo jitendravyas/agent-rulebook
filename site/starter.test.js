@@ -143,7 +143,7 @@ test('repository prose uses American spelling while source paths stay unchanged'
     assert.ok(!britishSpellings.test(prose), `${path} uses American spellings in prose`);
   }
   for (const entry of [...RULES, ...RULE_GROUPS]) {
-    for (const field of ['title', 'label', 'description', 'purpose', 'summary']) {
+    for (const field of ['title', 'label', 'description', 'purpose']) {
       if (typeof entry[field] === 'string') {
         assert.ok(!britishSpellings.test(entry[field]), `${entry.id}.${field} uses American spellings`);
       }

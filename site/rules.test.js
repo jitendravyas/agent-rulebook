@@ -26,21 +26,21 @@ test('every catalog rule belongs to exactly one category', () => {
   for (const rule of RULES) assert.ok(grouped.includes(rule), `Uncategorized rule: ${rule.id}`);
 });
 
-test('every selectable rule explains its purpose and categories include visible examples', () => {
+test('every selectable rule and category explains its purpose', () => {
   for (const rule of RULES) {
     assert.equal(typeof rule.purpose, 'string');
     assert.ok(rule.purpose.trim().length, `Missing selection explanation: ${rule.id}`);
   }
   for (const group of RULE_GROUPS) {
-    assert.equal(typeof group.summary, 'string');
-    assert.ok(group.summary.trim().length, `Missing category examples: ${group.id}`);
+    assert.equal(typeof group.description, 'string');
+    assert.ok(group.description.trim().length, `Missing category description: ${group.id}`);
   }
   assert.deepEqual(RULE_GROUPS.map(group => group.id), ['environment', 'general', 'development', 'capabilities']);
   assert.deepEqual(RULE_GROUPS.at(-1).rules.map(rule => rule.id), ['browser-use']);
   assert.match(RULE_GROUPS.at(-1).description, /Placement depends on intended use/);
   const development = RULE_GROUPS.find(group => group.id === 'development');
   assert.equal(development.title, 'Project-specific additions');
-  assert.match(development.summary, /project’s technologies/);
+  assert.match(development.description, /relevant to this project/);
   assert.match(html, /An HTML report presenting research can use General alone/);
   assert.match(html, /interactive website can benefit from software and web guidance/);
   assert.ok(development.rules.some(rule => rule.id === 'testing'));

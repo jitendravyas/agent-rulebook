@@ -179,21 +179,18 @@ export const RULE_GROUPS = [
   {
     id: 'environment',
     title: 'Operating system rules',
-    summary: 'Safety rules for the OS your agent uses, not the apps you build.',
     description: 'Select the OS your agent uses to include its safety rules in the review prompt. This is not the platform you build apps for.',
     rules: OS_RULES,
   },
   {
     id: 'general',
     title: 'General and optional activities',
-    summary: 'General works across tasks; choose activities only when relevant.',
     description: 'General provides broad defaults. Your agent proposes placement for optional activities based on whether they recur across tasks or are occasional.',
     rules: [GENERAL_RULE, CODING_RULE, VERSION_CONTROL_RULE, AUTHORING_RULE],
   },
   {
     id: 'development',
     title: 'Project-specific additions',
-    summary: 'For a project’s technologies and activities, not every agent session.',
     description: 'Select only guidance relevant to this project. These choices are not global defaults.',
     rules: [
       WEB_RULE,
@@ -208,7 +205,6 @@ export const RULE_GROUPS = [
   {
     id: 'capabilities',
     title: 'Optional agent capabilities',
-    summary: 'For available interface-control tools, not every agent.',
     description: 'Include only if your agent supports these actions. Placement depends on intended use; these rules do not install tools or add capabilities.',
     rules: [BROWSER_USE_RULE],
   },
