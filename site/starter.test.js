@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
+import { runInNewContext } from 'node:vm';
 import { PRESETS, RULE_GROUPS, RULES } from './rules.js';
 
 const root = new URL('../', import.meta.url);
@@ -245,6 +246,54 @@ test('website workflow checks relevant changes and gates main deployment on succ
   assert.ok(checks.indexOf('run: node --test site/*.test.js') < checks.indexOf('name: Prepare the static website'));
   assert.match(checks, /uses: actions\/upload-pages-artifact@[a-f0-9]{40}/);
   assert.doesNotMatch(checks, /^      pages: write$|^      id-token: write$/m, 'The test job has no deployment permissions');
+});
+
+test('deployment versions the page assets and imported catalog together without changing rules', () => {
+  const workflow = read('.github/workflows/website.yml');
+  assert.match(workflow, /RULEBOOK_DEPLOYMENT_SHA: \$\{\{ github\.sha \}\}/);
+  const script = workflow.match(/^          node - <<'NODE'\n([\s\S]*?)^          NODE$/m)?.[1];
+  assert.ok(script, 'The deployment prepares versioned assets');
+  const run = (version, alter = files => files) => {
+    const files = alter(new Map([
+      ['/build/index.html', read('index.html')],
+      ['/build/site/app.js', read('site/app.js')],
+      ['/build/site/rules.js', read('site/rules.js')],
+      ['/build/global/general-rules.md', read('global/general-rules.md')],
+    ]));
+    const writes = [];
+    const execute = () => runInNewContext(script.replace(/^ {10}/gm, ''), {
+      process: { env: { RULEBOOK_STATIC_DIR: '/build', RULEBOOK_DEPLOYMENT_SHA: version } },
+      require: name => {
+        assert.equal(name, 'node:fs');
+        return {
+          readFileSync: path => { assert.ok(files.has(path)); return files.get(path); },
+          writeFileSync: (path, content) => { writes.push(path); files.set(path, content); },
+        };
+      },
+    });
+    return { files, writes, execute };
+  };
+  for (const version of ['a'.repeat(40), 'b'.repeat(40)]) {
+    const result = run(version);
+    result.execute();
+    assert.ok(result.files.get('/build/index.html').includes(`href="./site/styles.css?v=${version}"`));
+    assert.ok(result.files.get('/build/index.html').includes(`src="./site/app.js?v=${version}"`));
+    assert.ok(result.files.get('/build/site/app.js').includes(`from './rules.js?v=${version}';`));
+    assert.equal(result.files.get('/build/site/rules.js'), read('site/rules.js'));
+    assert.equal(result.files.get('/build/global/general-rules.md'), read('global/general-rules.md'));
+    assert.deepEqual(result.writes, ['/build/index.html', '/build/site/app.js']);
+  }
+  const invalidVersion = run('not-a-commit');
+  assert.throws(invalidVersion.execute, /deployment version/);
+  assert.deepEqual(invalidVersion.writes, []);
+  for (const count of [0, 2]) {
+    const changedImport = run('a'.repeat(40), files => {
+      files.set('/build/site/app.js', "from './rules.js';".repeat(count));
+      return files;
+    });
+    assert.throws(changedImport.execute, /exactly one/);
+    assert.deepEqual(changedImport.writes, [], 'Reject uncertain replacements before writing either asset');
+  }
 });
 
 test('shared coding guidance has one canonical file and presets use it', () => {

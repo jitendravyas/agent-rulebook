@@ -274,7 +274,7 @@ The rules combine practical experience, research, and ideas shared publicly by o
 
 The [Vale workflow](.github/workflows/vale.yml) checks the general, software, web, and optional rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
 
-The [website workflow](.github/workflows/website.yml) runs on relevant pull requests and pushes to `main`. It checks rule-file links, catalog categories, review prompts, and saved-selection behavior. On pushes to `main`, successful checks package the public site before the dependent deployment job publishes it. Pull requests do not deploy. GitHub Pages must use GitHub Actions as its publishing source. Run the checks locally with Node.js 24: `node --test site/*.test.js`. These tests do not assess rendered appearance or accessibility.
+The [website workflow](.github/workflows/website.yml) runs on relevant pull requests and pushes to `main`. It checks rule-file links, catalog categories, review prompts, and saved-selection behavior. On pushes to `main`, successful checks package the public site before the dependent deployment job publishes it. Asset URLs include the deployment version so refreshed pages load matching code. Pull requests do not deploy. GitHub Pages must use GitHub Actions as its publishing source. Run the checks locally with Node.js 24: `node --test site/*.test.js`. These tests do not assess rendered appearance or accessibility.
 
 </details>
 

@@ -60,11 +60,30 @@ jobs:
 
       - name: Prepare the static website
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          RULEBOOK_STATIC_DIR: ${{ runner.temp }}/rulebook-site
+          RULEBOOK_DEPLOYMENT_SHA: ${{ github.sha }}
         run: |
           mkdir -p "$RUNNER_TEMP/rulebook-site/site"
           cp index.html README.md LICENSE "$RUNNER_TEMP/rulebook-site/"
           cp site/app.js site/rules.js site/styles.css "$RUNNER_TEMP/rulebook-site/site/"
           cp -R global project optional docs "$RUNNER_TEMP/rulebook-site/"
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const dir = process.env.RULEBOOK_STATIC_DIR;
+          const version = process.env.RULEBOOK_DEPLOYMENT_SHA;
+          if (!dir || !/^[a-f0-9]{40}$/.test(version)) throw new Error('Missing valid deployment version or build directory');
+          const replaceOnce = (text, source, replacement) => {
+            if (text.split(source).length !== 2) throw new Error(`Expected exactly one asset reference: ${source}`);
+            return text.replace(source, replacement);
+          };
+          let html = fs.readFileSync(`${dir}/index.html`, 'utf8');
+          html = replaceOnce(html, 'href="./site/styles.css"', `href="./site/styles.css?v=${version}"`);
+          html = replaceOnce(html, 'src="./site/app.js"', `src="./site/app.js?v=${version}"`);
+          const app = replaceOnce(fs.readFileSync(`${dir}/site/app.js`, 'utf8'), "from './rules.js';", `from './rules.js?v=${version}';`);
+          fs.writeFileSync(`${dir}/index.html`, html);
+          fs.writeFileSync(`${dir}/site/app.js`, app);
+          NODE
 
       - name: Upload the checked website
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
