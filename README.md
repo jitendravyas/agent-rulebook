@@ -15,17 +15,19 @@ Choose how to start:
 
 ## Choose only relevant rule sets
 
-The folders organize the sources: `global/` contains broad defaults and optional activity guidance; `project/` contains additions for relevant projects. General and the applicable OS safety file suit global use. For Coding, Version control, Computer use, and Authoring, choose placement from intended use: global when useful across the agent's recurring tasks, otherwise relevant project, task-scoped, or supported conditional guidance. If narrower loading is unavailable for occasional work, use task-specific guidance instead of adding permanent instructions. README and setup guidance are for people; the rule files are for agents.
+The rule files are for agents; this README is for people choosing and installing them.
 
-Each rule file is independent; none requires General or another module. Choose any set for its stated scope, including without General. Independence does not mean duplicating General in every file: a specialized set covers its own topic, not every safety risk. [General essentials](global/general-rules.md) are a suggested starting point if you need shared scope, safety, approval, privacy, and verification guidance. They work without a project, desktop, plugins, or skills. Use the source Git commit for an exact revision.
+- **Global defaults:** General and the applicable OS safety file suit user-level instructions across tasks.
+- **Optional activities:** Coding, Version control, Computer use, and Authoring suit global use when they recur across tasks; otherwise use relevant project, task-scoped, or supported conditional guidance. A file in `global/` does not require global installation.
+- **Project additions:** Files in `project/` belong in relevant project instructions or supported project-scoped loading. Keep project-specific commands, tools, and requirements in project instructions, not global rules.
 
-Copy only relevant sets, keeping their headings and applicability lines together. No rule file imports or activates another rule file. When adapting several sets into one instruction file, remove equivalent guidance and merge compatible overlaps while preserving every distinct requirement, condition, exception, and safety protection. Keep an explicit scope for merged sections; retain separate guidance if equivalence is uncertain.
+If narrower loading is unavailable for occasional work, use task-specific guidance instead of adding permanent instructions.
+
+Each rule file is independent; none requires General or another module. Suggested files are not dependencies: each covers its own topic, not every safety risk. [General essentials](global/general-rules.md) are a starting point for shared safety and behavior without a project, desktop, plugins, or skills. Use the source Git commit for an exact revision.
+
+When combining sets, keep unmerged headings and applicability lines together. Merge equivalent guidance while preserving every distinct requirement, condition, exception, and safety protection, with explicit scope for merged sections. Retain separate guidance if equivalence is uncertain. Across separately loaded files, remove overlap only when the remaining instruction is confirmed to apply and load everywhere needed.
 
 **Do not load the whole collection by default.** Preserve required approval, security, and privacy protections in your active instructions, whether from General or your own guidance. Add only modules for work that agent actually does. For example, research and documents need no Coding or Web rules; building a website does not automatically need animation, localization, or desktop-operation rules.
-
-Use broad defaults at user level and project additions in relevant project instructions or supported project-scoped loading. A file in `global/` does not require global installation: confirm scope for optional activities. Keep project-specific commands, tools, and requirements in project instructions, not global rules. Remove overlap across separately loaded files only when the remaining instruction is confirmed to apply and load everywhere needed; otherwise preserve the needed coverage.
-
-Suggested files are not dependencies; combine them with other sets or your own instructions only when useful.
 
 | Agent setup | Relevant standalone file | Covers |
 | --- | --- | --- |
@@ -47,23 +49,23 @@ Before copying rules, check [instruction loading and size](#instruction-loading-
 
 American English is used consistently in the supplied rules; it does not prescribe how agents must write your content.
 
-The [scenario test plan](docs/rule-scenarios.md) provides eight safe checks for loading and behavior across agents. Existing operating-system and specialist files remain available separately; they are not required for the starter setup.
+The [scenario test plan](docs/rule-scenarios.md) provides eight safe checks for loading and behavior across agents.
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
 ## Use the review prompt builder
 
-The [website](https://jitendravyas.github.io/agent-rulebook/) separates broad defaults, optional activities, and project additions. Select any relevant choices; the copied prompt keeps editing destinations separate and confirms activity placement from intended use. It does not read private instructions, merge rules, install anything, or change settings. It updates after the website checks pass on `main`.
+The [website](https://jitendravyas.github.io/agent-rulebook/) generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
 
-The operating-system rules appear first, above both groups. Choosing an OS includes its safety rules in the review prompt. General and optional activities and Project-specific additions are shown side by side on wide screens and stacked on smaller screens. Each choice shows a short purpose; Details provides further explanation and a source link without selecting it.
+OS choices appear first: choose where the agent operates, not the apps it builds. Each rule choice shows its purpose; **Details** explains more and links to its source without selecting it. Browser and desktop control appears last because it requires interface-control tools.
 
-The General and optional activities group includes General, Software development basics, version control, and authoring guidance. Project additions include Web, Apple, Android, testing, browser verification, animation, and localization. Browser and desktop control appears last, under Optional agent capabilities, and is useful only if the agent supports interface control. Like the other optional activities, its placement depends on intended use. General starts selected; rule-set checkboxes can be unchecked. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting Software development basics selects Git as a convenience; uncheck it if unnecessary. **Clear selection** removes all choices.
+General starts selected; you can uncheck it. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting Software development basics also selects Git; uncheck it if unnecessary. **Clear selection** removes all choices.
 
-1. **Choose relevant rules from either group or both.** Broad defaults go in user-level instructions; project additions go in the relevant project. Your agent proposes scope for optional activities. OS safety concerns where the agent operates, not which apps it builds.
-2. **Click Preview prompt, then copy it.** The full prompt stays hidden until you click Preview prompt. Check the separately labeled source lists; activity placement must be confirmed before review. Changing choices hides the preview. The prompt reviews only selected sources, consolidates compatible overlaps, and keeps project-specific rules out of global instructions.
+1. **Choose relevant rules.** Use the [selection guide above](#choose-only-relevant-rule-sets); you can select from either group or both.
+2. **Click Preview prompt, then copy it.** The full prompt stays hidden until you click **Preview prompt**. Check its labeled source lists; changing choices hides the preview.
 3. **Ask your agent to review.** Paste the prompt into a conversation. If you selected project additions, open the intended project first. The agent checks existing instructions and relevant skills, proposes edits separately by destination, and asks for approval for each affected location. It must confirm an unclear project target and leave unselected locations unchanged. It may recommend no changes.
 
-The agent needs access to the public links and relevant instructions. The website never reads or uploads your private instructions, project files, or agent settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
+The agent needs access to the public links and relevant instructions. The website never reads or uploads private instructions, project files, or agent settings, and does not merge rules, install anything, or change settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
 The prompt asks the agent to check for incomplete or truncated sources, retrieve missing text, or report sources it cannot fully read. For unmerged modules or excerpts, it must compare headings and applicability lines with the originals exactly. For merged guidance, it must check every contributing requirement, condition, exception, and safety protection against the complete sources. It must repeat those checks after saving approved edits. It must read the source license separately and propose any required copyright and permission notices in a separate file beside the instructions.
 
@@ -88,9 +90,9 @@ Local previews still generate prompts linking to public `main`. They do not incl
 
 Copy rule text you decide to adopt, whether you used the website or reviewed the files yourself. Do not copy the builder's review prompt into an instruction file.
 
-1. **Find the instruction locations you need.** Broad defaults use the agent's user-level file or settings. Project additions use the intended project's supported instruction files. Confirm the appropriate scope for optional activities. Support for project instructions alone does not confirm global loading.
+1. **Find supported instruction locations.** Use the [placement guidance above](#choose-only-relevant-rule-sets) and your agent's documentation. Support for project instructions alone does not confirm global loading.
 2. **Review alongside your existing instructions.** Remove duplicates and resolve conflicts before changing active instructions. Preserve your own guidance, project requirements, safety boundaries, and each rule's conditions and exceptions.
-3. **Save reviewed rules at their labeled locations.** Put global selections in supported user-level instructions and project selections in that project's instructions. Do not merge both groups into one global file. Use the filenames and formats your agent supports, and obtain approval for each affected location. Supported imports or loading controls can organize files; an ordinary Markdown link is not a universal import. No package installation is needed.
+3. **Save reviewed rules at the agreed locations.** Do not merge both groups into one global file. Use the filenames and formats your agent supports, and obtain approval for each affected location. Supported imports or loading controls can organize files; an ordinary Markdown link is not a universal import. No package installation is needed.
 4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available, including whether referenced files loaded. Cloning this repository or saving files in an arbitrary folder does not activate them.
 
 Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That file is only for agents maintaining this repository.
@@ -214,7 +216,7 @@ No. General stands alone for non-development tasks. Add Coding only for software
 
 Development rules also cover temporary and standalone work without a Git repository. They do not require browser automation or version control when unnecessary.
 
-For an agent used mainly for development, Coding can be a global default. For mixed everyday work, put Coding in relevant projects or use supported conditional loading. Do not load technology-specific additions globally merely because some projects use them.
+See [Choose only relevant rule sets](#choose-only-relevant-rule-sets) for global and project placement.
 
 ### What if the rules are too large?
 
