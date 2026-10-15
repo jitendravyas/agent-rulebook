@@ -61,11 +61,18 @@ test('every selectable rule and category explains its purpose', () => {
   assert.ok(development.rules.includes(localization));
 });
 
-test('selection guidance uses the visible software rule labels', () => {
+test('selection guidance uses visible rule labels and gives non-coders a starting point', () => {
   const coding = RULES.find(rule => rule.id === 'coding');
   assert.equal(coding.label, 'Software development basics');
   const sourceHelp = html.match(/<p>General is a suggested starting point[^<]+/)?.[0];
   assert.ok(sourceHelp?.includes(coding.label), 'Software guidance names its selection card');
+  const selectionGuide = html.match(/<div class="selection-guide">([\s\S]*?)<\/div>/)?.[1];
+  assert.match(selectionGuide, /Not writing software\?/);
+  assert.match(selectionGuide, /Start with General and your operating system/);
+  const browserUse = RULES.find(rule => rule.id === 'browser-use');
+  assert.ok(selectionGuide.includes(`Add ${browserUse.label} if your agent operates websites or apps`));
+  assert.match(selectionGuide, /Leave software-development options unchecked/);
+  assert.ok(html.indexOf('Not writing software?') < html.indexOf('id="rule-form"'));
 });
 
 test('review prompt recommends relevant loading without making safety optional', () => {
