@@ -97,19 +97,16 @@ h2 { font-size: 1.25rem; letter-spacing: -.025em; line-height: 1.3; margin: 0; f
 .text-button:hover { text-decoration-thickness: 2px; }
 .rule-group { margin: 0 0 32px; padding: 0; border: 0; min-inline-size: 0; }
 .rule-group legend { font-size: .9375rem; font-weight: 600; line-height: 1.5; max-inline-size: 100%; margin-block-end: 8px; padding: 0; }
-#software-guidance { min-inline-size: 0; margin-block-end: 32px; border-block-start: 1px solid var(--line); }
+#software-guidance { min-inline-size: 0; margin-block-end: 32px; border-block-start: 1px solid var(--line); padding-block-start: 16px; }
 #software-guidance > summary { color: var(--accent); font-size: .9375rem; }
 @media (min-width: 1000px) {
-  #rule-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px; align-items: start; }
-  #rule-group-environment { grid-column: 1 / -1; grid-row: 1; }
-  #rule-group-general { grid-column: 1; grid-row: 2; }
-  #software-guidance { grid-column: 2; grid-row: 2; }
-  #rule-group-capabilities { grid-column: 1 / -1; grid-row: 3; }
-  #rule-groups .rule-group { margin-block-end: 0; }
-  .output { max-inline-size: 760px; inline-size: 100%; margin-inline: auto; }
+  #rule-group-general > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  #rule-group-development > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  #rule-group-general .rule-card, #rule-group-development .rule-card { margin-block-end: 0; }
+  .output { max-inline-size: 900px; inline-size: 100%; margin-inline: auto; }
 }
 .group-description { margin: 0 0 14px; color: var(--muted); font-size: .75rem; line-height: 1.65; }
-.rule-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; position: relative; align-items: start; gap: 0 8px; border: 1px solid transparent; border-radius: 6px; margin-block-end: 4px; }
+.rule-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; position: relative; align-items: start; gap: 0 8px; border: 1px solid var(--line); border-radius: 6px; margin-block-end: 8px; background: #15231b; }
 .rule-card:hover { background: #24382a; border-color: #88a18b; }
 .rule-card:has(> label > input:checked) { background: #253c2a; border-color: #a5ed9a; }
 .rule-card label { display: flex; gap: 12px; min-width: 0; padding: 12px 10px; cursor: pointer; }
@@ -206,6 +203,7 @@ code { font: .95em var(--mono); }
   .intro-copy > p { max-width: 42ch; font-size: .875rem; }
   .agent-portrait { width: min(100%, 340px); margin-inline: auto; }
   .builder { grid-template-columns: 1fr; gap: 32px; padding-block-start: 22px; }
+  .os-choices { grid-template-columns: minmax(0, 1fr); }
   .section-heading { align-items: center; }
   .section-heading h2 { font-size: 1.125rem; }
   .output { position: static; padding: 18px; }
