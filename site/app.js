@@ -139,8 +139,16 @@ function renderChoices() {
     if (group.description) fieldset.setAttribute('aria-describedby', description.id);
     description.hidden = !group.description;
     const choices = document.createElement('div');
-    if (group.id === 'environment') choices.className = 'os-choices';
-    if (group.id === 'environment') {
+    fieldset.append(legend, description, choices);
+    if (group.id === 'global') {
+      containers.set('general', choices);
+      const osGroup = textElement('fieldset', 'os-group', '');
+      osGroup.id = 'os-rules';
+      const osTitle = textElement('legend', '', 'Operating-system rules (optional)');
+      const osDescription = textElement('p', 'group-description', 'Choose the system where your agent works, not the apps you build.');
+      osDescription.id = 'group-description-environment';
+      osGroup.setAttribute('aria-describedby', osDescription.id);
+      const osChoices = textElement('div', 'os-choices', '');
       const clear = textElement('button', 'text-button', 'Clear OS selection');
       clear.id = 'clear-os-selection';
       clear.type = 'button';
@@ -149,17 +157,11 @@ function renderChoices() {
         OS_RULES.forEach(rule => selected.delete(rule.id));
         updateSelection();
       });
-      fieldset.append(legend, choices, clear, description);
-    } else fieldset.append(legend, description, choices);
-    if (group.id === 'development') {
-      const softwareGuidance = textElement('div', 'software-guidance', '');
-      softwareGuidance.id = 'software-guidance';
-      const placementGuidance = textElement('p', 'software-placement', 'These rules can be reused across matching projects. Include them only in projects where they apply; for one-off work, use them only for that task.');
-      placementGuidance.id = 'specialist-placement';
-      const specialistChoices = textElement('div', 'software-rule-choices', '');
-      softwareGuidance.append(textElement('h3', 'software-guidance-title', 'More software rules (optional)'), placementGuidance, specialistChoices);
-      fieldset.append(softwareGuidance);
-      containers.set('coding', choices);
+      osGroup.append(osTitle, osChoices, clear, osDescription);
+      fieldset.append(osGroup);
+      OS_RULES.forEach(rule => containers.set(rule.id, osChoices));
+    } else if (group.id === 'project') {
+      choices.className = 'software-rule-choices';
       for (const area of group.areas) {
         const areaGroup = textElement('div', 'software-area', '');
         areaGroup.id = `software-area-${area.id}`;
@@ -172,7 +174,7 @@ function renderChoices() {
         explanation.id = `software-area-description-${area.id}`;
         const areaChoices = textElement('div', 'software-area-choices', '');
         areaGroup.append(title, explanation, areaChoices);
-        specialistChoices.append(areaGroup);
+        choices.append(areaGroup);
         area.rules.forEach((rule) => containers.set(rule.id, areaChoices));
       }
     } else group.rules.forEach((rule) => containers.set(rule.id, choices));
@@ -181,9 +183,6 @@ function renderChoices() {
   for (const rule of RULE_GROUPS.flatMap(group => group.rules)) {
     const card = textElement('div', 'rule-card', '');
     if (rule.id === 'general') card.className += ' rule-card--general';
-    if (rule.id === 'browser-operation') {
-      containers.get(rule.id).append(textElement('p', 'activity-label', 'Other activities (optional)'));
-    }
     const label = document.createElement('label');
     const input = document.createElement('input');
     input.type = rule.environment ? 'radio' : 'checkbox';
@@ -214,7 +213,7 @@ function renderChoices() {
     const description = textElement('span', 'rule-description', rule.purpose
       + (rule.id === 'coding' ? ' Also selects Version control rules; you can uncheck them.' : ''));
     description.id = `description-${rule.id}`;
-    input.setAttribute('aria-describedby', `${scope === 'project' ? 'specialist-placement' : `placement-${rule.id}`} ${description.id}`
+    input.setAttribute('aria-describedby', `${scope === 'project' ? 'group-description-project' : `placement-${rule.id}`} ${description.id}`
       + (rule.environment ? ' group-description-environment' : ''));
     text.append(description);
     label.append(input, text);

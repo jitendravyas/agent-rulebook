@@ -176,7 +176,7 @@ test('rule files stand alone without website-driven formatting or imports', () =
 });
 
 test('platform-agnostic guidance leaves browser translation mechanisms in Web development', () => {
-  const area = RULE_GROUPS.find(group => group.id === 'development').areas.find(area => area.id === 'across');
+  const area = RULE_GROUPS.find(group => group.id === 'project').areas.find(area => area.id === 'across');
   for (const rule of area.rules) {
     assert.doesNotMatch(read(rule.path), /translate="no"|browser-delivered interfaces|Browser translation or language-detection APIs/i);
   }

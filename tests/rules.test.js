@@ -36,19 +36,19 @@ test('every selectable rule and category explains its purpose', () => {
     assert.equal(typeof group.description, 'string');
     assert.ok(group.description.trim().length, `Missing category description: ${group.id}`);
   }
-  assert.deepEqual(RULE_GROUPS.map(group => group.id), ['environment', 'general', 'development']);
+  assert.deepEqual(RULE_GROUPS.map(group => group.id), ['global', 'activities', 'project']);
   assert.deepEqual(RULE_GROUPS.map(group => group.title), [
-    'Your agent’s operating system (optional)', 'General rules and optional activities', 'Software development',
+    'Global defaults', 'Activity rules', 'Project rules',
   ]);
-  const development = RULE_GROUPS.find(group => group.id === 'development');
-  assert.deepEqual(development.rules.slice(0, 4).map(rule => rule.id), ['coding', 'testing', 'ui-animation', 'i18n']);
+  const development = RULE_GROUPS.find(group => group.id === 'project');
+  assert.deepEqual(development.rules.slice(0, 3).map(rule => rule.id), ['testing', 'ui-animation', 'i18n']);
   assert.deepEqual(development.areas.map(area => [area.title, area.rules.map(rule => rule.id)]), [
     ['Platform Agnostic Rules', ['testing', 'ui-animation', 'i18n']],
-    ['Websites and web apps', ['web']],
+    ['Web development', ['web']],
     ['Native app development', ['apple-apps', 'android-apps']],
   ]);
-  assert.deepEqual(development.areas.flatMap(area => area.rules), development.rules.slice(1));
-  assert.match(development.description, /software your agent builds or maintains/);
+  assert.deepEqual(development.areas.flatMap(area => area.rules), development.rules);
+  assert.match(development.description, /not your global instructions/);
   assert.match(development.description, /one-off work/);
   assert.match(html, /An HTML report presenting research can use General alone/);
   assert.match(html, /interactive website can benefit from software and web guidance/);
@@ -68,7 +68,7 @@ test('every selectable rule and category explains its purpose', () => {
   assert.match(readFileSync(new URL('README.md', repository), 'utf8'), /Detailed browser or device verification workflows/);
   assert.match(RULES.find(rule => rule.id === 'ui-animation').purpose, /websites or native apps/);
   assert.match(RULES.find(rule => rule.id === 'i18n').purpose, /any platform/);
-  assert.deepEqual(RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control']);
+  assert.deepEqual(RULE_GROUPS.find(group => group.id === 'activities').rules.map(rule => rule.id), ['browser-operation', 'computer-use', 'version-control', 'coding']);
   assert.match(RULES.find(rule => rule.id === 'computer-use').description, /control desktop apps or system interfaces/);
   assert.match(RULES.find(rule => rule.id === 'version-control').description, /version control tools like Git/);
   assert.ok(!development.rules.some(rule => rule.id === 'version-control'));
@@ -339,7 +339,7 @@ test('static source links and categories match the live catalog', () => {
   assert.equal(groups.length, RULE_GROUPS.length);
   groups.forEach(([, title, list], index) => {
     const group = RULE_GROUPS[index];
-    assert.equal(title, group.id === 'environment' ? 'Your agent’s operating system' : group.title);
+    assert.equal(title, group.title);
     const links = [...list.matchAll(/<a\b([^>]+)>([^<]+)<\/a>/g)].map(([, attributes, text]) => ({
       ...Object.fromEntries([...attributes.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, key, value]) => [key, value])),
       text,
@@ -352,7 +352,7 @@ test('static source links and categories match the live catalog', () => {
     });
   });
   assert.deepEqual([...groups[2][2].matchAll(/<h4>([^<]+)<\/h4>/g)].map(([, title]) => title),
-    RULE_GROUPS.find(group => group.id === 'development').areas.map(area => area.title));
+    RULE_GROUPS.find(group => group.id === 'project').areas.map(area => area.title));
 });
 
 test('the retired performance set is not offered or linked in review prompts', () => {

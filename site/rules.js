@@ -153,12 +153,12 @@ const SOFTWARE_AREAS = [
   {
     id: 'across',
     title: 'Platform Agnostic Rules',
-    description: 'Software testing, UI animation, and localization can apply to web, native, or other software when relevant.',
+    description: 'For web, native, or other software. Platform agnostic does not mean required for every project; choose only the topics you need.',
     rules: [TESTING_RULE, UI_ANIMATION_RULE, I18N_RULE],
   },
   {
     id: 'web',
-    title: 'Websites and web apps',
+    title: 'Web development',
     description: 'Web-specific development and browser verification guidance, including mobile browsers and embedded web views.',
     rules: [WEB_RULE],
   },
@@ -172,22 +172,22 @@ const SOFTWARE_AREAS = [
 
 export const RULE_GROUPS = [
   {
-    id: 'environment',
-    title: 'Your agent’s operating system (optional)',
-    description: 'Choose the system where your agent works, not the apps you build.',
-    rules: OS_RULES,
+    id: 'global',
+    title: 'Global defaults',
+    description: 'Across your agent’s work. General and operating-system rules are optional starting points for global instructions.',
+    rules: [GENERAL_RULE, ...OS_RULES],
   },
   {
-    id: 'general',
-    title: 'General rules and optional activities',
-    description: 'General applies across tasks. Add only activities your agent does; the prompt checks where each belongs.',
-    rules: [GENERAL_RULE, BROWSER_USE_RULE, COMPUTER_USE_RULE, VERSION_CONTROL_RULE],
+    id: 'activities',
+    title: 'Activity rules',
+    description: 'Keep these globally for regular use across projects; otherwise use them only in the relevant project or task. Select only activities your agent does.',
+    rules: [BROWSER_USE_RULE, COMPUTER_USE_RULE, VERSION_CONTROL_RULE, CODING_RULE],
   },
   {
-    id: 'development',
-    title: 'Software development',
-    description: 'Select rules for software your agent builds or maintains. For one-off work without project instructions, use the guidance for that task instead.',
-    rules: [CODING_RULE, ...SOFTWARE_AREAS.flatMap((area) => area.rules)],
+    id: 'project',
+    title: 'Project rules',
+    description: 'Add only to projects that need them, not your global instructions. For one-off work without project instructions, use the guidance for that task instead.',
+    rules: SOFTWARE_AREAS.flatMap((area) => area.rules),
     areas: SOFTWARE_AREAS,
   },
 ];

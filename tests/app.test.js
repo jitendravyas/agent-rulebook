@@ -164,21 +164,17 @@ test('prompt stays hidden until Preview prompt and hides again when choices chan
   assert.equal(page.get('your-file').hidden, true);
 });
 
-test('choices put OS first and show specialist software guidance without expanding it', () => {
+test('choices group global defaults, activities, and visible project guidance', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.deepEqual(page.get('rule-groups').children.map(group => group.id), [
-    'rule-group-environment', 'rule-group-general', 'rule-group-development',
+    'rule-group-global', 'rule-group-activities', 'rule-group-project',
   ]);
-  const softwareGuidance = page.get('software-guidance');
-  assert.equal(softwareGuidance.tag, 'div', 'Specialist choices have no collapse control');
-  assert.ok(!softwareGuidance.hidden);
-  assert.equal(softwareGuidance.children[0].tag, 'h3');
-  assert.ok(page.get('rule-group-development').contains(softwareGuidance));
-  assert.equal(softwareGuidance.children[0].textContent, 'More software rules (optional)');
-  assert.equal(softwareGuidance.children[1].id, 'specialist-placement');
-  assert.match(softwareGuidance.children[1].textContent, /reused across matching projects/);
-  assert.match(softwareGuidance.children[1].textContent, /only in projects where they apply/);
-  assert.match(softwareGuidance.children[1].textContent, /one-off work/);
+  const projectGroup = page.get('rule-group-project');
+  assert.equal(projectGroup.tag, 'fieldset', 'Project rules have their own non-collapsible group');
+  assert.ok(!projectGroup.hidden);
+  assert.equal(page.get('group-title-project').textContent, 'Project rules');
+  assert.match(page.get('group-description-project').textContent, /not your global instructions/);
+  assert.match(page.get('group-description-project').textContent, /one-off work/);
   for (const group of catalog.RULE_GROUPS) {
     const fieldset = page.get(`rule-group-${group.id}`);
     const description = page.get(`group-description-${group.id}`);
@@ -187,16 +183,14 @@ test('choices put OS first and show specialist software guidance without expandi
     assert.ok(fieldset.contains(description), `${group.id} displays its description`);
     assert.equal(fieldset['aria-describedby'], description.id);
   }
-  assert.deepEqual(catalog.RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control']);
-  const generalChoices = page.get('rule-group-general').children[2];
-  assert.match(generalChoices.children[0].className, /rule-card--general/);
-  assert.equal(generalChoices.children[1].textContent, 'Other activities (optional)');
-  assert.deepEqual(generalChoices.children.slice(2).map(card => card.children[0].children[0].value),
-    ['browser-operation', 'computer-use', 'version-control']);
-  assert.equal(page.get('group-title-development').textContent, 'Software development');
-  assert.ok(page.get('rule-group-development').children[2].contains(page.get('rule-coding')));
-  const softwareAreas = catalog.RULE_GROUPS.find(group => group.id === 'development').areas;
-  assert.deepEqual(softwareGuidance.children[2].children.map(area => area.id), softwareAreas.map(area => `software-area-${area.id}`));
+  const globalGroup = page.get('rule-group-global');
+  assert.ok(globalGroup.children[2].contains(page.get('rule-general')));
+  assert.ok(globalGroup.children[3].contains(page.get('rule-mac')));
+  assert.equal(globalGroup.children[3].id, 'os-rules');
+  assert.deepEqual(page.get('rule-group-activities').children[2].children.map(card => card.children[0].children[0].value),
+    ['browser-operation', 'computer-use', 'version-control', 'coding']);
+  const softwareAreas = catalog.RULE_GROUPS.find(group => group.id === 'project').areas;
+  assert.deepEqual(projectGroup.children[2].children.map(area => area.id), softwareAreas.map(area => `software-area-${area.id}`));
   for (const area of softwareAreas) {
     const areaGroup = page.get(`software-area-${area.id}`);
     assert.equal(areaGroup['aria-labelledby'], `software-area-title-${area.id}`);
@@ -217,7 +211,7 @@ test('choices put OS first and show specialist software guidance without expandi
     const description = page.get(`description-${rule.id}`);
     const scope = catalog.ruleReviewScope(rule);
     if (scope === 'project') {
-      assert.ok(page.get(`rule-${rule.id}`)['aria-describedby'].split(' ').includes('specialist-placement'));
+      assert.ok(page.get(`rule-${rule.id}`)['aria-describedby'].split(' ').includes('group-description-project'));
     } else {
       const placement = page.get(`placement-${rule.id}`);
       assert.equal(placement.textContent, scope === 'global' ? 'Global default' : 'Global if recurring');
@@ -461,7 +455,7 @@ test('choosing an OS replaces the previous OS without selecting app guidance', (
 
 test('global and project choices remain visible and independently selectable together', () => {
   const page = boot('https://example.test/agent-rulebook/');
-  assert.ok(!page.get('rule-group-development').hidden);
+  assert.ok(!page.get('rule-group-project').hidden);
   assert.equal(page.get('rule-web').disabled, false);
   page.get('rule-web').checked = true;
   page.get('rule-web').dispatch('change');
@@ -480,8 +474,8 @@ test('global and project choices remain visible and independently selectable tog
 
 test('saved project choices retain independent selections in the visible group', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,web,mac');
-  assert.equal(page.get('software-guidance').tag, 'div');
-  assert.ok(!page.get('software-guidance').hidden);
+  assert.equal(page.get('rule-group-project').tag, 'fieldset');
+  assert.ok(!page.get('rule-group-project').hidden);
   assert.equal(page.get('rule-web').checked, true);
   assert.equal(page.get('rule-coding').checked, false);
   assert.equal(page.get('rule-mac').checked, true);
@@ -492,10 +486,10 @@ test('software choices stay visible after unrelated changes and clearing selecti
   const page = boot('https://example.test/agent-rulebook/?rules=general,web');
   page.get('rule-mac').checked = true;
   page.get('rule-mac').dispatch('change');
-  assert.ok(!page.get('software-guidance').hidden);
+  assert.ok(!page.get('rule-group-project').hidden);
   page.get('clear-selection').dispatch('click');
-  assert.ok(!page.get('software-guidance').hidden);
-  for (const rule of catalog.RULE_GROUPS.find(group => group.id === 'development').rules) {
+  assert.ok(!page.get('rule-group-project').hidden);
+  for (const rule of catalog.RULE_GROUPS.find(group => group.id === 'project').rules) {
     assert.equal(page.get(`rule-${rule.id}`).checked, false);
     assert.equal(page.get(`rule-${rule.id}`).disabled, false);
   }
@@ -643,10 +637,10 @@ test('OS choices switch through radio clicks and clear without losing other guid
 
 test('OS choices explain that they select safety rules, with help after the radios and no dropdown', () => {
   const page = boot('https://example.test/agent-rulebook/');
-  const osGroup = page.get('rule-group-environment');
+  const osGroup = page.get('os-rules');
   const [legend, choices, clear, help] = osGroup.children;
   assert.equal(legend.tag, 'legend');
-  assert.equal(legend.textContent, 'Your agent’s operating system (optional)');
+  assert.equal(legend.textContent, 'Operating-system rules (optional)');
   assert.equal(clear.id, 'clear-os-selection');
   assert.equal(help.id, 'group-description-environment');
   assert.equal(help.textContent, 'Choose the system where your agent works, not the apps you build.');

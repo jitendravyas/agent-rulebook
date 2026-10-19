@@ -64,7 +64,13 @@ These rules change over time and have not been tested with every agent, model, o
 
 The [website](https://jitendravyas.github.io/agent-rulebook/) offers separate choices so you can keep your agent's always-loaded instructions focused. Use it with an agent that can read the linked public rule files and the instruction files being reviewed. If your app only offers a Custom Instructions text box, do not paste the generated prompt there. Global guidance may live in a user-level `AGENTS.md` or `CLAUDE.md` when supported. Reusable project-scoped choices belong in each relevant project, not the global file. The website generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
 
-OS choices appear first: choose where the agent operates, not the apps it builds. General appears next as a suggested starting point, followed by optional Browser use, Computer use, and Version control. Select Computer use only if your agent can control desktop apps. General and OS choices are labeled **Global default**; recurring activities are labeled **Global if recurring**. The prompt asks your agent to confirm placement before suggesting edits. Software development has its own section: select it when your agent builds or maintains software. All specialist choices are visible without expanding a section; each remains optional. They usually belong with a relevant project; for one-off work, use them only for that task. The groups appear in this order: Platform Agnostic Rules, Websites and web apps, and Native app development. Software testing, UI animation, and localization can apply to web, native, or other software when relevant. Web development includes checking rendered software in a browser. **Details** explains each choice and links to its source without selecting it. Skills are not selections here; use them separately when their workflow is needed and your agent supports them.
+The choices are grouped by where the rules belong:
+
+1. **Global defaults:** General first, followed by optional operating-system rules. Choose the OS where your agent works, not the apps it builds.
+2. **Activity rules:** Browser use, Computer use, Version control, and Software development. Keep these global for regular use across projects; otherwise use them only in the relevant project or task. Select Computer use only if your agent can control desktop apps.
+3. **Project rules:** optional additions for relevant projects, grouped into Platform Agnostic Rules, Web development, and Native app development. Platform agnostic means independent of platform, not required for every project. Web development includes browser verification.
+
+All choices remain visible and independently selectable. The prompt asks your agent to confirm placement before suggesting edits. **Details** explains each choice and links to its source without selecting it. For one-off work, use project guidance only for that task. Skills remain separate, on-demand playbooks.
 
 **General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. **Clear selection** removes all choices.
 
@@ -180,7 +186,7 @@ For renamed or replaced products, follow the current product's guide: [Windsurf 
 
 [General rules](global/general-rules.md) include tool guidance when tools are used; they do not require tool use for ordinary replies.
 
-- [Version control](global/version-control-rules.md): using tools like Git to review and preserve repository changes, commits, pushes, and conflicts. Shown under Other activities for code and non-code tasks; select it only when relevant. Selecting Software development checks it by default, but it remains independently selectable.
+- [Version control](global/version-control-rules.md): using tools like Git to review and preserve repository changes, commits, pushes, and conflicts. Shown under Activity rules for code and non-code tasks; select it only when relevant. Selecting Software development checks it by default, but it remains independently selectable.
 
 ### Operating systems
 
