@@ -72,6 +72,8 @@ The choices are grouped by where the rules belong:
 
 All choices remain visible and independently selectable. The prompt asks your agent to confirm placement before suggesting edits. **Details** explains each choice and links to its source without selecting it. For one-off work, use project guidance only for that task. Skills remain separate, on-demand playbooks.
 
+The published website checks for a newer version once when opened. Before interaction, it can reload once with your selections preserved; otherwise it offers **Load latest**. Failed checks leave the page usable. It does not poll for changes while you work.
+
 **General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. **Clear selection** removes all choices.
 
 1. **Choose relevant rules.** Use the [selection guide above](#choose-only-relevant-rule-sets); select only the groups that fit your work.

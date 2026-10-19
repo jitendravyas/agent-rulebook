@@ -335,14 +335,22 @@ test('deployment versions the page assets and imported catalog together without 
     assert.ok(result.files.get('/build/index.html').includes(`href="./site/styles.css?v=${version}"`));
     assert.ok(result.files.get('/build/index.html').includes(`src="./site/app.js?v=${version}"`));
     assert.ok(result.files.get('/build/site/app.js').includes(`from './rules.js?v=${version}';`));
+    assert.ok(result.files.get('/build/site/app.js').includes(`const DEPLOYMENT_VERSION = '${version}';`));
+    assert.equal(JSON.parse(result.files.get('/build/version.json')).version, version);
     assert.equal(result.files.get('/build/site/rules.js'), read('site/rules.js'));
     assert.equal(result.files.get('/build/global/general-rules.md'), read('global/general-rules.md'));
-    assert.deepEqual(result.writes, ['/build/index.html', '/build/site/app.js']);
+    assert.deepEqual(result.writes, ['/build/index.html', '/build/site/app.js', '/build/version.json']);
   }
   const invalidVersion = run('not-a-commit');
   assert.throws(invalidVersion.execute, /deployment version/);
   assert.deepEqual(invalidVersion.writes, []);
   for (const count of [0, 2]) {
+    const changedVersion = run('a'.repeat(40), files => {
+      files.set('/build/site/app.js', read('site/app.js').replace("const DEPLOYMENT_VERSION = '';", "const DEPLOYMENT_VERSION = '';".repeat(count)));
+      return files;
+    });
+    assert.throws(changedVersion.execute, /exactly one/);
+    assert.deepEqual(changedVersion.writes, []);
     const changedImport = run('a'.repeat(40), files => {
       files.set('/build/site/app.js', "from './rules.js';".repeat(count));
       return files;

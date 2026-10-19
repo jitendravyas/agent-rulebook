@@ -80,9 +80,11 @@ jobs:
           let html = fs.readFileSync(`${dir}/index.html`, 'utf8');
           html = replaceOnce(html, 'href="./site/styles.css"', `href="./site/styles.css?v=${version}"`);
           html = replaceOnce(html, 'src="./site/app.js"', `src="./site/app.js?v=${version}"`);
-          const app = replaceOnce(fs.readFileSync(`${dir}/site/app.js`, 'utf8'), "from './rules.js';", `from './rules.js?v=${version}';`);
+          let app = replaceOnce(fs.readFileSync(`${dir}/site/app.js`, 'utf8'), "from './rules.js';", `from './rules.js?v=${version}';`);
+          app = replaceOnce(app, "const DEPLOYMENT_VERSION = '';", `const DEPLOYMENT_VERSION = '${version}';`);
           fs.writeFileSync(`${dir}/index.html`, html);
           fs.writeFileSync(`${dir}/site/app.js`, app);
+          fs.writeFileSync(`${dir}/version.json`, JSON.stringify({ version }));
           NODE
 
       - name: Upload the checked website

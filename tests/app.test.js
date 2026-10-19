@@ -10,9 +10,11 @@ const importLine = /^import \{([^}]+)\} from '\.\/rules\.js';\r?\n/;
 assert.match(app, importLine);
 const script = app.replace(importLine, (_, names) => `const {${names}} = catalog;\n`);
 
-function boot(address, { intersectionObserver = true, clipboard } = {}) {
+function boot(address, { intersectionObserver = true, clipboard, version = '', fetch, visibility = 'visible' } = {}) {
   const nodes = new Map();
   const observers = [];
+  const navigations = [];
+  const timers = new Map();
   let location = new URL(address);
 
   // This DOM double runs the actual app and event handlers, not layout or browser APIs.
@@ -53,6 +55,9 @@ function boot(address, { intersectionObserver = true, clipboard } = {}) {
       listeners.push(listener);
       this.listeners.set(type, listeners);
     }
+    removeEventListener(type, listener) {
+      this.listeners.set(type, (this.listeners.get(type) ?? []).filter(item => item !== listener));
+    }
     focus() { this.focused = true; document.activeElement = this; }
     scrollIntoView(options) { this.scrollOptions = options; }
     click() {
@@ -90,7 +95,9 @@ function boot(address, { intersectionObserver = true, clipboard } = {}) {
     return nodes.get(id);
   };
   const window = new Node('window');
-  Object.defineProperty(window, 'location', { get: () => location });
+  Object.defineProperty(window, 'location', { get: () => Object.assign(location, {
+    replace: url => { navigations.push(url); },
+  }) });
   const entries = [{ url: location.href, state: null }];
   let entryIndex = 0;
   window.history = {
@@ -123,15 +130,19 @@ function boot(address, { intersectionObserver = true, clipboard } = {}) {
   const document = new Node('document');
   Object.defineProperty(document, 'baseURI', { get: () => location.href });
   Object.assign(document, {
+    visibilityState: visibility,
     getElementById: id => nodes.get(id) ?? null,
     createElement: tag => new Node(tag),
     createElementNS: (namespace, tag) => new Node(tag),
   });
-  runInNewContext(script, {
+  const ready = runInNewContext(script.replace("const DEPLOYMENT_VERSION = '';", `const DEPLOYMENT_VERSION = '${version}';`) + '\nupdateCheck;', {
     catalog, document, window, URL, performance: { timeOrigin: 1000 },
     navigator: { clipboard },
+    fetch, AbortController,
+    setTimeout: (callback, delay) => { timers.set(callback, delay); return callback; },
+    clearTimeout: callback => timers.delete(callback),
   }, { filename: 'site/app.js', timeout: 5000 });
-  return { get, window, observers };
+  return { get, window, observers, document, ready, navigations, timers };
 }
 
 test('prompt stays hidden until Preview prompt and hides again when choices change', () => {
@@ -766,6 +777,119 @@ test('mobile shortcut previews and returns without IntersectionObserver', () => 
   assert.equal(page.get('mobile-review-link').href, '#your-file');
   assert.equal(page.get('choose-title').focused, true);
   assert.equal(page.get('choose-title').scrollOptions.block, 'start');
+});
+
+test('update check reloads once with current choices and preserves the path and fragment', async () => {
+  const version = 'a'.repeat(40);
+  const latest = 'b'.repeat(40);
+  const requests = [];
+  const page = boot('https://example.test/agent-rulebook/?rules=general,web&extra=kept#builder', {
+    version,
+    fetch: async (url, options) => {
+      requests.push({ url, options });
+      return { ok: true, json: async () => ({ version: latest }) };
+    },
+  });
+  await page.ready;
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].url.pathname, '/agent-rulebook/version.json');
+  assert.ok(requests[0].url.searchParams.has('check'));
+  assert.equal(requests[0].options.cache, 'no-store');
+  assert.equal(requests[0].options.credentials, 'omit');
+  assert.equal(page.navigations.length, 1);
+  const destination = new URL(page.navigations[0]);
+  assert.equal(destination.origin, 'https://example.test');
+  assert.equal(destination.pathname, '/agent-rulebook/');
+  assert.equal(destination.hash, '#builder');
+  assert.equal(destination.searchParams.get('rules'), 'general,web');
+  assert.equal(destination.searchParams.get('extra'), 'kept');
+  assert.equal(destination.searchParams.get('_rulebook_update'), latest);
+  const repeated = boot(destination.href, {
+    version, fetch: async () => ({ ok: true, json: async () => ({ version: latest }) }),
+  });
+  await repeated.ready;
+  assert.equal(repeated.navigations.length, 0);
+  assert.equal(repeated.get('website-update').hidden, false);
+  assert.ok(!repeated.get('setup-link').value.includes('_rulebook_update'));
+  assert.equal(page.timers.size, 0);
+  assert.equal(page.document.listeners.get('pointerdown').length, 0);
+});
+
+test('update check does not interrupt interaction and Load latest uses the newest selection', async () => {
+  let respond;
+  const page = boot('https://example.test/agent-rulebook/?rules=general', {
+    version: 'a'.repeat(40), fetch: () => new Promise(resolve => { respond = resolve; }),
+  });
+  await page.document.dispatch('pointerdown');
+  await page.get('rule-coding').click();
+  respond({ ok: true, json: async () => ({ version: 'b'.repeat(40) }) });
+  await page.ready;
+  assert.equal(page.navigations.length, 0);
+  assert.equal(page.get('website-update').hidden, false);
+  await page.get('rule-web').click();
+  await page.get('load-latest').click();
+  const destination = new URL(page.navigations[0]);
+  assert.equal(destination.searchParams.get('rules'), 'general,coding,web,version-control');
+  assert.match(html, /id="website-update"[^>]*role="status"[^>]*hidden/);
+  assert.match(html, /Your rule selections will be kept/);
+});
+
+test('update check leaves current, failed, or malformed responses usable without retries', async () => {
+  const version = 'a'.repeat(40);
+  for (const result of [
+    { ok: true, json: async () => ({ version }) },
+    { ok: false },
+    { ok: true, json: async () => ({ version: 'https://untrusted.test/' }) },
+    { ok: true, json: async () => ({ version: ['b'.repeat(40)] }) },
+    { ok: true, json: async () => { throw new Error('Invalid JSON'); } },
+    null,
+  ]) {
+    let calls = 0;
+    const page = boot('https://example.test/agent-rulebook/', { version, fetch: async () => {
+      calls++;
+      if (!result) throw new Error('Offline');
+      return result;
+    } });
+    await page.ready;
+    assert.equal(calls, 1);
+    assert.equal(page.navigations.length, 0);
+    assert.equal(page.get('website-update').hidden, true);
+    assert.equal(page.get('builder').hidden, false);
+    await page.get('preview-prompt').click();
+    assert.equal(page.get('your-file').hidden, false);
+    assert.equal(page.timers.size, 0);
+  }
+});
+
+test('update check times out and skips unversioned or local previews', async () => {
+  const page = boot('https://example.test/agent-rulebook/', {
+    version: 'a'.repeat(40), fetch: (url, { signal }) => new Promise((resolve, reject) => {
+      signal.addEventListener('abort', () => reject(new Error('Aborted')));
+    }),
+  });
+  const [[expire, delay]] = page.timers;
+  assert.equal(delay, 5000);
+  expire();
+  await page.ready;
+  assert.equal(page.navigations.length, 0);
+  assert.equal(page.get('website-update').hidden, true);
+  assert.equal(page.timers.size, 0);
+  for (const [address, version] of [['https://example.test/', ''], ['http://localhost:8000/', 'a'.repeat(40)]]) {
+    let calls = 0;
+    const preview = boot(address, { version, fetch: async () => { calls++; } });
+    await preview.ready;
+    assert.equal(calls, 0);
+  }
+});
+
+test('background tabs offer an update instead of navigating automatically', async () => {
+  const page = boot('https://example.test/agent-rulebook/', {
+    version: 'a'.repeat(40), visibility: 'hidden',
+    fetch: async () => ({ ok: true, json: async () => ({ version: 'b'.repeat(40) }) }),
+  });
+  await page.ready;
+  assert.equal(page.navigations.length, 0);
+  assert.equal(page.get('website-update').hidden, false);
 });
 
 test('keeps a static favicon and accurate review approval guidance', () => {

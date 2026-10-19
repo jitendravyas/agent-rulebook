@@ -1,5 +1,6 @@
 import { RULE_GROUPS, RULES, OS_RULES, DEFAULT_RULE_IDS, buildReviewPrompt, ruleReviewScope } from './rules.js';
 
+const DEPLOYMENT_VERSION = '';
 const element = (id) => document.getElementById(id);
 const selected = new Set(DEFAULT_RULE_IDS);
 const checkboxes = new Map();
@@ -405,3 +406,40 @@ element('skip-link').textContent = 'Skip to rule builder';
 element('mobile-review').hidden = false;
 updateSelection();
 syncMobileReview();
+const updateCheck = checkWebsiteUpdate();
+
+async function checkWebsiteUpdate() {
+  if (!/^[a-f0-9]{40}$/.test(DEPLOYMENT_VERSION) || isLocalPreview) return;
+  let interacted = false;
+  const interactionEvents = ['pointerdown', 'keydown', 'touchstart', 'wheel', 'input', 'change'];
+  const markInteraction = () => { interacted = true; };
+  interactionEvents.forEach(type => document.addEventListener(type, markInteraction, { capture: true, passive: true }));
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  try {
+    const manifest = new URL('./version.json', document.baseURI);
+    manifest.searchParams.set('check', String(Date.now()));
+    const response = await fetch(manifest, { cache: 'no-store', credentials: 'omit', signal: controller.signal });
+    if (!response.ok) return;
+    const { version } = await response.json();
+    if (typeof version !== 'string' || !/^[a-f0-9]{40}$/.test(version) || version === DEPLOYMENT_VERSION) return;
+    const loadLatest = () => {
+      const address = new URL(window.location.href);
+      address.searchParams.set('rules', selectionURL().searchParams.get('rules'));
+      address.searchParams.set('_rulebook_update', version);
+      window.location.replace(address.href);
+    };
+    if (!interacted && document.visibilityState === 'visible'
+      && !new URL(window.location.href).searchParams.has('_rulebook_update')) {
+      loadLatest();
+    } else {
+      element('load-latest').addEventListener('click', loadLatest);
+      element('website-update').hidden = false;
+    }
+  } catch {
+    return;
+  } finally {
+    clearTimeout(timeout);
+    interactionEvents.forEach(type => document.removeEventListener(type, markInteraction, true));
+  }
+}
