@@ -164,13 +164,15 @@ test('prompt stays hidden until Preview prompt and hides again when choices chan
   assert.equal(page.get('your-file').hidden, true);
 });
 
-test('choices put OS first and keep specialist software guidance available on demand', () => {
+test('choices put OS first and show specialist software guidance without expanding it', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.deepEqual(page.get('rule-groups').children.map(group => group.id), [
     'rule-group-environment', 'rule-group-general', 'rule-group-development',
   ]);
   const softwareGuidance = page.get('software-guidance');
-  assert.equal(softwareGuidance.open, false, 'Specialist choices start collapsed');
+  assert.equal(softwareGuidance.tag, 'div', 'Specialist choices have no collapse control');
+  assert.ok(!softwareGuidance.hidden);
+  assert.equal(softwareGuidance.children[0].tag, 'h3');
   assert.ok(page.get('rule-group-development').contains(softwareGuidance));
   assert.equal(softwareGuidance.children[0].textContent, 'More software rules (optional)');
   assert.equal(softwareGuidance.children[1].id, 'specialist-placement');
@@ -252,7 +254,7 @@ test('choices put OS first and keep specialist software guidance available on de
   assert.match(page.get('prompt-preview').value, /global\/computer-use-rules\.md/);
   page.get('rule-coding').checked = true;
   page.get('rule-coding').dispatch('change');
-  assert.equal(softwareGuidance.open, false, 'Selecting software development keeps specialist choices optional');
+  assert.equal(page.get('rule-web').checked, false, 'Visible specialist choices remain optional');
   page.get('rule-coding').checked = false;
   page.get('rule-coding').dispatch('change');
   assert.equal(page.get('rule-browser-operation').checked, true);
@@ -459,7 +461,6 @@ test('choosing an OS replaces the previous OS without selecting app guidance', (
 
 test('global and project choices remain visible and independently selectable together', () => {
   const page = boot('https://example.test/agent-rulebook/');
-  page.get('software-guidance').open = true;
   assert.ok(!page.get('rule-group-development').hidden);
   assert.equal(page.get('rule-web').disabled, false);
   page.get('rule-web').checked = true;
@@ -477,22 +478,27 @@ test('global and project choices remain visible and independently selectable tog
   assert.match(page.get('prompt-preview').value, /Project sources/);
 });
 
-test('saved project choices reveal their group while retaining independent selections', () => {
+test('saved project choices retain independent selections in the visible group', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,web,mac');
-  assert.equal(page.get('software-guidance').open, true);
+  assert.equal(page.get('software-guidance').tag, 'div');
+  assert.ok(!page.get('software-guidance').hidden);
   assert.equal(page.get('rule-web').checked, true);
   assert.equal(page.get('rule-coding').checked, false);
   assert.equal(page.get('rule-mac').checked, true);
   assert.equal(page.get('your-file').hidden, true);
 });
 
-test('an unrelated choice does not reopen software guidance after a user closes it', () => {
+test('software choices stay visible after unrelated changes and clearing selections', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,web');
-  assert.equal(page.get('software-guidance').open, true);
-  page.get('software-guidance').open = false;
   page.get('rule-mac').checked = true;
   page.get('rule-mac').dispatch('change');
-  assert.equal(page.get('software-guidance').open, false);
+  assert.ok(!page.get('software-guidance').hidden);
+  page.get('clear-selection').dispatch('click');
+  assert.ok(!page.get('software-guidance').hidden);
+  for (const rule of catalog.RULE_GROUPS.find(group => group.id === 'development').rules) {
+    assert.equal(page.get(`rule-${rule.id}`).checked, false);
+    assert.equal(page.get(`rule-${rule.id}`).disabled, false);
+  }
 });
 
 test('project-only choices also explain the one-off task route', () => {

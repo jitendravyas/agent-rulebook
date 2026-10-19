@@ -62,12 +62,6 @@ function clearLinkWarnings(...keys) {
   renderLinkWarnings();
 }
 
-function revealSelectedSoftware() {
-  const hasProjectChoice = RULE_GROUPS.find((group) => group.id === 'development')
-    .rules.some((rule) => rule.id !== 'coding' && selected.has(rule.id));
-  if (hasProjectChoice) element('software-guidance').open = true;
-}
-
 function restoreLinkedSelection() {
   const params = new URL(window.location.href).searchParams;
   const originalRequested = params.has('rules') ? params.get('rules').split(',').filter(Boolean) : DEFAULT_RULE_IDS;
@@ -119,7 +113,6 @@ function restoreLinkedSelection() {
   const changed = ids.length !== selected.size || ids.some((id) => !selected.has(id));
   selected.clear();
   ids.forEach((id) => selected.add(id));
-  revealSelectedSoftware();
   return changed;
 }
 
@@ -155,13 +148,13 @@ function renderChoices() {
       fieldset.append(legend, choices, clear, description);
     } else fieldset.append(legend, description, choices);
     if (group.id === 'development') {
-      const disclosure = textElement('details', 'software-guidance', '');
-      disclosure.id = 'software-guidance';
+      const softwareGuidance = textElement('div', 'software-guidance', '');
+      softwareGuidance.id = 'software-guidance';
       const placementGuidance = textElement('p', 'software-placement', 'These rules can be reused across matching projects. Include them only in projects where they apply; for one-off work, use them only for that task.');
       placementGuidance.id = 'specialist-placement';
       const specialistChoices = textElement('div', 'software-rule-choices', '');
-      disclosure.append(textElement('summary', '', 'More software rules (optional)'), placementGuidance, specialistChoices);
-      fieldset.append(disclosure);
+      softwareGuidance.append(textElement('h3', 'software-guidance-title', 'More software rules (optional)'), placementGuidance, specialistChoices);
+      fieldset.append(softwareGuidance);
       containers.set('coding', choices);
       for (const area of group.areas) {
         const areaGroup = textElement('div', 'software-area', '');
