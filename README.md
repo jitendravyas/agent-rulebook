@@ -2,6 +2,8 @@
 
 Reusable instructions for AI agents, with broad global defaults, optional activity guidance, and project-specific additions. Global defaults protect work and guide everyday behavior. Activity guidance applies only to the work it covers; project additions cover relevant technologies and requirements.
 
+When supported and enabled, user-level **global instructions** load across an agent's sessions, so keep them broadly useful. A **project handbook** loads for its own project and is the place for that repository's build and test commands, layout, style, and conventions. **Skills** are separate, on-demand playbooks for repeatable specialized work where the agent supports them; this repository provides rules, not skills. Do not put a detailed skill procedure into always-loaded instructions merely because the agent can use skills.
+
 These rules are for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalization fields, and reading or uploading a file does not by itself activate it as standing instructions.
 
 The rules also apply without a desktop, including servers accessed only through SSH. Use available tools for the task. If a required interaction or visual check is unavailable, report the gap rather than claiming it passed.
@@ -10,7 +12,7 @@ For the `AGENTS.md` format, examples, FAQ, and supported-agent directory, see [a
 
 Choose how to start:
 
-- [Use the website](#use-the-review-prompt-builder) to ask your agent which rules fit your existing instructions.
+- [Use the website](https://jitendravyas.github.io/agent-rulebook/) to ask your agent which rules fit your existing instructions.
 - [Copy reviewed rule text](#how-to-use) yourself if you already know what you need.
 
 ## Choose only relevant rule sets
@@ -18,64 +20,64 @@ Choose how to start:
 The rule files are for agents; this README is for people choosing and installing them.
 
 - **Global defaults:** General and the applicable OS safety file suit user-level instructions across tasks.
-- **Optional activities:** Coding, Version control, Computer use, and Authoring suit global use when they recur across tasks; otherwise use relevant project, task-scoped, or supported conditional guidance. A file in `global/` does not require global installation.
-- **Project additions:** Files in `project/` belong in relevant project instructions or supported project-scoped loading. Keep project-specific commands, tools, and requirements in project instructions, not global rules.
+- **Optional activities:** Coding, Version control, and Computer use suit global use when they recur across tasks; otherwise use relevant project, task-scoped, or supported conditional guidance. A file in `global/` does not require global installation.
+- **Project additions:** Files in `project/` belong in relevant project instructions or supported project-scoped loading. For one-off work without project instructions, ask for task-scoped guidance that applies only to that conversation. Keep project-specific commands, layout, style, tools, and requirements in the owning project's handbook, not user-level global rules.
 
 If narrower loading is unavailable for occasional work, use task-specific guidance instead of adding permanent instructions.
 
-Each rule file is independent; none requires General or another module. Suggested files are not dependencies: each covers its own topic, not every safety risk. [General essentials](global/general-rules.md) are a starting point for shared safety and behavior without a project, desktop, plugins, or skills. Use the source Git commit for an exact revision.
+Each rule file is independent; none requires General or another module. [General rules](global/general-rules.md) are a starting point for shared safety and behavior without a project, desktop, plugins, or skills. Use the source Git commit for an exact revision.
 
-When combining sets, keep unmerged headings and applicability lines together. Merge equivalent guidance while preserving every distinct requirement, condition, exception, and safety protection, with explicit scope for merged sections. Retain separate guidance if equivalence is uncertain. Across separately loaded files, remove overlap only when the remaining instruction is confirmed to apply and load everywhere needed.
+When combining sets, merge equivalent guidance without losing any distinct requirement, condition, exception, or safety protection. Preserve when each instruction applies; retain separate guidance if equivalence is uncertain. Across separately loaded files, remove overlap only when the remaining instruction is confirmed to apply and load everywhere needed.
 
 **Do not load the whole collection by default.** Preserve required approval, security, and privacy protections in your active instructions, whether from General or your own guidance. Add only modules for work that agent actually does. For example, research and documents need no Coding or Web rules; building a website does not automatically need animation, localization, or desktop-operation rules.
 
 | Agent setup | Relevant standalone file | Covers |
 | --- | --- | --- |
-| Any task | [General essentials](global/general-rules.md) | Scope, approvals, safety, privacy, verification, communication, tool use, basic efficiency, and file-reference maintenance. |
-| Software development | [Coding](global/coding-rules.md) | Software implementation, security, maintenance, performance, and static checks. |
-| Web development | [web](project/web-development-rules.md) | Browser-specific implementation, resource loading, and web security. |
-| Apple app development | [Apple apps](project/apple-app-development-rules.md) | App-specific approvals, file-access boundaries, and privacy declarations. |
-| Android app development | [Android apps](project/android-app-development-rules.md) | App-specific approvals, component exposure, and merged manifests. |
-| Writing and running software tests | [testing](project/software-testing-rules.md) | Running existing tests and writing or updating tests for software changes. |
-| Browser verification | [browser verification](project/browser-verification-rules.md) | Checking rendered pages, interactions, and accessibility when relevant. |
-| Version control, including non-code files | [version control](global/version-control-rules.md) | Reviewing changes, preserving work, identities, commits, pushes, and exposed history. |
-| Browser or desktop operation | [computer use](global/browser-computer-use-rules.md) | Sessions, tabs, focus, and interface interaction for any task. |
+| Any task | [General rules](global/general-rules.md) | Scope, approvals, safety, privacy, verification, communication, tool use, basic efficiency, and file-reference maintenance. |
+| Version control, including non-code files | [Version control rules](global/version-control-rules.md) | Using tools like Git to review changes, preserve work, and check identities, commits, pushes, and exposed history. |
+| Software development | [Software development rules](global/coding-rules.md) | Software implementation, security, maintenance, performance, and static checks. |
+| Web development | [Web development rules](project/web-development-rules.md) | Browser-specific implementation, resource loading, and web security. |
+| Apple app development | [Apple app development rules](project/apple-app-development-rules.md) | App-specific approvals, file-access boundaries, and privacy declarations. |
+| Android app development | [Android app development rules](project/android-app-development-rules.md) | App-specific approvals, component exposure, and merged manifests. |
+| Software testing | [Software testing rules](project/software-testing-rules.md) | Running existing tests and writing or updating tests for software changes. |
+| Browser verification | [Browser verification rules](project/browser-verification-rules.md) | Checking rendered pages, interactions, and accessibility when relevant. |
+| Browser or desktop operation | [Browser and computer use rules](global/browser-computer-use-rules.md) | Sessions, tabs, focus, and interface interaction for any task. |
 
 "Global" means reusable across tasks or projects, not permission to act everywhere. Project instructions govern implementation choices, not waivers of required approval or safety.
 
-When combining files, if General is included, keep General first, selected add-ons next, and move General's **Personalize** section, including any preferences already added, to the end. Change its heading to `# Personalize` so it is separate from every add-on. Keep `## Personalize` when using General alone. Keep each unmerged set's heading and applicability line together. Add personal preferences or an optional private context-file instruction under Personalize when you use that section.
+When combining files, if General is included, keep General first, selected add-ons next, and move General's **Personalize** section, including any preferences already added, to the end. Change its heading to `# Personalize` so it is separate from every add-on. Keep `## Personalize` when using General alone. Under Personalize, add any personal preferences and, if useful, name a private context file and when the agent should read it.
 
 Before copying rules, check [instruction loading and size](#instruction-loading-and-size).
 
 American English is used consistently in the supplied rules; it does not prescribe how agents must write your content.
 
-The [scenario test plan](docs/rule-scenarios.md) provides eight safe checks for loading and behavior across agents.
+The [behavior scenarios](https://github.com/jitendravyas/agent-rulebook/blob/main/tests/agent-rule-scenarios.md) provide eight safe scenarios for checking loading and behavior across agents.
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
 ## Use the review prompt builder
 
-The [website](https://jitendravyas.github.io/agent-rulebook/) generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
+The [website](https://jitendravyas.github.io/agent-rulebook/) offers separate choices so you can keep your agent's always-loaded instructions focused. Global guidance may live in a user-level `AGENTS.md` or `CLAUDE.md` when supported. Project-specific choices belong in the relevant project, not the global file. The website generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
 
-OS choices appear first: choose where the agent operates, not the apps it builds. Each rule choice shows its purpose; **Details** explains more and links to its source without selecting it. Browser and desktop control appears last because it requires interface-control tools.
+OS choices appear first: choose where the agent operates, not the apps it builds. Each rule choice shows its purpose; **Details** explains more and links to its source without selecting it. Software work starts collapsed and opens when you expand it, select **Software development rules**, or follow a saved link with a software-work choice. **Browser and computer use rules** appear last because they require interface-control tools. Skills are not selections here; use them separately when their workflow is needed and your agent supports them.
 
-General starts selected; you can uncheck it. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting Software development basics also selects Git; uncheck it if unnecessary. **Clear selection** removes all choices.
+**General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. **Clear selection** removes all choices.
 
-1. **Choose relevant rules.** Use the [selection guide above](#choose-only-relevant-rule-sets); you can select from either group or both.
+1. **Choose relevant rules.** Use the [selection guide above](#choose-only-relevant-rule-sets); select only the groups that fit your work.
 2. **Click Preview prompt, then copy it.** The full prompt stays hidden until you click **Preview prompt**. Check its labeled source lists; changing choices hides the preview.
-3. **Ask your agent to review.** Paste the prompt into a conversation. If you selected project additions, open the intended project first. The agent checks existing instructions and relevant skills, proposes edits separately by destination, and asks for approval for each affected location. It must confirm an unclear project target and leave unselected locations unchanged. It may recommend no changes.
+3. **Ask your agent to review.** Paste the prompt into a conversation. If you selected project additions for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance instead. The agent checks existing instructions and relevant skills, proposes edits separately by scope, and asks for approval for each affected location. It must confirm an unclear project target and leave unselected locations unchanged. It may recommend no changes.
 
 The agent needs access to the public links and relevant instructions. The website never reads or uploads private instructions, project files, or agent settings, and does not merge rules, install anything, or change settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
-The prompt asks the agent to check for incomplete or truncated sources, retrieve missing text, or report sources it cannot fully read. For unmerged modules or excerpts, it must compare headings and applicability lines with the originals exactly. For merged guidance, it must check every contributing requirement, condition, exception, and safety protection against the complete sources. It must repeat those checks after saving approved edits. It must read the source license separately and propose any required copyright and permission notices in a separate file beside the instructions.
+The prompt asks the agent to check for incomplete or truncated sources, retrieve missing text, or report sources it cannot fully read. It must check adopted guidance against the complete sources for lost or invented requirements, conditions, exceptions, and safety protections, including after saving approved edits. It must read the source license separately and propose any required copyright and permission notices in a separate file beside the instructions.
 
 Source links are for the review, not your installed instructions. Adopted rule text must omit repository branding, source links, paths, and tracking metadata. Required license notices stay outside active rules.
 
-Bookmark the page address or use **Copy setup link** to save selected sets. Links restore choices, not a fixed rule version; prompts always link to public `main`. Local preview links work only on the serving machine; share the hosted address with others.
+For a first setup, the prompt asks your agent to propose suitable instruction locations and edits. If you already have instructions, it treats them as the baseline and proposes only worthwhile changes. No files are created or replaced until you approve the proposed destinations and edits.
+
+For later reviews, reopen the website, revisit your choices, and copy a fresh prompt. Bookmark the page address or use **Copy setup link** to remember selected sets. Links restore choices, not a fixed rule version or a record of what you adopted. An old copied prompt still reads current `main` for its existing links, but it cannot include new sets or later prompt improvements; a removed or renamed source needs a refreshed selection. An exact since-last-review comparison needs a known earlier-reviewed source revision or copy. The prompt asks your agent to report the retrieval date and an exact source revision when verifiable in its reply, not in adopted instructions. Keep that reply if you want a baseline for next time. Without one, the agent should compare current sources with your active instructions and ask before removing anything; a missing source rule may still be your own useful instruction. Local preview links work only on the serving machine; share the hosted address with others.
 
 The website's **Read the source rules** section links to the original Markdown files, this README, and the license. People, crawlers, and agents can follow them without JavaScript.
-
-With a compatible browser and agent, the builder also offers optional [WebMCP](https://developer.chrome.com/docs/ai/webmcp/) tools to list the available rule sets and generate the same review prompt. These tools return public rule links and prompt text for review; they do not save files, upload private content, or change agent settings. WebMCP is experimental; the normal controls work without it.
 
 <details>
 <summary>Preview the website locally</summary>
@@ -95,7 +97,7 @@ Copy rule text you decide to adopt, whether you used the website or reviewed the
 3. **Save reviewed rules at the agreed locations.** Do not merge both groups into one global file. Use the filenames and formats your agent supports, and obtain approval for each affected location. Supported imports or loading controls can organize files; an ordinary Markdown link is not a universal import. No package installation is needed.
 4. **Confirm loading, then try a small task.** Check your agent's loading diagnostics where available, including whether referenced files loaded. Cloning this repository or saving files in an arbitrary folder does not activate them.
 
-Copy the rule files above, not this repository's [AGENTS.md](AGENTS.md). That file is only for agents maintaining this repository.
+Copy the rule files above, not this repository's [AGENTS.md](https://github.com/jitendravyas/agent-rulebook/blob/main/AGENTS.md). That file is only for agents maintaining this repository.
 
 See [Set up global rules](#set-up-global-rules) for official setup guides. The table distinguishes global loading from imports and project-only support so you can choose the right location.
 
@@ -116,9 +118,10 @@ This advice is for the person installing, not instructions to load into the agen
 - **Enable available controls.** Use approval prompts for destructive actions, installations, external writes, and access beyond the task. Prefer a sandbox restricted to the task directory and necessary network access. Do not disable controls because the rules ask for approval. If controls are unavailable, start with disposable data and restrict account permissions.
 - **Protect Git commits from secrets.** If you use Git, configure an approved secret scanner through a global pre-commit hook. Check the effective hooks configuration and preserve or compose with existing hooks. Test with synthetic examples, never real credentials, and confirm coverage for new, changed, and non-text files. Local hooks can be bypassed and do not inspect other contributors' pushes or all outgoing history; use server-side push protection or continuous integration (CI) checks where available.
 - **Store credentials securely.** Use an operating-system credential store or password/credential manager, not plaintext documents, agent instructions, source files, or chat. Use supported secure injection and least-privilege credentials. Do not paste secrets to prove they work.
-- **Try the rules safely.** Keep private context outside this public repository. Run the [scenario checks](docs/rule-scenarios.md) in a disposable environment and review failures before trusting unattended work.
+- **Try the rules safely.** Keep private context outside this public repository. Run the [behavior scenarios](https://github.com/jitendravyas/agent-rulebook/blob/main/tests/agent-rule-scenarios.md) in a disposable environment and review failures before trusting unattended work.
 
 These documents and the website do not install tools or hooks, connect accounts, or change permissions.
+
 
 ### Set up global rules
 
@@ -170,22 +173,21 @@ For renamed or replaced products, follow the current product's guide: [Windsurf 
 
 ### General behavior
 
-[General essentials](global/general-rules.md) are useful for development and everyday work. They keep scope, approvals, security, privacy, destructive-action safeguards, execution protections, verification, communication, tool selection, documentation lookup, process startup, basic resource efficiency, and file-reference maintenance together. Tool guidance applies when tools are used; it does not require tool use for ordinary replies. General does not contain software-specific implementation guidance. The categories below add context only when the task needs it.
+[General rules](global/general-rules.md) include tool guidance when tools are used; they do not require tool use for ordinary replies.
 
-- [Guidance for writing rules and skills](global/agent-workflow-authoring-rules.md): optional guidance for agents that create or improve rules, skills, or workflows. Helps keep those instructions clear, consistent, and free of duplication. Confirm placement from intended use. Keep it separate from General when copying; it is not needed just to use existing rules or skills.
-- [Version control](global/version-control-rules.md): reviewing and preserving repository changes, commits, pushes, and conflicts, with identity checks for Git. Available under General and optional activities for code and non-code work; confirm placement from intended use. Selecting Software development basics checks it by default, but it remains independently selectable.
+- [Version control](global/version-control-rules.md): using tools like Git to review and preserve repository changes, commits, pushes, and conflicts. Shown under General and recurring work for code and non-code tasks; select it only when relevant. Selecting Software development checks it by default, but it remains independently selectable.
 
 ### Operating systems
 
-These additional add-ons can accompany General for development or everyday tasks. Choose the operating-system file for the environment where the agent works, including remote environments.
+Choose an optional operating-system file for the system where the agent works, not the platform of apps it builds. Each file also works without General.
 
 - [macOS agent rules](global/macos-agent-rules.md): a compact safety add-on for agents that operate a Mac, including non-software tasks. Covers system protection, permissions, iCloud and Photos file handling, and local-processing boundaries. This safety layer can stay loaded; detailed tool guidance stays optional.
 - [Windows agent rules](global/windows-agent-rules.md): protect managed system files, handle redirected and synced folders, and keep Windows and WSL operations distinct.
 - [Linux agent rules](global/linux-agent-rules.md): respect distribution differences and protect system interfaces, permissions, and persistent application data.
 
-### Browser and desktop control
+### Browser and computer use
 
-- [Browser and desktop control](global/browser-computer-use-rules.md): guidance for agents with tools to click, type, and navigate websites or desktop apps. Helps protect tabs, sessions, and other work. Select only if your agent supports these actions; the rules do not add tools or authorize installation. Browser access does not necessarily include desktop control. Unlike Browser verification, this guidance concerns operating interfaces for any task, not checking software rendering and behavior.
+- [Browser and computer use](global/browser-computer-use-rules.md): guidance for agents with tools to click, type, and navigate websites or desktop apps. Helps protect tabs, sessions, and other work. Select only if your agent supports these actions; the rules do not add tools or authorize installation. Browser access does not necessarily include desktop control. Unlike Browser verification, this guidance concerns operating interfaces for any task, not checking software rendering and behavior.
 
 ### Project-specific software additions
 
@@ -197,30 +199,18 @@ Keep these additions in the relevant project's instructions or supported project
 - [Web development](project/web-development-rules.md): browser-specific implementation, resource-loading safeguards, and security guidance.
 - [Apple app development](project/apple-app-development-rules.md): three optional safeguards for app-specific approvals, file-access boundaries, and privacy declarations. Applies to the Apple app platforms you target, not merely using an Apple device.
 - [Android app development](project/android-app-development-rules.md): three optional safeguards for app-specific approvals, component exposure, and merged manifests. Applies to Android apps, not merely using an Android device. Both modules are separate from the agent's operating-system choice. They complement shared Coding guidance without summarizing platform documentation or prescribing a framework or development tool.
-- [Writing and running software tests](project/software-testing-rules.md): optional guidance for agents that run existing tests or write and update tests for software changes. Covers affected input boundaries, representative interface content, and spelling in changed user-facing text while avoiding duplicate coverage. It does not trigger a full test suite or audit just because it is loaded. General retains the basic expectations to verify outcomes and report unchecked work honestly.
-- [Browser verification](project/browser-verification-rules.md): checking rendered pages, interactions, and accessibility when relevant. Separate from ordinary browser operation. Writing and running software tests and Browser verification are independently optional; neither selects or requires the other.
+- [Software testing](project/software-testing-rules.md): optional guidance for agents that run existing tests or write and update tests for software changes. Covers affected input boundaries, representative interface content, and spelling in changed user-facing text while avoiding duplicate coverage. It does not trigger a full test suite or audit just because it is loaded. General retains the basic expectations to verify outcomes and report unchecked work honestly.
+- [Browser verification](project/browser-verification-rules.md): checking rendered pages, interactions, and accessibility when relevant. Separate from ordinary browser operation. Software testing and Browser verification are independently optional; neither selects or requires the other.
 - [Interactive UI animation](project/interactive-ui-animation-rules.md): optional guidance for live animation in browser and native app interfaces. Keeps state, controls, and cleanup reliable when motion is interrupted. Not for exported video.
-- [Multilingual and regional software](project/internationalization-localization-rules.md): optional guidance for apps and websites that support multiple languages or regional formats. Not for translating ordinary documents or messages.
+- [Internationalization and localization](project/internationalization-localization-rules.md): optional guidance for apps and websites that support multiple languages or regional formats. Not for translating ordinary documents or messages.
 
 ### Tool reference
 
-The [helper-tool reference](optional/helper-tools.md) covers utilities, integrations, and operating-system capabilities for research, browser use, files, and other tasks. It includes Windows and Linux diagnostics, Spotlight, text recognition, Shortcuts, and Apple Intelligence, with version conditions where needed. These tools are optional, not assumed to be installed. Provide relevant entries for a task or use supported conditional loading; do not load the whole reference in every session. No rule file imports it automatically. Git history records edits, not verification of every tool or requirement.
+The [helper-tool reference](reference/helper-tools.md) covers utilities, integrations, and operating-system capabilities for research, browser use, files, and other tasks. It includes Windows and Linux diagnostics, Spotlight, text recognition, Shortcuts, and Apple Intelligence, with version conditions where needed. These tools are optional, not assumed to be installed. Provide relevant entries for a task or use supported conditional loading; do not load the whole reference in every session. No rule file imports it automatically. Git history records edits, not verification of every tool or requirement.
 
 </details>
 
 ## FAQ
-
-### Do I need coding rules for non-development work?
-
-No. General stands alone for non-development tasks. Add Coding only for software work. Browser and computer use, Version control, or other activity-specific guidance can be useful without software development.
-
-Development rules also cover temporary and standalone work without a Git repository. They do not require browser automation or version control when unnecessary.
-
-See [Choose only relevant rule sets](#choose-only-relevant-rule-sets) for global and project placement.
-
-### What if the rules are too large?
-
-Use a smaller relevant selection. See [instruction loading and size](#instruction-loading-and-size) for loading controls and limits; keep essential safety and approval boundaries active.
 
 ### How do I migrate from older rule files?
 
@@ -235,7 +225,7 @@ Communication and Tools and execution are now part of General rather than separa
 
 `global/coding-rules.md` remains a separate opt-in file. General does not include its software-specific guidance. Website links preserve General and Coding as separate choices; review the changed sources before adopting them.
 
-The formerly combined Software testing choice is now labeled Writing and running software tests and no longer bundles browser verification. If you used the combined file, replace it with the updated testing file and add Browser verification only when relevant. Older links with a former scope or agent choice show a split notice; new links do not. Browser verification is never selected automatically.
+The earlier combined testing choice was split into Software testing and Browser verification. If you used the combined file, replace it with the updated testing file and add Browser verification only when relevant. Older links with a former scope or agent choice show a split notice; new links do not. Browser verification is never selected automatically.
 
 Browser animation is now Interactive UI animation, with platform-neutral guidance for live browser and native interfaces. Older website links keep the selection and show a scope-change notice. Replace the older copied module rather than adding a second copy.
 
@@ -274,9 +264,9 @@ The rules combine practical experience, research, and ideas shared publicly by o
 
 [Vale](https://docs.vale.sh/) checks wording, [Promptfoo](https://www.promptfoo.dev/docs/intro/) has been used for small model-response comparisons, and [Firecrawl](https://docs.firecrawl.dev/introduction) supports research into public documentation and developer feedback. These tools help refine the rules but do not certify them. You do not need them to use the rules.
 
-The [Vale workflow](.github/workflows/vale.yml) checks the general, software, web, and optional rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
+The [Vale workflow](https://github.com/jitendravyas/agent-rulebook/blob/main/.github/workflows/vale.yml) checks the general, software, web, and optional rule files after pushes to `main` that change them, the Vale configuration, or the workflow itself. Warnings are advisory; errors fail the check. It does not rewrite files.
 
-The [website workflow](.github/workflows/website.yml) runs on relevant pull requests and pushes to `main`. It checks rule-file links, catalog categories, review prompts, and saved-selection behavior. On pushes to `main`, successful checks package the public site before the dependent deployment job publishes it. Asset URLs include the deployment version so refreshed pages load matching code. Pull requests do not deploy. GitHub Pages must use GitHub Actions as its publishing source. Run the checks locally with Node.js 24: `node --test site/*.test.js`. These tests do not assess rendered appearance or accessibility.
+The [website workflow](https://github.com/jitendravyas/agent-rulebook/blob/main/.github/workflows/website.yml) runs on relevant pull requests and pushes to `main`. It checks rule-file links, catalog categories, review prompts, and saved-selection behavior. On pushes to `main`, successful checks package the public site before the dependent deployment job publishes it. Asset URLs include the deployment version so refreshed pages load matching code. Pull requests do not deploy. GitHub Pages must use GitHub Actions as its publishing source. Run the checks locally with Node.js 24: `node --test tests/*.test.js`. These tests do not assess rendered appearance or accessibility.
 
 </details>
 
@@ -290,7 +280,7 @@ These sources contributed guidance that remains in the rules; this is not a list
 
 - [ASD-STE100's writing principles](https://asd-ste100.org/STE_faq.html) informed short sentences, active voice, and one main idea per sentence in explanations. The rules borrow these principles without requiring the standard's restricted vocabulary or overriding the user's requested style.
 - [EARS (Easy Approach to Requirements Syntax)](https://alistairmavin.com/ears/) informed placing conditions before actions and stating expected results. [Anthropic's prompting guidance](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices) informed giving a permitted alternative when a prohibition alone leaves the next action unclear. These guide instruction authoring, without requiring a fixed template or weakening safety restrictions.
-- MDN's guidance on [animation timing](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), [transition completion](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event), and [cancellation](https://developer.mozilla.org/en-US/docs/Web/API/Animation/cancel) informed the browser-animation safeguards.
+- MDN's guidance on [animation timing](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), [transition completion](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event), and [cancellation](https://developer.mozilla.org/en-US/docs/Web/API/Animation/cancel) informed the interactive UI animation safeguards.
 - Apple's guidance on [command-line Shortcuts](https://support.apple.com/guide/shortcuts-mac/run-shortcuts-from-the-command-line-apd455c82f02/mac), [Script Editor and app scripting dictionaries](https://support.apple.com/en-ca/guide/script-editor/scpedt6935/mac), [app permissions](https://support.apple.com/guide/security/controlling-app-access-to-files-secddd1d86a6/web), [Gatekeeper](https://support.apple.com/en-us/102445), [System Integrity Protection](https://support.apple.com/en-us/102149), [Rosetta](https://support.apple.com/en-us/102527), [iCloud Drive files](https://support.apple.com/guide/mac-help/work-with-folders-and-files-in-icloud-drive-mchl1a02d711/mac), and [Photos libraries](https://support.apple.com/guide/photos/where-are-the-items-i-imported-pht12e7a8015/mac) informed the macOS safeguards and optional tool guidance.
 - Apple's guidance on [Spotlight indexing](https://support.apple.com/en-ie/102321), [document version history](https://support.apple.com/guide/mac-help/view-and-restore-past-versions-of-documents-mh40710/mac), and [Live Text in Preview](https://support.apple.com/guide/preview/interact-with-text-in-a-photo-prvw625a5b2c/mac), plus the installed `mdfind` and `mdls` manuals, informed the native discovery and recovery guidance. The [macOS Monterey release notes](https://www.apple.com/newsroom/2021/10/macos-monterey-is-now-available/) establish the macOS 12 minimum for Shortcuts and Live Text.
 - Apple's [Foundation Models CLI introduction](https://developer.apple.com/videos/play/wwdc2026/334/) and installed `fm` manual informed the conditional local-AI guidance. The [Container project](https://github.com/apple/container), [container machines](https://developer.apple.com/videos/play/wwdc2026/389/), and [macOS virtualization documentation](https://developer.apple.com/documentation/virtualization/virtualize-macos-on-a-mac) informed the distinction between isolated execution and shared resources.

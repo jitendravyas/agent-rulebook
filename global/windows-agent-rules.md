@@ -1,7 +1,5 @@
 # Windows-specific agent instructions
 
-Apply to authorized work on Windows, including tasks outside software development.
-
 ## System protection
 
   * For Windows-managed system files and protected registry keys, use supported settings or repair procedures. Do not take ownership of protected resources or weaken their permissions merely to bypass an access error.

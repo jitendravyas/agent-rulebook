@@ -1,6 +1,6 @@
 # Interactive UI animation rules
 
-Apply when creating or changing live user interface (UI) animations in browser or native applications. Do not apply to video compositions merely because their previews run in an interactive interface. Prefer project-level or project-scoped loading over always-loaded global instructions.
+Apply when creating or changing live user interface (UI) animations in browser or native applications. Do not apply to video compositions merely because their previews run in an interactive interface.
 
   * Honor available reduced-motion preferences for nonessential animation. Keep required information and controls usable when motion is reduced or disabled.
   * Keep application state independent of decorative animation completion. Required actions and cleanup must still work when motion is skipped, canceled, or has zero duration; do not rely only on an animation-end event.

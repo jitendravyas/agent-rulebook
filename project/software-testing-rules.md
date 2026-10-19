@@ -1,7 +1,5 @@
 # Software testing rules
 
-Apply when testing software or verifying software changes, including temporary and standalone work. Prefer project-level or project-scoped loading over always-loaded global instructions.
-
 ## Software checks
 
   * Use the test environment specified for the check, whether local or remote. Otherwise, prefer a relevant established environment when suitable. Isolate checks that could affect shared state or real data. Check that inherited settings do not redirect isolated tests to real or shared resources. Self-contained checks need no additional services or isolation unless project policy requires them.
@@ -11,8 +9,8 @@ Apply when testing software or verifying software changes, including temporary a
   * When adding a regression test, confirm it detects the original defect where safe and practical.
   * When the task or project has an established test approach, follow it. Reuse available coverage. Add or change tests only for meaningful gaps; a focused check may be enough for a small, low-risk change. Prefer the narrowest test level that reliably detects the relevant failure. Avoid repeating detailed cases across test levels; retain broader checks where they add confidence in integration or important user journeys.
   * Before refactoring poorly tested behavior, establish what must stay compatible and which changes are intentional.
-  * When test creation or changes are within the authorized task, small tests using available tools need no separate approval, even without an existing test suite, unless applicable policy requires it. This includes new test files. Ask before adding test dependencies or infrastructure or expanding beyond the task. Before deleting tests, identify what they guard and confirm needed coverage remains.
-  * For verification, use commands that finish and report results. Use watch or interactive mode only when the task needs it.
+  * When test creation or changes are within the authorized task, small tests using available tools need no separate approval, even without an existing test suite, unless applicable policy requires it. This includes new test files. Ask before adding test dependencies or infrastructure or expanding beyond the task. Before deleting tests, confirm the request or approved plan covers that deletion and its target; otherwise ask. Identify what they guard and confirm needed coverage remains.
+  * When using commands for verification, choose ones that finish and report results. Use watch or interactive mode only when the task needs it.
   * For repeatable tests, control time, randomness, and external state that affect results. Preserve variations the test is meant to exercise.
   * For asynchronous tests, prefer waiting for the required event or condition with a timeout over fixed delays, unless timing itself is being tested.
   * When changing or testing a trust boundary, test inputs bypassing the normal interface. Check validation, access controls, object boundaries, and workflow order with relevant unauthenticated, unauthorized, cross-user or cross-object, repeated, and out-of-order cases.

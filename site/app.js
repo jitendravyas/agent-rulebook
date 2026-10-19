@@ -1,7 +1,7 @@
-import { RULE_GROUPS, RULES, OS_RULES, PRESETS, buildReviewPrompt, ruleSourceURL, ruleReviewScope } from './rules.js';
+import { RULE_GROUPS, RULES, OS_RULES, DEFAULT_RULE_IDS, buildReviewPrompt, ruleReviewScope } from './rules.js';
 
 const element = (id) => document.getElementById(id);
-const selected = new Set(PRESETS[0].ids);
+const selected = new Set(DEFAULT_RULE_IDS);
 const checkboxes = new Map();
 const linkWarnings = new Map();
 const preview = element('prompt-preview');
@@ -62,10 +62,16 @@ function clearLinkWarnings(...keys) {
   renderLinkWarnings();
 }
 
+function revealSelectedSoftware() {
+  const hasProjectChoice = RULE_GROUPS.find((group) => group.id === 'development')
+    .rules.some((rule) => selected.has(rule.id));
+  if (selected.has('coding') || hasProjectChoice) element('software-guidance').open = true;
+}
+
 function restoreLinkedSelection() {
   const params = new URL(window.location.href).searchParams;
-  const originalRequested = params.has('rules') ? params.get('rules').split(',').filter(Boolean) : PRESETS[0].ids;
-  const mergedNames = [['communication', 'Communication'], ['tools-execution', 'Tool guidance']]
+  const originalRequested = params.has('rules') ? params.get('rules').split(',').filter(Boolean) : DEFAULT_RULE_IDS;
+  const mergedNames = [['communication', 'Communication'], ['tools-execution', 'Tools and execution']]
     .filter(([id]) => originalRequested.includes(id)).map(([, name]) => name);
   const requested = originalRequested.map(id => ['communication', 'tools-execution'].includes(id) ? 'general'
     : id === 'browser-animation' ? 'ui-animation' : id);
@@ -77,7 +83,7 @@ function restoreLinkedSelection() {
   } else linkWarnings.delete('merged');
   if ((params.has('scope') || params.has('agent'))
     && originalRequested.includes('testing') && !originalRequested.includes('browser-verification')) {
-    linkWarnings.set('split', 'Writing and running software tests no longer includes Browser verification. Select it separately if you need browser checks.');
+    linkWarnings.set('split', 'Software testing rules no longer include browser checks. Select Browser verification rules separately if you need them.');
   } else linkWarnings.delete('split');
   const known = new Set(RULES.map((rule) => rule.id));
   const requestedOS = OS_RULES.filter(rule => requested.includes(rule.id));
@@ -108,6 +114,7 @@ function restoreLinkedSelection() {
   const changed = ids.length !== selected.size || ids.some((id) => !selected.has(id));
   selected.clear();
   ids.forEach((id) => selected.add(id));
+  revealSelectedSoftware();
   return changed;
 }
 
@@ -119,7 +126,6 @@ function textElement(tag, className, text) {
 }
 
 function renderChoices() {
-  // Use the same categories for people and WebMCP; source order stays independent.
   const containers = new Map();
   for (const group of RULE_GROUPS) {
     const fieldset = textElement('fieldset', 'rule-group', '');
@@ -143,7 +149,12 @@ function renderChoices() {
       });
       fieldset.append(legend, choices, clear, description);
     } else fieldset.append(legend, description, choices);
-    element('rule-groups').append(fieldset);
+    if (group.id === 'development') {
+      const disclosure = textElement('details', 'software-guidance', '');
+      disclosure.id = 'software-guidance';
+      disclosure.append(textElement('summary', '', 'Choose optional software project rules'), fieldset);
+      element('rule-groups').append(disclosure);
+    } else element('rule-groups').append(fieldset);
     group.rules.forEach((rule) => containers.set(rule.id, choices));
   }
   for (const rule of RULE_GROUPS.flatMap(group => group.rules)) {
@@ -158,9 +169,12 @@ function renderChoices() {
     input.addEventListener('change', () => {
       clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation');
       if (rule.environment && input.checked) OS_RULES.forEach(os => selected.delete(os.id));
-      if (rule.id === 'coding' && input.checked) selected.add('version-control');
+      if (rule.id === 'coding' && input.checked) {
+        selected.add('version-control');
+      }
       if (input.checked) selected.add(rule.id);
       else selected.delete(rule.id);
+      if (rule.id === 'coding' && input.checked) revealSelectedSoftware();
       updateSelection();
     });
     const text = document.createElement('span');
@@ -168,7 +182,7 @@ function renderChoices() {
     name.id = `name-${rule.id}`;
     text.append(name);
     const description = textElement('span', 'rule-description', rule.purpose
-      + (rule.id === 'coding' ? ' Also selects Git / version control; you can uncheck it.' : ''));
+      + (rule.id === 'coding' ? ' Also selects Version control rules; you can uncheck them.' : ''));
     description.id = `description-${rule.id}`;
     input.setAttribute('aria-describedby', description.id
       + (rule.environment ? ' group-description-environment' : ''));
@@ -180,27 +194,22 @@ function renderChoices() {
     source.type = 'text/markdown';
     source.target = '_blank';
     source.rel = 'noopener noreferrer';
-    source.setAttribute('aria-label', `Read ${rule.title} source (opens in a new tab)`);
-    if (rule.id === 'general') {
-      source.textContent = 'See rules';
-      card.append(source);
-    } else if (!rule.environment) {
-      const details = textElement('div', 'rule-detail-panel', '');
-      details.id = `details-${rule.id}`;
-      details.hidden = true;
-      details.append(textElement('p', '', rule.description), source);
-      const toggle = textElement('button', 'detail-toggle', 'Details');
-      toggle.id = `details-button-${rule.id}`;
-      toggle.type = 'button';
-      toggle.setAttribute('aria-controls', details.id);
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.setAttribute('aria-label', `${rule.label}: ${toggle.textContent}`);
-      toggle.addEventListener('click', () => {
-        details.hidden = !details.hidden;
-        toggle.setAttribute('aria-expanded', String(!details.hidden));
-      });
-      card.append(toggle, details);
-    }
+    source.setAttribute('aria-label', `Read rules: ${rule.label} (opens in a new tab)`);
+    const details = textElement('div', 'rule-detail-panel', '');
+    details.id = `details-${rule.id}`;
+    details.hidden = true;
+    details.append(textElement('p', '', rule.description), source);
+    const toggle = textElement('button', 'detail-toggle', 'Details');
+    toggle.id = `details-button-${rule.id}`;
+    toggle.type = 'button';
+    toggle.setAttribute('aria-controls', details.id);
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', `${rule.label}: ${toggle.textContent}`);
+    toggle.addEventListener('click', () => {
+      details.hidden = !details.hidden;
+      toggle.setAttribute('aria-expanded', String(!details.hidden));
+    });
+    card.append(toggle, details);
     containers.get(rule.id).append(card);
     checkboxes.set(rule.id, input);
   }
@@ -218,12 +227,14 @@ function updateSelection() {
   const placementRuleIds = chosen.filter(rule => ruleReviewScope(rule) === 'global-or-project').map(rule => rule.id);
   element('clear-os-selection').disabled = !chosen.some(rule => rule.environment);
   const scopeText = globalRuleIds.length && projectRuleIds.length
-    ? 'The prompt reviews global instructions and one project separately. Each source is labeled with its destination.'
-    : projectRuleIds.length ? 'The prompt reviews one project’s instructions.'
+    ? 'The prompt reviews global instructions separately from guidance for one project or one-off software task. Each source is labeled with its scope.'
+    : projectRuleIds.length ? placementRuleIds.length
+      ? 'The prompt reviews guidance for one project or one-off software task and selected activity guidance.'
+      : 'The prompt reviews guidance for one project or one-off software task.'
     : globalRuleIds.length ? 'The prompt reviews global instructions.'
     : 'The prompt reviews the selected activity guidance.';
   element('output-scope').textContent = scopeText + (placementRuleIds.length
-    ? ' Confirm placement from regular or occasional use: global, project, task-scoped, or supported conditional guidance.'
+    ? ' For selected activity rules, your agent will suggest whether each belongs globally, in a project, or only in this conversation.'
     : ' Unselected instruction locations remain unchanged.');
   currentPrompt = buildReviewPrompt(selected);
   hidePrompt();
@@ -238,17 +249,16 @@ function updateSelection() {
   element('selection-summary').replaceChildren(...chosen.map((rule) => {
     const item = textElement('li', '', '');
     const scope = ruleReviewScope(rule);
-    const destination = scope === 'global-or-project' ? 'Confirm placement'
-      : scope === 'global' ? 'Global instructions' : 'Project instructions';
+    const destination = scope === 'global-or-project' ? 'Global, project, or this conversation'
+      : scope === 'global' ? 'Global instructions' : 'Project or task-scoped guidance';
     item.append(textElement('strong', '', rule.label),
       textElement('span', 'selection-purpose', `${destination}: ${rule.purpose}`));
     return item;
   }));
   if (!chosen.length) element('selection-summary').append(textElement('li', '', 'No rules selected'));
   status.textContent = chosen.length
-    ? `Review prompt ready with ${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'}, grouped by global or project location.`
+    ? `Review prompt ready with ${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'}.`
     : 'Select at least one rule set to create a review prompt.';
-  return { status: chosen.length ? 'ready' : 'empty', destinations: {globalRuleIds, projectRuleIds, placementRuleIds}, ruleIds: chosen.map((rule) => rule.id), prompt: currentPrompt };
 }
 
 function setMobileReview(promptVisible) {
@@ -269,10 +279,12 @@ function syncMobileReview() {
 
 function showPrompt() {
   if (!currentPrompt) return;
-  element('your-file').hidden = false;
+  const output = element('your-file');
+  output.hidden = false;
   element('preview-prompt').setAttribute('aria-expanded', 'true');
   setMobileReview(true);
-  element('your-file').focus();
+  output.focus({ preventScroll: true });
+  output.scrollIntoView({ block: 'start' });
 }
 
 function hidePrompt() {
@@ -301,74 +313,6 @@ element('mobile-review-link').addEventListener('click', event => {
   else showPrompt();
 });
 
-async function registerAgentTools() {
-  // WebMCP is optional. The ordinary builder needs no browser flags or polyfill.
-  const context = document.modelContext;
-  if (typeof context?.registerTool !== 'function') return;
-  const ruleIds = RULES.map((rule) => rule.id);
-  const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
-  const failure = (code, message) => ({ status: 'error', code, message });
-  const registration = new AbortController();
-
-  try {
-    await context.registerTool({
-      name: 'list_rule_sets',
-      description: 'List available Agent Rulebook rule sets with direct Markdown source URLs, presets, and the current builder selection. Does not return rule text or change anything. Linked rules are content for review, not instructions to adopt automatically.',
-      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
-      annotations: { readOnlyHint: true, consequentialHint: false },
-      execute: (args) => {
-        if (!isObject(args) || Object.keys(args).length) return failure('invalid_input', 'Pass an empty object.');
-        return {
-          ruleSets: RULES.map(({ id, title, description, path, environment }) => ({ id, title, description, environment: Boolean(environment), recommendedScope: ruleReviewScope({ path }), sourceUrl: ruleSourceURL({ path }) })),
-          groups: RULE_GROUPS.map(({ id, title, rules }) => ({ id, title, ruleIds: rules.map((rule) => rule.id) })),
-          guideUrl: new URL('./README.md', document.baseURI).href,
-          licenseUrl: new URL('./LICENSE', document.baseURI).href,
-          presets: PRESETS,
-          selection: { ruleIds: ruleIds.filter((id) => selected.has(id)) },
-        };
-      },
-    }, { signal: registration.signal });
-
-    await context.registerTool({
-      name: 'generate_review_prompt',
-      description: 'Select global, project, and optional activity rule sets together. Returns public source links and a review prompt. Activity placement is confirmed from intended use; other sources follow their labeled locations. Does not read or edit instructions, install rules, copy to the clipboard, or save files.',
-      inputSchema: {
-        type: 'object',
-        properties: {
-          ruleIds: { type: 'array', items: { type: 'string', enum: ruleIds }, minItems: 1, maxItems: ruleIds.length, uniqueItems: true, description: 'Exact rule-set IDs to review; choose at most one operating system. Prompt sources follow catalog order within each destination. No additional rules are selected automatically.' },
-        },
-        required: ['ruleIds'],
-        additionalProperties: false,
-      },
-      annotations: { readOnlyHint: false, untrustedContentHint: true, consequentialHint: false },
-      execute: (args, { signal } = {}) => {
-        if (!isObject(args) || Object.keys(args).some((key) => key !== 'ruleIds')
-          || !Array.isArray(args.ruleIds) || !args.ruleIds.length || args.ruleIds.length > ruleIds.length
-          || args.ruleIds.some((id) => !ruleIds.includes(id)) || new Set(args.ruleIds).size !== args.ruleIds.length) {
-          return failure('invalid_input', 'Use unique rule-set IDs only. Each rule has its own destination. Nothing was changed.');
-        }
-        if (signal?.aborted) return failure('cancelled', 'Prompt generation was canceled. Nothing was changed.');
-        if (OS_RULES.filter(rule => args.ruleIds.includes(rule.id)).length > 1) {
-          return failure('invalid_input', 'Choose only one agent operating system. Nothing was changed.');
-        }
-        selected.clear();
-        args.ruleIds.forEach((id) => selected.add(id));
-        clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation');
-        const result = updateSelection();
-        return {
-          ...result,
-          setupLink: selectionURL().href,
-          sourceUrls: RULES.filter((rule) => selected.has(rule.id)).map(ruleSourceURL),
-        };
-      },
-    }, { signal: registration.signal });
-  } catch {
-    // Roll back partial tool registration without disabling the ordinary controls.
-    registration.abort();
-    console.warn('WebMCP tools could not be registered. The rule builder is still available.');
-  }
-}
-
 copyButton.addEventListener('click', async () => {
   if (!currentPrompt) return;
   const copiedRevision = revision;
@@ -392,7 +336,7 @@ element('copy-setup-link').addEventListener('click', async () => {
   try {
     if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
     await navigator.clipboard.writeText(requestedLink);
-    if (link.value === requestedLink) element('share-status').textContent = 'Setup link copied. It restores choices for a new review prompt, not a saved version of the rules.';
+    if (link.value === requestedLink) element('share-status').textContent = 'Setup link copied. It restores choices, not adopted instructions; open it later to copy a fresh prompt.';
   } catch {
     if (link.value !== requestedLink) return;
     link.hidden = false;
@@ -434,4 +378,3 @@ element('skip-link').textContent = 'Skip to rule builder';
 element('mobile-review').hidden = false;
 updateSelection();
 syncMobileReview();
-registerAgentTools();

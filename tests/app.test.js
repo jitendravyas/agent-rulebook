@@ -2,18 +2,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
-import * as catalog from './rules.js';
+import * as catalog from '../site/rules.js';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-const app = readFileSync(new URL('./app.js', import.meta.url), 'utf8');
+const app = readFileSync(new URL('../site/app.js', import.meta.url), 'utf8');
 const importLine = /^import \{([^}]+)\} from '\.\/rules\.js';\r?\n/;
 assert.match(app, importLine);
 const script = app.replace(importLine, (_, names) => `const {${names}} = catalog;\n`);
 
-function boot(address, { intersectionObserver = true, modelContext = false, clipboard } = {}) {
+function boot(address, { intersectionObserver = true, clipboard } = {}) {
   const nodes = new Map();
   const observers = [];
-  const tools = new Map();
   let location = new URL(address);
 
   // This DOM double runs the actual app and event handlers, not layout or browser APIs.
@@ -25,6 +24,7 @@ function boot(address, { intersectionObserver = true, modelContext = false, clip
       this.classList = { add() {} };
       this.checked = false;
       this.disabled = false;
+      if (tag === 'details') this.open = false;
       this.value = '';
       this.text = '';
     }
@@ -127,15 +127,16 @@ function boot(address, { intersectionObserver = true, modelContext = false, clip
     createElement: tag => new Node(tag),
     createElementNS: (namespace, tag) => new Node(tag),
   });
-  if (modelContext) document.modelContext = { async registerTool(tool) { tools.set(tool.name, tool); } };
   runInNewContext(script, {
     catalog, document, window, URL, performance: { timeOrigin: 1000 },
-    navigator: { clipboard }, AbortController,
-  }, { filename: 'site/app.js', timeout: 1000 });
-  return { get, window, observers, tools };
+    navigator: { clipboard },
+  }, { filename: 'site/app.js', timeout: 5000 });
+  return { get, window, observers };
 }
 
 test('prompt stays hidden until Preview prompt and hides again when choices change', () => {
+  assert.ok(html.indexOf('id="copy-prompt"') < html.indexOf('id="selection-summary"'), 'Copy is available before the long selection recap');
+  assert.equal([...html.matchAll(/id="copy-prompt"/g)].length, 1, 'There is one Copy control');
   const page = boot('https://example.test/agent-rulebook/?rules=general,mac#your-file');
   assert.equal(page.get('your-file').hidden, true);
   assert.equal(page.get('preview-prompt').disabled, false);
@@ -161,11 +162,15 @@ test('prompt stays hidden until Preview prompt and hides again when choices chan
   assert.equal(page.get('your-file').hidden, true);
 });
 
-test('choices show each purpose, put OS first, and keep details available on demand', () => {
+test('choices put OS first and keep specialist software guidance available on demand', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.deepEqual(page.get('rule-groups').children.map(group => group.id), [
-    'rule-group-environment', 'rule-group-general', 'rule-group-development', 'rule-group-capabilities',
+    'rule-group-environment', 'rule-group-general', 'software-guidance', 'rule-group-capabilities',
   ]);
+  const softwareGuidance = page.get('software-guidance');
+  assert.equal(softwareGuidance.open, false, 'Specialist choices start collapsed');
+  assert.ok(softwareGuidance.contains(page.get('rule-group-development')));
+  assert.equal(softwareGuidance.children[0].textContent, 'Choose optional software project rules');
   for (const group of catalog.RULE_GROUPS) {
     const fieldset = page.get(`rule-group-${group.id}`);
     const description = page.get(`group-description-${group.id}`);
@@ -174,22 +179,31 @@ test('choices show each purpose, put OS first, and keep details available on dem
     assert.ok(fieldset.contains(description), `${group.id} displays its description`);
     assert.equal(fieldset['aria-describedby'], description.id);
   }
-  assert.deepEqual(catalog.RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'coding', 'version-control', 'authoring']);
+  assert.deepEqual(catalog.RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'version-control', 'coding']);
   assert.equal(page.get('rule-general').checked, true);
-  assert.match(page.get('description-browser-use').textContent, /For agents with browser or desktop control tools/);
-  assert.equal(page.get('name-browser-use').textContent, 'Browser and desktop control');
+  assert.match(page.get('description-browser-use').textContent, /For agents that can click, type, or navigate/);
+  assert.equal(page.get('name-browser-use').textContent, 'Browser and computer use rules');
   assert.match(page.get('details-browser-use').textContent, /Browser verification is separate guidance/);
   for (const rule of catalog.RULES) {
     const description = page.get(`description-${rule.id}`);
     assert.ok(description.textContent.includes(rule.purpose), `${rule.id} explains its purpose without opening Details`);
     assert.notEqual(description.hidden, true);
     assert.ok(page.get(`rule-${rule.id}`)['aria-describedby'].split(' ').includes(description.id));
+    const details = page.get(`details-${rule.id}`);
+    const toggle = page.get(`details-button-${rule.id}`);
+    assert.equal(details.hidden, true);
+    assert.equal(toggle['aria-controls'], details.id);
+    assert.equal(details.children[1].href, new URL(rule.path, page.window.location.href).href);
+    assert.ok(details.children[1]['aria-label'].includes(details.children[1].textContent), `${rule.id} accessible link name includes its visible text`);
+    assert.ok(details.children[1]['aria-label'].includes(rule.label), `${rule.id} accessible link uses its selection name`);
   }
-  assert.match(page.get('description-coding').textContent, /Also selects Git \/ version control; you can uncheck it/);
-  assert.equal(page.get('rule-authoring').checked, false);
-  page.get('rule-authoring').checked = true;
-  page.get('rule-authoring').dispatch('change');
-  assert.equal(page.get('rule-coding').checked, false);
+  for (const id of ['general', 'mac']) {
+    const checked = page.get(`rule-${id}`).checked;
+    page.get(`details-button-${id}`).dispatch('click');
+    assert.equal(page.get(`details-${id}`).hidden, false);
+    assert.equal(page.get(`rule-${id}`).checked, checked, 'Opening Details does not select a rule');
+  }
+  assert.match(page.get('description-coding').textContent, /Also selects Version control rules; you can uncheck them/);
   assert.equal(page.get('rule-browser-use').checked, false);
   page.get('rule-browser-use').checked = true;
   page.get('rule-browser-use').dispatch('change');
@@ -197,10 +211,10 @@ test('choices show each purpose, put OS first, and keep details available on dem
   assert.match(page.get('prompt-preview').value, /browser-computer-use-rules\.md/);
   page.get('rule-coding').checked = true;
   page.get('rule-coding').dispatch('change');
+  assert.equal(softwareGuidance.open, true, 'Selecting software development reveals specialist choices');
   page.get('rule-coding').checked = false;
   page.get('rule-coding').dispatch('change');
   assert.equal(page.get('rule-browser-use').checked, true);
-  assert.equal(page.get('rule-authoring').checked, true);
   const details = page.get('details-testing');
   const control = page.get('details-button-testing');
   assert.equal(details.hidden, true);
@@ -234,7 +248,7 @@ test('saved setup restores selected controls and the global prompt without host 
   assert.equal(restored.get('setup-link').value, saved);
   const prompt = restored.get('prompt-preview').value;
   assert.equal(prompt, first.get('prompt-preview').value);
-  assert.match(prompt, /Operating systems to consider: Linux\./);
+  assert.match(prompt, /Operating-system rules to consider: Linux rules\./);
   assert.doesNotMatch(prompt, /host|roles not specified/i);
   assert.match(prompt.split('\n')[0], /my global agent instructions and/);
   for (const rule of catalog.RULES) {
@@ -266,6 +280,7 @@ test('copy buttons write the exact current prompt and setup link', async () => {
   await page.get('copy-setup-link').dispatch('click');
   assert.deepEqual(writes, [prompt, link]);
   assert.match(page.get('share-status').textContent, /link copied/i);
+  assert.match(page.get('share-status').textContent, /restores choices.*fresh prompt/i);
   page.get('clear-selection').dispatch('click');
   await page.get('copy-prompt').dispatch('click');
   assert.deepEqual(writes, [prompt, link], 'An empty prompt is not copied');
@@ -364,54 +379,13 @@ test('old single-scope links keep all choices and migrate to per-rule destinatio
     assert.ok(!page.window.location.search.includes('scope='));
   }
 });
-test('agent-facing tools support mixed selections and reject obsolete scope inputs without mutation', async () => {
-  const page = boot('https://example.test/agent-rulebook/', { modelContext: true });
-  await new Promise(setImmediate);
-  const list = page.tools.get('list_rule_sets');
-  const generate = page.tools.get('generate_review_prompt');
-  assert.ok(list && generate);
-  assert.ok(!Object.hasOwn(generate.inputSchema.properties, 'scope'));
-  assert.equal(list.execute({}).ruleSets.find(rule => rule.id === 'web').recommendedScope, 'project');
-  for (const id of ['coding', 'version-control', 'authoring', 'browser-use']) {
-    assert.equal(list.execute({}).ruleSets.find(rule => rule.id === id).recommendedScope, 'global-or-project');
-  }
-  const before = page.get('prompt-preview').value;
-  for (const args of [{ ruleIds: ['web'], scope: 'global' }, { ruleIds: ['web'], hostOS: 'mac' },
-    { ruleIds: ['web', 'mac', 'linux'] }]) {
-    assert.equal(generate.execute(args).code, 'invalid_input');
-    assert.equal(page.get('prompt-preview').value, before);
-  }
-  const result = generate.execute({ ruleIds: ['general', 'web'] });
-  assert.equal(result.status, 'ready');
-  assert.deepEqual(Array.from(result.destinations.globalRuleIds), ['general']);
-  assert.deepEqual(Array.from(result.destinations.projectRuleIds), ['web']);
-  assert.equal(result.prompt, catalog.buildReviewPrompt(['general', 'web']));
-  assert.equal(page.get('rule-web').checked, true);
-  assert.ok(!new URL(result.setupLink).searchParams.has('scope'));
-  const coding = generate.execute({ ruleIds: ['general', 'coding', 'web'] });
-  assert.deepEqual(Array.from(coding.destinations.globalRuleIds), ['general']);
-  assert.deepEqual(Array.from(coding.destinations.projectRuleIds), ['web']);
-  assert.deepEqual(Array.from(coding.destinations.placementRuleIds), ['coding']);
-  assert.match(page.get('selection-summary').textContent, /Confirm placement/);
-  assert.match(page.get('output-scope').textContent, /regular or occasional/);
-  for (const id of ['version-control', 'authoring', 'browser-use']) {
-    const activity = generate.execute({ ruleIds: [id] });
-    assert.deepEqual(Array.from(activity.destinations.globalRuleIds), []);
-    assert.deepEqual(Array.from(activity.destinations.projectRuleIds), []);
-    assert.deepEqual(Array.from(activity.destinations.placementRuleIds), [id]);
-    assert.match(page.get('selection-summary').textContent, /Confirm placement/);
-    assert.match(page.get('output-scope').textContent, /regular or occasional/);
-    assert.ok(!page.get('output-scope').textContent.includes('software guidance'));
-    assert.equal(page.get('your-file').hidden, true);
-  }
-});
 test('old Tools and Communication links migrate visibly to General without duplicates', () => {
   for (const ids of ['communication', 'general,communication', 'tools-execution', 'general,tools-execution', 'tools-execution,communication']) {
     const page = boot(`https://example.test/agent-rulebook/?rules=${ids}`);
     assert.equal(page.get('rule-general').checked, true);
     assert.equal(page.get('rule-count').textContent, '1');
     assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['general']));
-    assert.match(page.get('link-warning').textContent, /(?:Communication|Tool guidance).*part of General/);
+    assert.match(page.get('link-warning').textContent, /(?:Communication|Tools and execution).*part of General/);
   }
   for (const scope of ['personal', 'project']) {
     const page = boot(`https://example.test/agent-rulebook/?rules=tools-execution,communication&scope=${scope}`);
@@ -443,6 +417,7 @@ test('choosing an OS replaces the previous OS without selecting app guidance', (
 
 test('global and project choices remain visible and independently selectable together', () => {
   const page = boot('https://example.test/agent-rulebook/');
+  page.get('software-guidance').open = true;
   assert.ok(!page.get('rule-group-development').hidden);
   assert.equal(page.get('rule-web').disabled, false);
   page.get('rule-web').checked = true;
@@ -459,6 +434,43 @@ test('global and project choices remain visible and independently selectable tog
   assert.match(page.get('prompt-preview').value, /Global sources/);
   assert.match(page.get('prompt-preview').value, /Project sources/);
 });
+
+test('saved project choices reveal their group while retaining independent selections', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=general,web,mac');
+  assert.equal(page.get('software-guidance').open, true);
+  assert.equal(page.get('rule-web').checked, true);
+  assert.equal(page.get('rule-coding').checked, false);
+  assert.equal(page.get('rule-mac').checked, true);
+  assert.equal(page.get('your-file').hidden, true);
+});
+
+test('an unrelated choice does not reopen software guidance after a user closes it', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=general,web');
+  assert.equal(page.get('software-guidance').open, true);
+  page.get('software-guidance').open = false;
+  page.get('rule-mac').checked = true;
+  page.get('rule-mac').dispatch('change');
+  assert.equal(page.get('software-guidance').open, false);
+});
+
+test('project-only choices also explain the one-off task route', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=web');
+  assert.match(page.get('output-scope').textContent, /one project or one-off software task/);
+  assert.match(page.get('selection-summary').textContent, /Project or task-scoped guidance/);
+  assert.match(page.get('prompt-preview').value, /without creating a persistent project or global rule file/);
+});
+
+test('project and activity choices describe both review scopes', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=coding,web');
+  assert.match(page.get('output-scope').textContent, /one project or one-off software task and selected activity guidance/);
+  assert.match(page.get('output-scope').textContent, /For selected activity rules, your agent will suggest whether each belongs globally, in a project, or only in this conversation/);
+  assert.match(page.get('selection-summary').textContent, /Global, project, or this conversation/);
+  assert.match(page.get('action-status').textContent, /Review prompt ready with 2 rule sets\./);
+  assert.doesNotMatch(page.get('action-status').textContent, /grouped by/);
+  assert.match(page.get('prompt-preview').value, /Project sources/);
+  assert.match(page.get('prompt-preview').value, /Activity sources/);
+});
+
 test('saved multiple-OS choices ask for review and keep one OS', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,mac,linux');
   assert.equal(page.get('rule-mac').checked, true);
@@ -482,7 +494,7 @@ test('software testing and browser verification are independently optional', () 
     assert.equal(page.get('link-warning').hidden, true);
   }
   const legacy = boot('https://example.test/agent-rulebook/?rules=testing&scope=project');
-  assert.match(legacy.get('link-warning').textContent, /no longer includes Browser verification/);
+  assert.match(legacy.get('link-warning').textContent, /no longer include browser checks/);
 });
 
 test('published app-platform rules are optional and independent of the agent OS', () => {
@@ -546,10 +558,10 @@ test('OS choices explain that they select safety rules, with help after the radi
   const osGroup = page.get('rule-group-environment');
   const [legend, choices, clear, help] = osGroup.children;
   assert.equal(legend.tag, 'legend');
-  assert.equal(legend.textContent, 'Operating system rules');
+  assert.equal(legend.textContent, 'Your agent’s operating system');
   assert.equal(clear.id, 'clear-os-selection');
   assert.equal(help.id, 'group-description-environment');
-  assert.equal(help.textContent, 'Select the OS your agent uses to include its safety rules in the review prompt. This is not the platform you build apps for.');
+  assert.equal(help.textContent, 'These OS rules are optional. Choose the system where your agent works, not the apps you build.');
   assert.equal(osGroup['aria-describedby'], help.id);
   assert.deepEqual(choices.children.map(card => card.children[0].children[0].value), ['mac', 'windows', 'linux']);
   const descendants = node => [node, ...node.children.filter(child => typeof child === 'object').flatMap(descendants)];
@@ -566,7 +578,7 @@ test('OS choices explain that they select safety rules, with help after the radi
 });
 
 test('saved links flag a retired set without losing other choices', () => {
-  const page = boot('https://example.test/agent-rulebook/?rules=general,coding,web,web-performance,motion-video,mac&scope=project&host=mac');
+  const page = boot('https://example.test/agent-rulebook/?rules=general,coding,web,web-performance,motion-video,authoring,mac&scope=project&host=mac');
   const ids = catalog.RULES.filter(rule => page.get(`rule-${rule.id}`).checked).map(rule => rule.id);
   assert.deepEqual(ids, ['general', 'coding', 'web', 'mac']);
   assert.equal(page.get('rule-mac').disabled, false);
@@ -575,6 +587,13 @@ test('saved links flag a retired set without losing other choices', () => {
   assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(ids));
   assert.ok(!page.get('setup-link').value.includes('web-performance'));
   assert.ok(!page.get('setup-link').value.includes('motion-video'));
+  assert.ok(!page.get('setup-link').value.includes('authoring'));
+  const retiredOnly = boot('https://example.test/agent-rulebook/?rules=authoring');
+  assert.match(retiredOnly.get('link-warning').textContent, /unavailable/);
+  assert.equal(retiredOnly.get('prompt-preview').value, '');
+  assert.equal(retiredOnly.get('preview-prompt').disabled, true);
+  assert.equal(retiredOnly.get('copy-prompt').disabled, true);
+  assert.ok(catalog.RULES.every(rule => !retiredOnly.get(`rule-${rule.id}`).checked));
 });
 
 test('legacy host parameters are ignored without changing selected rules', () => {
@@ -658,6 +677,7 @@ test('mobile shortcut previews and returns without IntersectionObserver', () => 
   assert.equal(page.get('copy-prompt').disabled, false);
   page.get('mobile-review-link').dispatch('click');
   assert.equal(page.get('your-file').hidden, false);
+  assert.equal(page.get('your-file').scrollOptions.block, 'start');
   assert.equal(page.get('mobile-review-link').href, '#builder');
   page.get('mobile-review-link').dispatch('click');
   assert.equal(page.get('your-file').hidden, true);

@@ -1,6 +1,6 @@
 # Web development rules
 
-Apply when developing, changing, reviewing, or testing browser-rendered content, behavior, or supporting web endpoints, including temporary pages and embedded browsers. Using a website or creating a temporary page for a non-development task does not by itself trigger a web-development workflow. Prefer project-level or project-scoped loading over always-loaded global instructions.
+Apply when developing, changing, reviewing, or testing browser-rendered content, behavior, or supporting web endpoints, including temporary pages and embedded browsers. Using a website or creating a temporary page for a non-development task does not by itself trigger a web-development workflow.
 
 ## Web scope and browser compatibility
 

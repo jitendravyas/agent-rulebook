@@ -1,7 +1,5 @@
 # macOS-specific agent instructions
 
-Apply to authorized work on macOS, including tasks outside software development.
-
 ## System protection and app access
 
   * Use installed system tools without changing their programs or bundled files. Do not directly edit or delete Apple-managed system files, frameworks, built-in apps, or boot and recovery components. For authorized maintenance, use Apple-supported procedures without bypassing system protections.

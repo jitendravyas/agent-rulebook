@@ -6,17 +6,17 @@
   <meta name="description" content="Select global defaults and project-specific AI agent rules together. Copy a prompt that reviews each rule at its recommended location for useful additions, duplicates, and conflicts.">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#101716">
-  <title>Agent Rulebook | Find Rules That Fit Your Agent</title>
+  <title>AI Agent Rules for Coding and Everyday Work | Agent Rulebook</title>
   <link rel="canonical" href="https://jitendravyas.github.io/agent-rulebook/">
   <link rel="help" type="text/markdown" href="./README.md" title="Agent Rulebook usage guide">
   <link rel="license" href="./LICENSE">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Agent Rulebook">
-  <meta property="og:title" content="Agent Rulebook | Find Rules That Fit Your Agent">
+  <meta property="og:title" content="AI Agent Rules for Coding and Everyday Work | Agent Rulebook">
   <meta property="og:description" content="Select global defaults and project additions together. Your agent proposes edits separately for each location; you approve what to keep. Free, with no account needed.">
   <meta property="og:url" content="https://jitendravyas.github.io/agent-rulebook/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Agent Rulebook | Find Rules That Fit Your Agent">
+  <meta name="twitter:title" content="AI Agent Rules for Coding and Everyday Work | Agent Rulebook">
   <meta name="twitter:description" content="Select global defaults and project additions together. Your agent proposes edits separately for each location; you approve what to keep. Free, with no account needed.">
   <script type="application/ld+json">
     {
@@ -67,12 +67,12 @@
       <div class="intro-copy">
         <p class="eyebrow">Your agent. Your ground rules.</p>
         <h1 id="page-title">Find the rules<br>that <span>fit your agent.</span></h1>
-          <p>Choose global defaults and relevant project additions, then copy a review prompt. Your agent checks each location separately and proposes useful changes. You decide what to keep.</p>
+        <p>Read or copy rule files from the repo. Use this page to select candidates and copy a prompt that asks your agent to compare them with your existing instructions, or suggest a starting set. Nothing is installed; you decide what to keep.</p>
         <div class="intro-actions">
           <a class="button primary builder-link" href="#builder">Choose rules to review <span aria-hidden="true">↓</span></a>
           <a class="intro-guide" href="https://github.com/jitendravyas/agent-rulebook#how-to-use">How to use the rules</a>
         </div>
-        <p class="intro-note">For agents with file and tool access. Free. No account needed.</p>
+        <p class="intro-note">For agents with file and tool access. These are standing rules; skills remain separate, on-demand playbooks. Free. No account needed.</p>
       </div>
       <figure class="agent-portrait" aria-label="A custom-built robot with attentive green eyes and a chest panel holding its rulebook.">
         <input class="motion-toggle" id="pause-motion" type="checkbox">
@@ -125,16 +125,16 @@
     <div id="builder" class="builder" tabindex="-1" hidden>
       <section class="choices" aria-labelledby="choose-title">
         <div class="section-heading">
-          <h2 id="choose-title" tabindex="-1">Choose your agent’s guidance</h2>
+          <h2 id="choose-title" tabindex="-1">1. Choose rules to review</h2>
           <button class="text-button" id="clear-selection" type="button">Clear selection</button>
         </div>
         <div class="selection-guide">
-          <p><strong>Not writing software?</strong> Start with General and your operating system. Add Browser and desktop control if your agent operates websites or apps. Leave software-development options unchecked.</p>
-          <p id="selection-defaults">General is selected by default. You can uncheck it. All other modules are optional.</p>
-          <p>Select from either group or both. General and OS safety are global defaults. Your agent proposes placement for optional activities; project additions go in the relevant project. Each set is independent; General is not required.</p>
+          <p id="selection-purpose"><strong>Why separate choices?</strong> Choose global rules for recurring work across tasks, and project rules for the project where they apply. Depending on the agent, global instructions may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>; project rules belong in that project's instructions.</p>
+          <p id="selection-defaults"><strong>Start with General rules</strong> for safety, privacy, checking work, and clear replies. They start selected but are optional. Add operating-system guidance and only the activities your agent does; skip software choices if you do not build software.</p>
+          <p><strong>Already have rules?</strong> The prompt asks your agent to compare them with the selected sources and propose only useful changes. For later reviews, revisit your choices and copy a fresh prompt. Nothing here replaces your instructions automatically.</p>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
-        <form id="rule-form" aria-label="Rule selection" aria-describedby="selection-defaults">
+        <form id="rule-form" aria-label="Rule selection" aria-describedby="selection-purpose selection-defaults">
           <div id="rule-groups"></div>
           <button id="preview-prompt" class="button primary review-selection" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt <span aria-hidden="true">→</span></button>
           <p id="empty-selection-note" class="section-description" role="status" hidden>Select at least one rule set to preview a prompt.</p>
@@ -144,8 +144,12 @@
 
       <section id="your-file" class="output" aria-labelledby="output-title" tabindex="-1" hidden>
         <div class="socket-rail" aria-hidden="true"></div>
-        <div class="output-heading"><h2 id="output-title">2. Copy your review prompt</h2><span class="file-type">Prompt</span></div>
-        <p id="output-scope" class="output-description">The prompt groups each selected rule by its global or project destination.</p>
+        <div class="output-heading">
+          <h2 id="output-title">2. Copy your review prompt</h2>
+          <button id="copy-prompt" class="button primary" type="button" disabled>Copy review prompt <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
+        </div>
+        <output id="action-status" class="action-status" aria-live="polite" aria-atomic="true"></output>
+        <p id="output-scope" class="output-description">The review scope for your selected rules appears here.</p>
         <p id="selection-notice" class="section-description">Your agent combines useful guidance, removes duplicates, and preserves scope and safeguards before you approve changes.</p>
         <p id="local-prompt-note" class="notice" hidden>Local preview: this prompt links to published rules on GitHub, not unpublished edits in this checkout.</p>
         <div class="metrics">
@@ -156,10 +160,6 @@
         <div class="preview-heading"><label for="prompt-preview">Your review prompt</label><span>Exact copy contents</span></div>
         <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
         <p id="preview-help" class="preview-help">Read the full prompt before copying. Your agent must show proposed changes and ask for your approval before editing instructions.</p>
-        <div class="actions">
-          <button id="copy-prompt" class="button primary" type="button" disabled>Copy review prompt <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
-        </div>
-        <output id="action-status" class="action-status" aria-live="polite" aria-atomic="true"></output>
         <details class="setup-sharing">
           <summary>Save or share this setup</summary>
           <p>Your choices stay in the address. Bookmark it or copy a link to this selection.</p>
@@ -167,19 +167,19 @@
           <label id="setup-link-label" for="setup-link" hidden>Setup link</label>
           <input id="setup-link" class="setup-link" type="text" readonly hidden>
           <output id="share-status" class="share-status" aria-live="polite" aria-atomic="true"></output>
-          <p>The link stores choices, not rule text. Prompts link to the current public rules, not a saved version.</p>
+          <p>The link restores choices, not what you adopted. Reopen it to review new choices and copy the latest prompt.</p>
           <p id="local-link-note" hidden>This is a local preview link. Other people need the hosted website’s address.</p>
         </details>
         <section class="next-step" aria-labelledby="use-rules-title">
           <h3 id="use-rules-title">3. Ask your agent to review</h3>
-          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. If you selected project additions, open the intended project first. Your agent reviews each group at its labeled location and confirms activity placement from your intended use.</p>
+          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. If you selected project additions for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance that applies only to this conversation. Your agent reviews each group at its relevant scope and recommends where to use each selected activity.</p>
           <p>If you don’t have instructions yet, ask your agent to propose supported locations for the selected groups. Approve edits separately for each location before saving.</p>
           <p>Your agent needs access to the public links and the instructions being reviewed.</p>
           <p>This website does not read or upload your existing instructions. Review the suggestions yourself; an agent may miss a conflict or recommend no changes.</p>
           <details>
-            <summary>Advanced guidance</summary>
+            <summary>Where these rules belong</summary>
             <p>General can be enough for everyday tasks. An HTML report presenting research can use General alone; developing an interactive website can benefit from software and web guidance. Apple and Android app guidance is optional and applies to the apps you build, not the operating system your agent uses.</p>
-            <p>Preserve required approval, security, and privacy protections. Global defaults apply across tasks; optional activity placement depends on intended use. Web, Apple, Android, testing, animation, and localization additions belong in relevant projects or supported conditional loading. An “Apply when” sentence does not keep unused text out of context. Imports save context only when irrelevant text stays unloaded.</p>
+            <p>Preserve required approval, security, and privacy protections. Global defaults apply across tasks; optional activity placement depends on intended use. Web, Apple, Android, testing, animation, and localization additions belong in relevant projects, task-scoped guidance for one-off work, or supported conditional loading. An “Apply when” sentence does not keep unused text out of context. Imports save context only when irrelevant text stays unloaded.</p>
             <p>A file can load completely and still contain too much guidance. Check your agent’s limits and recommendations, then try a low-risk task. See the <a href="https://github.com/jitendravyas/agent-rulebook#choose-only-relevant-rule-sets">module-loading guide</a>.</p>
           </details>
         </section>
@@ -191,21 +191,19 @@
       <p>People and agents can read the original Markdown files directly, without JavaScript or browser automation. The review prompt links to these files on the repository's main branch, not separate copies.</p>
       <details>
         <summary>Browse individual Markdown files</summary>
-        <!-- Keep these categories and links aligned with site/rules.js. -->
-        <h3>Operating system rules</h3>
+        <h3>Your agent’s operating system</h3>
         <ul>
-          <li><a data-rule-id="mac" href="./global/macos-agent-rules.md" type="text/markdown">macOS agent rules</a></li>
-          <li><a data-rule-id="windows" href="./global/windows-agent-rules.md" type="text/markdown">Windows agent rules</a></li>
-          <li><a data-rule-id="linux" href="./global/linux-agent-rules.md" type="text/markdown">Linux agent rules</a></li>
+          <li><a data-rule-id="mac" href="./global/macos-agent-rules.md" type="text/markdown">macOS rules</a></li>
+          <li><a data-rule-id="windows" href="./global/windows-agent-rules.md" type="text/markdown">Windows rules</a></li>
+          <li><a data-rule-id="linux" href="./global/linux-agent-rules.md" type="text/markdown">Linux rules</a></li>
         </ul>
-        <h3>General and optional activities</h3>
+        <h3>General and recurring work</h3>
         <ul>
-          <li><a data-rule-id="general" href="./global/general-rules.md" type="text/markdown">General essentials for AI agents</a></li>
-          <li><a data-rule-id="coding" href="./global/coding-rules.md" type="text/markdown">Coding-agent rules</a></li>
-          <li><a data-rule-id="version-control" href="./global/version-control-rules.md" type="text/markdown">Version-control rules</a></li>
-          <li><a data-rule-id="authoring" href="./global/agent-workflow-authoring-rules.md" type="text/markdown">Agent workflow authoring rules</a></li>
+          <li><a data-rule-id="general" href="./global/general-rules.md" type="text/markdown">General rules</a></li>
+          <li><a data-rule-id="version-control" href="./global/version-control-rules.md" type="text/markdown">Version control rules</a></li>
+          <li><a data-rule-id="coding" href="./global/coding-rules.md" type="text/markdown">Software development rules</a></li>
         </ul>
-        <h3>Project-specific additions</h3>
+        <h3>Software work</h3>
         <ul>
           <li><a data-rule-id="web" href="./project/web-development-rules.md" type="text/markdown">Web development rules</a></li>
           <li><a data-rule-id="apple-apps" href="./project/apple-app-development-rules.md" type="text/markdown">Apple app development rules</a></li>
@@ -215,12 +213,12 @@
           <li><a data-rule-id="ui-animation" href="./project/interactive-ui-animation-rules.md" type="text/markdown">Interactive UI animation rules</a></li>
           <li><a data-rule-id="i18n" href="./project/internationalization-localization-rules.md" type="text/markdown">Internationalization and localization rules</a></li>
         </ul>
-        <h3>Optional agent capabilities</h3>
+        <h3>When your agent controls apps</h3>
         <ul>
-          <li><a data-rule-id="browser-use" href="./global/browser-computer-use-rules.md" type="text/markdown">Browser and computer-use rules</a></li>
+          <li><a data-rule-id="browser-use" href="./global/browser-computer-use-rules.md" type="text/markdown">Browser and computer use rules</a></li>
         </ul>
       </details>
-      <p>General is a suggested starting point. For software work, consider “Software development basics”. Read the <a href="https://github.com/jitendravyas/agent-rulebook#safe-setup">safe setup advice</a> and <a href="./README.md" type="text/markdown">usage guide</a>. Retain the <a href="./LICENSE" rel="license">MIT license</a> when reusing the rules.</p>
+      <p>General rules are a suggested starting point. For software work, consider “Software development rules”. Read the <a href="https://github.com/jitendravyas/agent-rulebook#safe-setup">safe setup advice</a> and <a href="./README.md" type="text/markdown">usage guide</a>. Retain the <a href="./LICENSE" rel="license">MIT license</a> when reusing the rules.</p>
     </section>
     <section class="closing-note" aria-labelledby="before-use-title">
       <h2 id="before-use-title">A starting point, not a guarantee.</h2>
