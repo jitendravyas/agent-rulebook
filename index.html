@@ -129,12 +129,13 @@
           <button class="text-button" id="clear-selection" type="button">Clear selection</button>
         </div>
         <div class="selection-guide">
+          <p id="agent-fit"><strong>Check your agent first.</strong> This builder is for agents that can read the linked rule files and your existing instruction files. If you only have a Custom Instructions text box, do not paste the generated prompt there.</p>
           <p id="selection-purpose"><strong>Start with General rules.</strong> They cover safety, privacy, checking work, and clear replies. They start selected but are optional. Add only the activities your agent does and, if useful, its operating-system rules.</p>
-          <p id="selection-next"><strong>Then preview and copy the prompt.</strong> It asks your agent to compare your choices with existing instructions and seek approval before editing. Return later for a fresh review when the rules change.</p>
+          <p id="selection-next"><strong>Then preview and copy the prompt.</strong> It asks your agent to review existing instructions, propose useful changes and a backup plan, then wait for your approval. Return later for a fresh review when the rules change.</p>
           <details><summary>Where do global and project rules go?</summary><p>Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Project rules belong with the relevant project. The prompt asks your agent to recommend the right location. This website does not replace your instructions.</p></details>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
-        <form id="rule-form" aria-label="Rule selection" aria-describedby="selection-purpose selection-next">
+        <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose selection-next">
           <div id="rule-groups"></div>
           <button id="preview-prompt" class="button primary review-selection" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt <span aria-hidden="true">→</span></button>
           <p id="empty-selection-note" class="section-description" role="status" hidden>Select at least one rule set to preview a prompt.</p>
@@ -151,8 +152,8 @@
         <p id="local-prompt-note" class="notice" hidden>Local preview: this prompt links to published rules on GitHub, not unpublished edits in this checkout.</p>
         <div class="preview-heading"><label for="prompt-preview">Your review prompt</label><span>Exact copy contents</span></div>
         <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
-        <p id="preview-help" class="preview-help">Read the prompt before copying. It asks your agent to show proposed changes and request approval before editing; check its reply before approving.</p>
-        <button id="copy-prompt" class="button primary" type="button" disabled>Copy review prompt <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
+        <p id="preview-help" class="preview-help">This is a one-time review request. Paste it into a conversation with your agent, not an instruction file or Custom Instructions box. The agent should propose changes and a backup plan, then wait for approval.</p>
+        <button id="copy-prompt" class="button primary" type="button" disabled>Copy prompt for agent chat <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
         <output id="action-status" class="action-status" aria-live="polite" aria-atomic="true"></output>
         <div class="metrics">
           <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
@@ -171,8 +172,8 @@
         </details>
         <section class="next-step" aria-labelledby="use-rules-title">
           <h3 id="use-rules-title">3. Ask your agent to review</h3>
-          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file. If you selected project additions for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance that applies only to this conversation. The prompt asks your agent to review each group at its relevant scope and recommend where to use each selected activity.</p>
-          <p>If you don’t have instructions yet, ask your agent to propose supported locations for the selected groups. Approve edits separately for each location before saving.</p>
+          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file or Custom Instructions box. If you selected project additions for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance that applies only to this conversation. The prompt asks your agent to review each group at its relevant scope and recommend where to use each selected activity.</p>
+          <p>If you don’t have instructions yet, ask your agent to propose supported locations for the selected groups. Approve edits and backup locations separately for each affected file before saving.</p>
           <p>Your agent needs access to the public links and the instructions being reviewed.</p>
           <p>This website does not read or upload your existing instructions. Review the suggestions yourself; an agent may miss a conflict or recommend no changes.</p>
           <details>
@@ -196,25 +197,26 @@
           <li><a data-rule-id="windows" href="./global/windows-agent-rules.md" type="text/markdown">Windows rules</a></li>
           <li><a data-rule-id="linux" href="./global/linux-agent-rules.md" type="text/markdown">Linux rules</a></li>
         </ul>
-        <h3>General and recurring work</h3>
+        <h3>General rules and optional activities</h3>
         <ul>
           <li><a data-rule-id="general" href="./global/general-rules.md" type="text/markdown">General rules</a></li>
+        </ul>
+        <h4>Other activities (optional)</h4>
+        <ul>
+          <li><a data-rule-id="browser-operation" href="./global/browser-use-rules.md" type="text/markdown">Browser use rules</a></li>
+          <li><a data-rule-id="computer-use" href="./global/computer-use-rules.md" type="text/markdown">Computer use rules</a></li>
           <li><a data-rule-id="version-control" href="./global/version-control-rules.md" type="text/markdown">Version control rules</a></li>
           <li><a data-rule-id="coding" href="./global/coding-rules.md" type="text/markdown">Software development rules</a></li>
         </ul>
-        <h3>Software work</h3>
+        <h3>More software rules (optional)</h3>
         <ul>
           <li><a data-rule-id="web" href="./project/web-development-rules.md" type="text/markdown">Web development rules</a></li>
+          <li><a data-rule-id="browser-verification" href="./project/browser-verification-rules.md" type="text/markdown">Browser verification rules</a></li>
           <li><a data-rule-id="apple-apps" href="./project/apple-app-development-rules.md" type="text/markdown">Apple app development rules</a></li>
           <li><a data-rule-id="android-apps" href="./project/android-app-development-rules.md" type="text/markdown">Android app development rules</a></li>
           <li><a data-rule-id="testing" href="./project/software-testing-rules.md" type="text/markdown">Software testing rules</a></li>
-          <li><a data-rule-id="browser-verification" href="./project/browser-verification-rules.md" type="text/markdown">Browser verification rules</a></li>
           <li><a data-rule-id="ui-animation" href="./project/interactive-ui-animation-rules.md" type="text/markdown">Interactive UI animation rules</a></li>
           <li><a data-rule-id="i18n" href="./project/internationalization-localization-rules.md" type="text/markdown">Internationalization and localization rules</a></li>
-        </ul>
-        <h3>When your agent controls apps</h3>
-        <ul>
-          <li><a data-rule-id="browser-use" href="./global/browser-computer-use-rules.md" type="text/markdown">Browser and computer use rules</a></li>
         </ul>
       </details>
       <p>General rules are a suggested starting point. For software work, consider “Software development rules”. Read the <a href="https://github.com/jitendravyas/agent-rulebook#safe-setup">safe setup advice</a> and <a href="./README.md" type="text/markdown">usage guide</a>. Retain the <a href="./LICENSE" rel="license">MIT license</a> when reusing the rules.</p>

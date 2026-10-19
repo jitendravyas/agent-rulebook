@@ -36,13 +36,12 @@ test('every selectable rule and category explains its purpose', () => {
     assert.equal(typeof group.description, 'string');
     assert.ok(group.description.trim().length, `Missing category description: ${group.id}`);
   }
-  assert.deepEqual(RULE_GROUPS.map(group => group.id), ['environment', 'general', 'development', 'capabilities']);
+  assert.deepEqual(RULE_GROUPS.map(group => group.id), ['environment', 'general', 'development']);
   assert.deepEqual(RULE_GROUPS.map(group => group.title), [
-    'Your agent’s operating system (optional)', 'General and recurring work', 'Software work', 'When your agent controls apps',
+    'Your agent’s operating system (optional)', 'General rules and optional activities', 'More software rules (optional)',
   ]);
-  assert.deepEqual(RULE_GROUPS.at(-1).rules.map(rule => rule.id), ['browser-use']);
-  assert.match(RULE_GROUPS.at(-1).description, /only if your agent can control/);
   const development = RULE_GROUPS.find(group => group.id === 'development');
+  assert.deepEqual(development.rules.slice(0, 2).map(rule => rule.id), ['web', 'browser-verification']);
   assert.match(development.description, /relevant to your project/);
   assert.match(development.description, /one-off work/);
   assert.match(html, /An HTML report presenting research can use General alone/);
@@ -52,7 +51,8 @@ test('every selectable rule and category explains its purpose', () => {
   assert.equal(testing.label, 'Software testing rules');
   assert.match(testing.description, /existing tests/);
   assert.match(testing.description, /duplicate coverage/);
-  assert.deepEqual(RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'version-control', 'coding']);
+  assert.deepEqual(RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control', 'coding']);
+  assert.match(RULES.find(rule => rule.id === 'computer-use').description, /Browser access alone does not provide desktop control/);
   assert.match(RULES.find(rule => rule.id === 'version-control').description, /version control tools like Git/);
   assert.ok(!development.rules.some(rule => rule.id === 'version-control'));
   assert.ok(RULES.every(rule => !rule.path.startsWith('drafts/')), 'No draft app-platform rules are offered');
@@ -69,6 +69,9 @@ test('selection guidance helps first-time and returning users without adding rul
   const sourceHelp = html.match(/<p>General rules are a suggested starting point[^<]+/)?.[0];
   assert.ok(sourceHelp?.includes(coding.label), 'Software guidance names its selection card');
   const selectionGuide = html.match(/<div class="selection-guide">([\s\S]*?)<\/div>/)?.[1];
+  assert.match(selectionGuide, /Check your agent first/);
+  assert.match(selectionGuide, /can read the linked rule files and your existing instruction files/);
+  assert.match(selectionGuide, /only have a Custom Instructions text box, do not paste the generated prompt there/);
   assert.match(selectionGuide, /Start with General rules/);
   assert.match(selectionGuide, /They start selected but are optional/);
   assert.match(selectionGuide, /Then preview and copy the prompt/);
@@ -76,7 +79,7 @@ test('selection guidance helps first-time and returning users without adding rul
   assert.match(selectionGuide, /user-level <code>AGENTS\.md<\/code> or <code>CLAUDE\.md<\/code>/);
   assert.match(selectionGuide, /Project rules belong with the relevant project/);
   assert.match(selectionGuide, /safety, privacy, checking work, and clear replies/);
-  assert.match(selectionGuide, /asks your agent to compare your choices with existing instructions and seek approval before editing/);
+  assert.match(selectionGuide, /asks your agent to review existing instructions, propose useful changes and a backup plan, then wait for your approval/);
   assert.match(selectionGuide, /Return later for a fresh review when the rules change/);
   assert.match(selectionGuide, /This website does not replace your instructions/);
   assert.ok(html.indexOf('Start with General') < html.indexOf('id="rule-form"'));
@@ -115,7 +118,7 @@ test('review prompts route each selected source to its own instruction location'
   assert.ok(codingSources.includes('/global/coding-rules.md'));
   assert.match(mixed, /Request approval for each affected location before editing, saving, installing, or activating instructions/);
   assert.match(mixed, /Do not copy project-specific facts or rules into global instructions/);
-  for (const id of ['coding', 'version-control', 'browser-use']) {
+  for (const id of ['coding', 'version-control', 'browser-operation', 'computer-use']) {
     const activity = RULES.find(rule => rule.id === id);
     assert.equal(ruleReviewScope(activity), 'global-or-project');
     for (const ids of [[id], ['general', id], [id, 'web'], ['general', id, 'web']]) {
@@ -136,11 +139,20 @@ test('review prompts route each selected source to its own instruction location'
       }
     }
   }
-  const allActivities = buildReviewPrompt(['general', 'coding', 'web', 'version-control', 'browser-use']);
+  const allActivities = buildReviewPrompt(['general', 'coding', 'web', 'version-control', 'browser-operation', 'computer-use']);
   const activities = allActivities.split('Activity sources — confirm placement before review:')[1].split('\n\n')[0];
-  for (const id of ['coding', 'version-control', 'browser-use']) {
+  for (const id of ['coding', 'version-control', 'browser-operation', 'computer-use']) {
     assert.ok(activities.includes(ruleSourceURL(RULES.find(rule => rule.id === id))));
   }
+});
+
+test('browser and desktop rules remain independent choices', () => {
+  const browser = buildReviewPrompt(['browser-operation']);
+  const computer = buildReviewPrompt(['computer-use']);
+  assert.ok(browser.includes(ruleSourceURL(RULES.find(rule => rule.id === 'browser-operation'))));
+  assert.ok(!browser.includes(ruleSourceURL(RULES.find(rule => rule.id === 'computer-use'))));
+  assert.ok(computer.includes(ruleSourceURL(RULES.find(rule => rule.id === 'computer-use'))));
+  assert.ok(!computer.includes(ruleSourceURL(RULES.find(rule => rule.id === 'browser-operation'))));
 });
 
 test('prompt treats existing instructions as the baseline and keeps approval before changes', () => {
@@ -154,20 +166,30 @@ test('prompt treats existing instructions as the baseline and keeps approval bef
     ];
     assert.deepEqual(steps.map(step => prompt.indexOf(step)).sort((a, b) => a - b), steps.map(step => prompt.indexOf(step)));
     assert.ok(steps.every(step => prompt.split(step).length === 2));
+    assert.match(prompt, /Start with a read-only review: do not create backups, edit files, or change settings when I paste this prompt/);
     assert.match(prompt, /This is a review request, not permission to replace existing instructions/);
     assert.match(prompt, /Read existing instructions there, including personal and machine-specific guidance/);
     assert.match(prompt, /If an existing instruction serves the same purpose, propose no addition/);
     assert.match(prompt, /Keep effective existing guidance, including personal and machine-specific rules, at its appropriate scope/);
+    assert.match(prompt, /Leave useful, nonconflicting existing guidance exactly as written, including its wording, order, and formatting/);
     assert.match(prompt, /Replace it only for a concrete benefit that outweighs lost behavior/);
     assert.match(prompt, /concise before-and-after wording for replacements/);
+    assert.match(prompt, /summarize what you propose to add or replace, why it helps, and which useful existing guidance will remain untouched/);
+    assert.match(prompt, /proposed private backup location and recovery plan for every existing file you would change/);
+    assert.match(prompt, /make and verify a recoverable copy of its original contents in the approved private backup location/);
+    assert.match(prompt, /Keep backups in the approved environment; do not publish them or transfer them to another service/);
+    assert.doesNotMatch(prompt, /Do not expose or upload private instructions/);
+    assert.match(prompt, /If the backup cannot be made or verified, stop and ask rather than edit/);
     assert.match(prompt, /do not guess or propose edits to it/);
     assert.ok(prompt.indexOf('Request approval for each affected location') < prompt.indexOf('4. If approved'));
+    assert.ok(prompt.indexOf('Start with a read-only review') < prompt.indexOf('Request approval for each affected location'));
+    assert.ok(prompt.indexOf('Request approval for each affected location') < prompt.indexOf('Before modifying an existing instruction file'));
     assert.match(prompt, /otherwise report loading as unverified, not complete/);
   }
 });
 
 test('one prompt handles first setup and later reviews without pretending to sync changes', () => {
-  for (const ids of [['general'], ['coding'], ['web'], ['browser-use'], RULES.map(rule => rule.id)]) {
+  for (const ids of [['general'], ['coding'], ['web'], ['browser-operation'], RULES.map(rule => rule.id)]) {
     const prompt = buildReviewPrompt(ids);
     assert.match(prompt, /first setup or a later review/);
     assert.match(prompt, /If none exist, propose supported locations without creating files yet/);
@@ -239,7 +261,7 @@ test('authoring guidance stays in repository maintenance instructions, not selec
 });
 
 test('review prompt preserves adopted rule conditions and Personalize placement', () => {
-  for (const ids of [['general'], ['general', 'coding', 'web', 'browser-use']]) {
+  for (const ids of [['general'], ['general', 'coding', 'web', 'browser-operation']]) {
     const prompt = buildReviewPrompt(ids);
     assert.match(prompt, /preserving every distinct requirement, condition, exception, and safety protection/);
     assert.match(prompt, /Preserve when guidance applies/);
@@ -257,14 +279,14 @@ test('every non-General module can be reviewed independently with scope-safe con
     assert.ok(prompt.includes(ruleSourceURL(rule)));
     assert.ok(!prompt.includes(generalURL), `${rule.id} does not add General as a source`);
     assert.match(prompt, /The selected files are independent; ask before adding an unselected source/);
-    assert.match(prompt, /Merge equivalent guidance within each proposed file/);
+    assert.match(prompt, /Merge equivalent new guidance within each proposed file/);
     assert.match(prompt, /preserving every distinct requirement, condition, exception, and safety protection/);
     assert.match(prompt, /Remove overlap across files only if the remaining rule is confirmed to load wherever needed/);
   }
 });
 
 test('review prompt requires complete source reads and reports unresolved truncation', () => {
-  for (const ids of [['general'], ['browser-use'], RULES.map(rule => rule.id)]) {
+  for (const ids of [['general'], ['browser-operation'], RULES.map(rule => rule.id)]) {
     const prompt = buildReviewPrompt(ids);
     assert.ok(prompt.includes('Check each selected source for truncated or omitted text, even after a successful request.'));
     assert.ok(prompt.includes('Retrieve missing text; if completeness cannot be confirmed, report the gap and do not adopt from that source.'));
@@ -273,7 +295,7 @@ test('review prompt requires complete source reads and reports unresolved trunca
 });
 
 test('review prompt checks meaning against complete sources before and after saving', () => {
-  for (const ids of [['general'], ['browser-use'], RULES.map(rule => rule.id)]) {
+  for (const ids of [['general'], ['browser-operation'], RULES.map(rule => rule.id)]) {
     const prompt = buildReviewPrompt(ids);
     assert.ok(prompt.includes('Before proposing and after saving, compare adopted guidance with the complete sources for lost or invented requirements, conditions, exceptions, and safeguards.'));
     assert.ok(prompt.includes('Preserve when guidance applies; keep it separate if equivalence is uncertain.'));
@@ -285,7 +307,7 @@ test('static source links and categories match the live catalog', () => {
   const section = html.match(/<section\b[^>]*id="source-rules"[^>]*>([\s\S]*?)<\/section>/)?.[1];
   assert.ok(section, 'Missing no-JavaScript source list');
   assert.equal([...section.matchAll(/\bdata-rule-id="[^"]+"/g)].length, RULES.length);
-  const groups = [...section.matchAll(/<h3>([^<]+)<\/h3>\s*<ul>([\s\S]*?)<\/ul>/g)];
+  const groups = [...section.matchAll(/<h3>([^<]+)<\/h3>([\s\S]*?)(?=<h3>|<\/details>)/g)];
   assert.equal(groups.length, RULE_GROUPS.length);
   groups.forEach(([, title, list], index) => {
     const group = RULE_GROUPS[index];
@@ -356,7 +378,7 @@ test('rejects unknown rule selections, including unsupported operating systems',
 });
 
 test('retains every selected source once and keeps the license footer removed', () => {
-  for (const ids of [['general'], ['browser-use'], ['general', 'general', 'web'], RULES.map(rule => rule.id)]) {
+  for (const ids of [['general'], ['browser-operation'], ['general', 'general', 'web'], RULES.map(rule => rule.id)]) {
     const prompt = buildReviewPrompt(ids);
     for (const rule of RULES) {
       assert.equal(prompt.split(ruleSourceURL(rule)).length - 1, ids.includes(rule.id) ? 1 : 0);
@@ -368,7 +390,7 @@ test('retains every selected source once and keeps the license footer removed', 
 
 test('checks the source license separately before proposing adoption', () => {
   const licenseURL = 'https://raw.githubusercontent.com/jitendravyas/agent-rulebook/main/LICENSE';
-  for (const ids of [['general'], ['browser-use'], RULES.map(rule => rule.id)]) {
+  for (const ids of [['general'], ['browser-operation'], RULES.map(rule => rule.id)]) {
     const prompt = buildReviewPrompt(ids);
     assert.ok(prompt.includes(`Read the source license separately before proposing adoption: ${licenseURL}.`));
     assert.equal(prompt.split(licenseURL).length - 1, 1);

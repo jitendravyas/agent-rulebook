@@ -167,12 +167,12 @@ test('prompt stays hidden until Preview prompt and hides again when choices chan
 test('choices put OS first and keep specialist software guidance available on demand', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.deepEqual(page.get('rule-groups').children.map(group => group.id), [
-    'rule-group-environment', 'rule-group-general', 'software-guidance', 'rule-group-capabilities',
+    'rule-group-environment', 'rule-group-general', 'software-guidance',
   ]);
   const softwareGuidance = page.get('software-guidance');
   assert.equal(softwareGuidance.open, false, 'Specialist choices start collapsed');
   assert.ok(softwareGuidance.contains(page.get('rule-group-development')));
-  assert.equal(softwareGuidance.children[0].textContent, 'Choose optional software project rules');
+  assert.equal(softwareGuidance.children[0].textContent, 'More software rules (optional)');
   for (const group of catalog.RULE_GROUPS) {
     const fieldset = page.get(`rule-group-${group.id}`);
     const description = page.get(`group-description-${group.id}`);
@@ -181,11 +181,26 @@ test('choices put OS first and keep specialist software guidance available on de
     assert.ok(fieldset.contains(description), `${group.id} displays its description`);
     assert.equal(fieldset['aria-describedby'], description.id);
   }
-  assert.deepEqual(catalog.RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'version-control', 'coding']);
+  assert.deepEqual(catalog.RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control', 'coding']);
+  const generalChoices = page.get('rule-group-general').children[2];
+  assert.match(generalChoices.children[0].className, /rule-card--general/);
+  assert.equal(generalChoices.children[1].textContent, 'Other activities (optional)');
+  assert.deepEqual(generalChoices.children.slice(2).map(card => card.children[0].children[0].value),
+    ['browser-operation', 'computer-use', 'version-control', 'coding']);
+  assert.equal(page.get('group-title-development').className, 'visually-hidden');
+  const webGroup = page.get('rule-group-development').children[2].children[0];
+  assert.equal(webGroup.className, 'web-rule-group');
+  assert.equal(webGroup['aria-labelledby'], 'web-rule-group-label');
+  assert.equal(page.get('web-rule-group-label').textContent, 'Web work: build and verify');
+  assert.deepEqual(webGroup.children[1].children.map(card => card.children[0].children[0].value), ['web', 'browser-verification']);
   assert.equal(page.get('rule-general').checked, true);
-  assert.match(page.get('description-browser-use').textContent, /For agents that can click, type, or navigate/);
-  assert.equal(page.get('name-browser-use').textContent, 'Browser and computer use rules');
-  assert.match(page.get('details-browser-use').textContent, /Browser verification is separate guidance/);
+  assert.match(page.get('description-browser-operation').textContent, /navigate and interact with websites/);
+  assert.equal(page.get('name-browser-operation').textContent, 'Browser use rules');
+  assert.match(page.get('details-browser-operation').textContent, /Browser verification is separate guidance/);
+  assert.match(page.get('description-computer-use').textContent, /operate desktop apps/);
+  assert.equal(page.get('name-computer-use').textContent, 'Computer use rules');
+  assert.match(page.get('details-computer-use').textContent, /Browser access alone does not provide desktop control/);
+  assert.equal(page.get('rule-computer-use').checked, false);
   for (const rule of catalog.RULES) {
     const description = page.get(`description-${rule.id}`);
     assert.ok(description.textContent.includes(rule.purpose), `${rule.id} explains its purpose without opening Details`);
@@ -206,17 +221,24 @@ test('choices put OS first and keep specialist software guidance available on de
     assert.equal(page.get(`rule-${id}`).checked, checked, 'Opening Details does not select a rule');
   }
   assert.match(page.get('description-coding').textContent, /Also selects Version control rules; you can uncheck them/);
-  assert.equal(page.get('rule-browser-use').checked, false);
-  page.get('rule-browser-use').checked = true;
-  page.get('rule-browser-use').dispatch('change');
+  assert.equal(page.get('rule-browser-operation').checked, false);
+  assert.equal(page.get('rule-computer-use').checked, false);
+  page.get('rule-browser-operation').checked = true;
+  page.get('rule-browser-operation').dispatch('change');
   assert.equal(page.get('rule-coding').checked, false);
-  assert.match(page.get('prompt-preview').value, /browser-computer-use-rules\.md/);
+  assert.equal(page.get('rule-computer-use').checked, false);
+  assert.match(page.get('prompt-preview').value, /global\/browser-use-rules\.md/);
+  assert.doesNotMatch(page.get('prompt-preview').value, /computer-use-rules\.md/);
+  page.get('rule-computer-use').checked = true;
+  page.get('rule-computer-use').dispatch('change');
+  assert.match(page.get('prompt-preview').value, /global\/computer-use-rules\.md/);
   page.get('rule-coding').checked = true;
   page.get('rule-coding').dispatch('change');
   assert.equal(softwareGuidance.open, true, 'Selecting software development reveals specialist choices');
   page.get('rule-coding').checked = false;
   page.get('rule-coding').dispatch('change');
-  assert.equal(page.get('rule-browser-use').checked, true);
+  assert.equal(page.get('rule-browser-operation').checked, true);
+  assert.equal(page.get('rule-computer-use').checked, true);
   const details = page.get('details-testing');
   const control = page.get('details-button-testing');
   assert.equal(details.hidden, true);
@@ -498,6 +520,20 @@ test('software testing and browser verification are independently optional', () 
   assert.match(legacy.get('link-warning').textContent, /no longer include browser checks/);
 });
 
+test('web development and browser verification remain separate choices inside the web group', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=web');
+  assert.equal(page.get('rule-web').checked, true);
+  assert.equal(page.get('rule-browser-verification').checked, false);
+  page.get('rule-browser-verification').checked = true;
+  page.get('rule-browser-verification').dispatch('change');
+  assert.equal(page.get('rule-web').checked, true);
+  assert.match(page.get('prompt-preview').value, /project\/browser-verification-rules\.md/);
+  page.get('rule-web').checked = false;
+  page.get('rule-web').dispatch('change');
+  assert.equal(page.get('rule-browser-verification').checked, true);
+  assert.doesNotMatch(page.get('prompt-preview').value, /project\/web-development-rules\.md/);
+});
+
 test('published app-platform rules are optional and independent of the agent OS', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,mac');
   for (const id of ['apple-apps', 'android-apps']) {
@@ -522,6 +558,30 @@ test('old browser animation links retain the selection with its broadened scope 
   assert.ok(!page.get('setup-link').value.includes('browser-animation'));
   const fresh = boot('https://example.test/agent-rulebook/?rules=general,coding');
   assert.equal(fresh.get('rule-ui-animation').checked, false);
+});
+
+test('old combined browser and computer links preserve both choices with a notice', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=general,browser-use');
+  assert.equal(page.get('rule-browser-operation').checked, true);
+  assert.equal(page.get('rule-computer-use').checked, true);
+  assert.match(page.get('link-warning').textContent, /older link kept both/);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['general', 'browser-operation', 'computer-use']));
+  const saved = new URL(page.get('setup-link').value);
+  assert.equal(saved.searchParams.get('rules'), 'general,browser-operation,computer-use');
+  const restored = boot(saved.href);
+  assert.equal(restored.get('link-warning').hidden, true);
+  page.get('rule-computer-use').checked = false;
+  page.get('rule-computer-use').dispatch('change');
+  assert.equal(page.get('link-warning').hidden, true);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['general', 'browser-operation']));
+});
+
+test('new browser-only links do not select desktop control or show a migration notice', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=browser-operation');
+  assert.equal(page.get('rule-browser-operation').checked, true);
+  assert.equal(page.get('rule-computer-use').checked, false);
+  assert.equal(page.get('link-warning').hidden, true);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['browser-operation']));
 });
 
 test('OS choices switch through radio clicks and clear without losing other guidance', async () => {
@@ -635,7 +695,7 @@ test('selected guidance explains its purpose and remains independently optional'
   assert.ok(summary.textContent.includes(web.label));
   assert.ok(summary.textContent.includes(web.purpose));
   assert.equal(page.get('rule-coding').checked, false);
-  assert.equal(page.get('rule-browser-use').checked, false);
+  assert.equal(page.get('rule-browser-operation').checked, false);
   assert.equal(page.get('rule-testing').checked, false);
   assert.equal(page.get('rule-general').checked, false);
   assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web']));
@@ -691,7 +751,10 @@ test('keeps a static favicon and accurate review approval guidance', () => {
   assert.match(html, /<link id="favicon"[^>]+type="image\/svg\+xml"[^>]+data:image\/svg\+xml/);
   assert.match(html, /Nothing is installed or activated here\./);
   assert.equal((html.match(/installed or activated/g) ?? []).length, 1);
-  assert.match(html, /It asks your agent to show proposed changes and request approval before editing/);
+  assert.match(html, /This is a one-time review request/);
+  assert.match(html, /Paste it into a conversation with your agent, not an instruction file or Custom Instructions box/);
+  assert.match(html, /Copy prompt for agent chat/);
+  assert.match(html, /propose changes and a backup plan, then wait for approval/);
   assert.doesNotMatch(html, /Your agent must show proposed changes/);
   assert.doesNotMatch(app, /animateFavicon/);
   assert.match(html, /id="pause-motion"/);

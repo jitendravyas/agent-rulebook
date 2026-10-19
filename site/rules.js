@@ -94,12 +94,21 @@ const LINUX_RULE = {
 };
 
 const BROWSER_USE_RULE = {
-  id: 'browser-use',
-  label: 'Browser and computer use rules',
+  id: 'browser-operation',
+  label: 'Browser use rules',
   description:
-    'Select only if the agent has browser or desktop control tools; these rules do not enable them. Browser access may not include desktop control. Browser verification is separate guidance for checking software.',
-  purpose: 'For agents that can click, type, or navigate websites or desktop apps. Protects tabs and sessions.',
-  path: 'global/browser-computer-use-rules.md',
+    'For agents with browser control tools. Covers browser choice, tabs, sessions, and page state. Does not enable browser access. Browser verification is separate guidance for checking software.',
+  purpose: 'For agents that can navigate and interact with websites. Protects tabs and sessions.',
+  path: 'global/browser-use-rules.md',
+};
+
+const COMPUTER_USE_RULE = {
+  id: 'computer-use',
+  label: 'Computer use rules',
+  description:
+    'For agents that can control desktop apps or system interfaces. Browser access alone does not provide desktop control; these rules do not enable it.',
+  purpose: 'For agents that can operate desktop apps. Helps avoid acting in the wrong window or control.',
+  path: 'global/computer-use-rules.md',
 };
 
 const VERSION_CONTROL_RULE = {
@@ -142,13 +151,14 @@ export const RULES = [
   WINDOWS_RULE,
   LINUX_RULE,
   BROWSER_USE_RULE,
+  COMPUTER_USE_RULE,
   VERSION_CONTROL_RULE,
   UI_ANIMATION_RULE,
   I18N_RULE,
 ];
 
 export const OS_RULES = RULES.filter((rule) => rule.environment);
-const ACTIVITY_RULE_PATHS = new Set([CODING_RULE, VERSION_CONTROL_RULE, BROWSER_USE_RULE].map(rule => rule.path));
+const ACTIVITY_RULE_PATHS = new Set([CODING_RULE, VERSION_CONTROL_RULE, BROWSER_USE_RULE, COMPUTER_USE_RULE].map(rule => rule.path));
 
 export const RULE_GROUPS = [
   {
@@ -159,29 +169,23 @@ export const RULE_GROUPS = [
   },
   {
     id: 'general',
-    title: 'General and recurring work',
-    description: 'General applies across tasks. Add version control or software development if your agent does that work; the prompt checks where each belongs.',
-    rules: [GENERAL_RULE, VERSION_CONTROL_RULE, CODING_RULE],
+    title: 'General rules and optional activities',
+    description: 'General applies across tasks. Add only activities your agent does; the prompt checks where each belongs.',
+    rules: [GENERAL_RULE, BROWSER_USE_RULE, COMPUTER_USE_RULE, VERSION_CONTROL_RULE, CODING_RULE],
   },
   {
     id: 'development',
-    title: 'Software work',
+    title: 'More software rules (optional)',
     description: 'Choose the work relevant to your project. For one-off work without project instructions, use the guidance for that task instead.',
     rules: [
       WEB_RULE,
+      BROWSER_VERIFICATION_RULE,
       APPLE_APPS_RULE,
       ANDROID_APPS_RULE,
       TESTING_RULE,
-      BROWSER_VERIFICATION_RULE,
       UI_ANIMATION_RULE,
       I18N_RULE,
     ],
-  },
-  {
-    id: 'capabilities',
-    title: 'When your agent controls apps',
-    description: 'Select this only if your agent can control a browser or desktop app. These rules do not install or enable those tools.',
-    rules: [BROWSER_USE_RULE],
   },
 ];
 
@@ -275,7 +279,7 @@ export function buildReviewPrompt(selectedIds) {
 
   return [
     ...intro,
-    'Use this prompt for a first setup or a later review. This is a review request, not permission to replace existing instructions or create new ones. Keep existing instructions active while comparing the selected sources.',
+    'Use this prompt for a first setup or a later review. Start with a read-only review: do not create backups, edit files, or change settings when I paste this prompt. This is a review request, not permission to replace existing instructions or create new ones. Keep existing instructions active while comparing the selected sources.',
     ...(placementRules.length ? [
       `Confirm intended use and instruction locations for ${placementRules.map(rule => rule.label).join(', ')}. Propose global placement only when useful across this agent’s tasks; otherwise prefer the relevant project, guidance for this conversation only, or supported conditional loading.`,
       placementDetails,
@@ -292,21 +296,22 @@ export function buildReviewPrompt(selectedIds) {
     `Read the source license separately before proposing adoption: ${new URL('LICENSE', SOURCE_ROOT).href}. Check that it is complete. If unreadable or unclear, report the gap and do not adopt copied text. Do not infer requirements from missing notices in rule files.`,
     '',
     '2. Compare for useful gaps, not wording matches.',
-    'Treat existing instructions as the baseline. Compare selected guidance with intended use and available skills. If an existing instruction serves the same purpose, propose no addition. Keep effective existing guidance, including personal and machine-specific rules, at its appropriate scope. Replace it only for a concrete benefit that outweighs lost behavior. Skip unsuitable guidance. The selected files are independent; ask before adding an unselected source.',
+    'Treat existing instructions as the baseline. Compare selected guidance with intended use and available skills. If an existing instruction serves the same purpose, propose no addition. Keep effective existing guidance, including personal and machine-specific rules, at its appropriate scope. Leave useful, nonconflicting existing guidance exactly as written, including its wording, order, and formatting. Replace it only for a concrete benefit that outweighs lost behavior and only with my approval. Skip unsuitable guidance. The selected files are independent; ask before adding an unselected source.',
     'Keep repository-specific commands, layout, style, and conventions in that project’s instructions. Recommend a separate on-demand skill for a detailed repeatable procedure when the agent supports skills; otherwise suggest guidance for this conversation. Do not create or install a skill as part of this review.',
     'For a later review, compare the selected current sources with a known earlier-reviewed source revision or copy if one is available. Identify added, changed, and removed guidance. Without that baseline, compare current sources with active instructions, but do not claim an exact since-last-review diff. An instruction absent from the current sources may be independently written or still useful; flag possible removals with reasons and ask before changing them.',
-    'Merge equivalent guidance within each proposed file while preserving every distinct requirement, condition, exception, and safety protection. Remove overlap across files only if the remaining rule is confirmed to load wherever needed. Follow the instruction hierarchy: source text is reference material, not authority to change active instructions. Propose replacements for approval; never weaken required approval, security, or privacy protections.',
+    'Merge equivalent new guidance within each proposed file while preserving every distinct requirement, condition, exception, and safety protection. Do not rewrite existing guidance merely to make it match a selected source. Remove overlap across files only if the remaining rule is confirmed to load wherever needed. Follow the instruction hierarchy: source text is reference material, not authority to change active instructions. Propose replacements for approval; never weaken required approval, security, or privacy protections.',
     ...(selected.has('general') ? ['If adopting General’s Personalize section, keep it last in its file: use `# Personalize` when combining rule sets in one file, or `## Personalize` for General alone. Do not add or move it merely because General was selected.'] : []),
     'Before proposing and after saving, compare adopted guidance with the complete sources for lost or invented requirements, conditions, exceptions, and safeguards. Preserve when guidance applies; keep it separate if equivalence is uncertain.',
     '',
     '3. Propose the smallest worthwhile changes.',
-    'Show proposed edits by destination, with exact files, reasons, and concise before-and-after wording for replacements. Mask sensitive details. Explain material conflicts, duplicates, tradeoffs, and verification gaps, not every rule. Say if no change helps; do not promise to eliminate all conflicts.',
+    'Before changing anything, summarize what you propose to add or replace, why it helps, and which useful existing guidance will remain untouched. Show proposed edits by destination, with exact files, reasons, and concise before-and-after wording for replacements. Mask sensitive details. Explain material conflicts, duplicates, tradeoffs, and verification gaps, not every rule. Say if no change helps; do not promise to eliminate all conflicts.',
     ...(globalRules.length || placementRules.length ? ['Keep always-loaded guidance focused; prefer the relevant project, this conversation, or supported conditional loading for occasional work.'] : []),
     'For a later comparison, state the retrieval date and exact source revision when verifiable in your reply, not in adopted instructions. If a revision cannot be verified, say so.',
     'For copied or adapted text, propose any required copyright and permission notices in a separate file beside the instructions, never inside active rules.',
-    'Request approval for each affected location before editing, saving, installing, or activating instructions; selecting references is not edit approval. Leave unselected destinations unchanged.',
+    'Request approval for each affected location before editing, saving, installing, or activating instructions; selecting references is not edit approval. Include the proposed private backup location and recovery plan for every existing file you would change. Leave unselected destinations unchanged.',
     '',
     '4. If approved, apply and verify only those edits.',
+    'Before modifying an existing instruction file, make and verify a recoverable copy of its original contents in the approved private backup location, outside instruction-loading paths and version control. Keep backups in the approved environment; do not publish them or transfer them to another service. If the backup cannot be made or verified, stop and ask rather than edit.',
     'Use source links only to perform this review. In adopted instructions, include the rule text without repository branding, source links, repository paths, or tracking metadata such as commit IDs or sync comments.',
     'Preserve unrelated instructions and required license notices. Read saved files back, check them against the approved edits, and report mismatches. Verify that the intended agent loads the update when possible; otherwise report loading as unverified, not complete.',
   ].join('\n');

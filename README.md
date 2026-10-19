@@ -4,7 +4,7 @@ Reusable instructions for AI agents, with broad global defaults, optional activi
 
 When supported and enabled, user-level **global instructions** load across an agent's sessions, so keep them broadly useful. A **project handbook** loads for its own project and is the place for that repository's build and test commands, layout, style, and conventions. **Skills** are separate, on-demand playbooks for repeatable specialized work where the agent supports them; this repository provides rules, not skills. Do not put a detailed skill procedure into always-loaded instructions merely because the agent can use skills.
 
-These rules are for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalization fields, and reading or uploading a file does not by itself activate it as standing instructions.
+These rules are for agents that work with files on a local machine, in a remote workspace, or in a sandbox. Load them through the agent's supported instruction files or rules settings, such as Cursor's User Rules. They are not designed for ordinary chatbot personalization fields, and reading or uploading a file does not by itself activate it as standing instructions. The website's generated prompt is a one-time request for an agent conversation, not text for a Custom Instructions box.
 
 The rules also apply without a desktop, including servers accessed only through SSH. Use available tools for the task. If a required interaction or visual check is unavailable, report the gap rather than claiming it passed.
 
@@ -20,7 +20,7 @@ Choose how to start:
 The rule files are for agents; this README is for people choosing and installing them.
 
 - **Global defaults:** General and the applicable OS safety file suit user-level instructions across tasks.
-- **Optional activities:** Coding, Version control, and Computer use suit global use when they recur across tasks; otherwise use relevant project, task-scoped, or supported conditional guidance. A file in `global/` does not require global installation.
+- **Optional activities:** Coding, Version control, Browser use, and Computer use suit global use when they recur across tasks; otherwise use relevant project, task-scoped, or supported conditional guidance. A file in `global/` does not require global installation.
 - **Project additions:** Files in `project/` belong in relevant project instructions or supported project-scoped loading. For one-off work without project instructions, ask for task-scoped guidance that applies only to that conversation. Keep project-specific commands, layout, style, tools, and requirements in the owning project's handbook, not user-level global rules.
 
 If narrower loading is unavailable for occasional work, use task-specific guidance instead of adding permanent instructions.
@@ -41,7 +41,8 @@ When combining sets, merge equivalent guidance without losing any distinct requi
 | Android app development | [Android app development rules](project/android-app-development-rules.md) | App-specific approvals, component exposure, and merged manifests. |
 | Software testing | [Software testing rules](project/software-testing-rules.md) | Running existing tests and writing or updating tests for software changes. |
 | Browser verification | [Browser verification rules](project/browser-verification-rules.md) | Checking rendered pages, interactions, and accessibility when relevant. |
-| Browser or desktop operation | [Browser and computer use rules](global/browser-computer-use-rules.md) | Sessions, tabs, focus, and interface interaction for any task. |
+| Browser operation | [Browser use rules](global/browser-use-rules.md) | Browser choice, sessions, tabs, and page state for any task. |
+| Desktop operation | [Computer use rules](global/computer-use-rules.md) | Focus, selection, and window control for agents with desktop access. |
 
 "Global" means reusable across tasks or projects, not permission to act everywhere. Project instructions govern implementation choices, not waivers of required approval or safety.
 
@@ -57,15 +58,15 @@ These rules change over time and have not been tested with every agent, model, o
 
 ## Use the review prompt builder
 
-The [website](https://jitendravyas.github.io/agent-rulebook/) offers separate choices so you can keep your agent's always-loaded instructions focused. Global guidance may live in a user-level `AGENTS.md` or `CLAUDE.md` when supported. Project-specific choices belong in the relevant project, not the global file. The website generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
+The [website](https://jitendravyas.github.io/agent-rulebook/) offers separate choices so you can keep your agent's always-loaded instructions focused. Use it with an agent that can read the linked public rule files and the instruction files being reviewed. If your app only offers a Custom Instructions text box, do not paste the generated prompt there. Global guidance may live in a user-level `AGENTS.md` or `CLAUDE.md` when supported. Project-specific choices belong in the relevant project, not the global file. The website generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
 
-OS choices appear first: choose where the agent operates, not the apps it builds. Each rule choice shows its purpose; **Details** explains more and links to its source without selecting it. Software work starts collapsed and opens when you expand it, select **Software development rules**, or follow a saved link with a software-work choice. **Browser and computer use rules** appear last because they require interface-control tools. Skills are not selections here; use them separately when their workflow is needed and your agent supports them.
+OS choices appear first: choose where the agent operates, not the apps it builds. General appears next as a suggested starting point. Browser use, Computer use, Version control, and Software development appear together as independent optional activities; select Computer use only if your agent can control desktop apps. **Details** explains each choice and links to its source without selecting it. More software rules start collapsed and open when you expand them, select **Software development rules**, or follow a saved link with a software-work choice. Skills are not selections here; use them separately when their workflow is needed and your agent supports them.
 
 **General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. **Clear selection** removes all choices.
 
 1. **Choose relevant rules.** Use the [selection guide above](#choose-only-relevant-rule-sets); select only the groups that fit your work.
 2. **Click Preview prompt, then copy it.** The full prompt stays hidden until you click **Preview prompt**. Check its labeled source lists; changing choices hides the preview.
-3. **Ask your agent to review.** Paste the prompt into a conversation. If you selected project additions for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance instead. The agent checks existing instructions and relevant skills, proposes edits separately by scope, and asks for approval for each affected location. It must confirm an unclear project target and leave unselected locations unchanged. It may recommend no changes.
+3. **Ask your agent to review.** Paste the prompt into a conversation, not an instruction file or Custom Instructions box. If you selected project additions for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance instead. The agent first reads existing instructions without changing them, then summarizes proposed additions, their value, unchanged personal or machine-specific guidance, and a private backup plan. It asks for approval for each affected location before creating backups or editing. It must confirm an unclear project target and leave unselected locations unchanged. It may recommend no changes.
 
 The agent needs access to the public links and relevant instructions. The website never reads or uploads private instructions, project files, or agent settings, and does not merge rules, install anything, or change settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
@@ -73,7 +74,7 @@ The prompt asks the agent to check for incomplete or truncated sources, retrieve
 
 Source links are for the review, not your installed instructions. Adopted rule text must omit repository branding, source links, paths, and tracking metadata. Required license notices stay outside active rules.
 
-For a first setup, the prompt asks your agent to propose suitable instruction locations and edits. If you already have instructions, it treats them as the baseline and proposes only worthwhile changes. No files are created or replaced until you approve the proposed destinations and edits.
+For a first setup, the prompt asks your agent to propose suitable instruction locations and edits. If you already have instructions, it treats them as the baseline and leaves useful, nonconflicting content exactly as written. No files are created or replaced until you approve the proposed destinations, edits, and backup locations. After approval, the agent must verify a private, recoverable copy of each existing file before changing it; if it cannot, it stops instead of editing.
 
 For later reviews, reopen the website, revisit your choices, and copy a fresh prompt. Bookmark the page address or use **Copy setup link** to remember selected sets. Links restore choices, not a fixed rule version or a record of what you adopted. An old copied prompt still reads current `main` for its existing links, but it cannot include new sets or later prompt improvements; a removed or renamed source needs a refreshed selection. An exact since-last-review comparison needs a known earlier-reviewed source revision or copy. The prompt asks your agent to report the retrieval date and an exact source revision when verifiable in its reply, not in adopted instructions. Keep that reply if you want a baseline for next time. Without one, the agent should compare current sources with your active instructions and ask before removing anything; a missing source rule may still be your own useful instruction. Local preview links work only on the serving machine; share the hosted address with others.
 
@@ -175,7 +176,7 @@ For renamed or replaced products, follow the current product's guide: [Windsurf 
 
 [General rules](global/general-rules.md) include tool guidance when tools are used; they do not require tool use for ordinary replies.
 
-- [Version control](global/version-control-rules.md): using tools like Git to review and preserve repository changes, commits, pushes, and conflicts. Shown under General and recurring work for code and non-code tasks; select it only when relevant. Selecting Software development checks it by default, but it remains independently selectable.
+- [Version control](global/version-control-rules.md): using tools like Git to review and preserve repository changes, commits, pushes, and conflicts. Shown under Other activities for code and non-code tasks; select it only when relevant. Selecting Software development checks it by default, but it remains independently selectable.
 
 ### Operating systems
 
@@ -187,7 +188,8 @@ Choose an optional operating-system file for the system where the agent works, n
 
 ### Browser and computer use
 
-- [Browser and computer use](global/browser-computer-use-rules.md): guidance for agents with tools to click, type, and navigate websites or desktop apps. Helps protect tabs, sessions, and other work. Select only if your agent supports these actions; the rules do not add tools or authorize installation. Browser access does not necessarily include desktop control. Unlike Browser verification, this guidance concerns operating interfaces for any task, not checking software rendering and behavior.
+- [Browser use](global/browser-use-rules.md): guidance for agents that can navigate and interact with websites. Covers browser choice, tabs, sessions, and page state for any task. Unlike Browser verification, this is about operating websites, not checking software rendering or behavior.
+- [Computer use](global/computer-use-rules.md): guidance for agents that can control desktop apps or system interfaces. Covers choosing the intended app, window, and control before acting. Browser access does not imply desktop control. Select each file only if your agent has the relevant tools; the rules do not add them or authorize installation.
 
 ### Project-specific software additions
 
@@ -226,6 +228,8 @@ Communication and Tools and execution are now part of General rather than separa
 `global/coding-rules.md` remains a separate opt-in file. General does not include its software-specific guidance. Website links preserve General and Coding as separate choices; review the changed sources before adopting them.
 
 The earlier combined testing choice was split into Software testing and Browser verification. If you used the combined file, replace it with the updated testing file and add Browser verification only when relevant. Older links with a former scope or agent choice show a split notice; new links do not. Browser verification is never selected automatically.
+
+Browser and computer use are now separate choices. Older website links selecting the combined choice keep both and show a notice. New links can select Browser use without Computer use. When updating installed guidance, retain only the capabilities your agent actually has.
 
 Browser animation is now Interactive UI animation, with platform-neutral guidance for live browser and native interfaces. Older website links keep the selection and show a scope-change notice. Replace the older copied module rather than adding a second copy.
 

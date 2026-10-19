@@ -163,7 +163,7 @@ test('rule files stand alone without website-driven formatting or imports', () =
   for (const { path } of RULES) {
     const content = read(path);
     assert.match(content, /^# [^\n]+\n\n/, `${path} starts with its title`);
-    assert.doesNotMatch(content, /(?:agent-global|coding-agent-global|web-development|software-testing|browser-verification|version-control|browser-computer-use)-rules\.md/);
+    assert.doesNotMatch(content, /(?:agent-global|coding-agent-global|web-development|software-testing|browser-verification|version-control|browser-use|computer-use)-rules\.md/);
     for (const other of RULES.filter(rule => rule.path !== path)) {
       assert.ok(!content.includes(other.path.split('/').at(-1)), `${path} does not reference ${other.path}`);
     }
@@ -172,6 +172,18 @@ test('rule files stand alone without website-driven formatting or imports', () =
   assert.match(read('AGENTS.md'), /Write rules for agent behavior, not for the website's prompt format/);
   assert.match(read('project/interactive-ui-animation-rules.md'), /Honor available reduced-motion preferences for nonessential animation/);
   assert.match(read('AGENTS.md'), /not a copy of the whole general-purpose rule set/);
+});
+
+test('README and scenarios cover the separate browser and desktop choices', () => {
+  const readme = read('README.md');
+  for (const rule of RULES) {
+    assert.ok(readme.includes(`](${rule.path})`), `README links to ${rule.path}`);
+  }
+  assert.ok(!readme.includes('browser-computer-use-rules.md'));
+  const scenarios = read('tests/agent-rule-scenarios.md');
+  assert.match(scenarios, /Browser use, and Computer use selections/);
+  assert.match(scenarios, /mock desktop login interface/);
+  assert.match(scenarios, /Browser use alone, without Computer use/);
 });
 
 test('README keeps Personalize last and independent when combining files', () => {
@@ -219,14 +231,14 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.match(defaults, /only the activities your agent does and, if useful, its operating-system rules/i);
   assert.ok(html.indexOf('id="selection-next"') < html.indexOf('id="rule-form"'));
   const descriptions = html.match(/<form\b[^>]*id="rule-form"[^>]*aria-describedby="([^"]+)"/)?.[1].split(/\s+/);
-  assert.deepEqual(descriptions, ['selection-purpose', 'selection-next']);
+  assert.deepEqual(descriptions, ['agent-fit', 'selection-purpose', 'selection-next']);
   assert.doesNotMatch(html, /id="scope-global"|id="scope-project"|name="review-scope"/);
   assert.match(html, /This website does not replace your instructions/);
   assert.match(html, /open that project first; review another project separately/);
   assert.match(html, /For one-off work without project instructions, ask for task-scoped guidance/);
   const nextStep = html.match(/<section class="next-step"[^>]*>([\s\S]*?)<\/section>/)?.[1];
   assert.match(nextStep, /(?:don’t|don't|do not) have instructions yet[^<]*propose[^<]*supported locations/i);
-  assert.match(nextStep, /Approve edits separately for each location before saving/i);
+  assert.match(nextStep, /Approve edits and backup locations separately for each affected file before saving/i);
   assert.match(nextStep, /instructions being reviewed/);
   assert.match(html, /Preserve required approval, security, and privacy protections/);
   assert.match(html, /An “Apply when” sentence does not keep unused text out of context/);

@@ -73,8 +73,12 @@ function restoreLinkedSelection() {
   const originalRequested = params.has('rules') ? params.get('rules').split(',').filter(Boolean) : DEFAULT_RULE_IDS;
   const mergedNames = [['communication', 'Communication'], ['tools-execution', 'Tools and execution']]
     .filter(([id]) => originalRequested.includes(id)).map(([, name]) => name);
-  const requested = originalRequested.map(id => ['communication', 'tools-execution'].includes(id) ? 'general'
-    : id === 'browser-animation' ? 'ui-animation' : id);
+  const requested = originalRequested.flatMap(id => ['communication', 'tools-execution'].includes(id) ? ['general']
+    : id === 'browser-animation' ? ['ui-animation']
+      : id === 'browser-use' ? ['browser-operation', 'computer-use'] : [id]);
+  if (originalRequested.includes('browser-use')) {
+    linkWarnings.set('browser-split', 'Browser and computer use is now two choices. This older link kept both; uncheck Computer use if your agent cannot control desktop apps.');
+  } else linkWarnings.delete('browser-split');
   if (originalRequested.includes('browser-animation')) {
     linkWarnings.set('animation', 'Browser animation is now Interactive UI animation, covering browser and native interfaces. Your selection is kept; review its updated scope.');
   } else linkWarnings.delete('animation');
@@ -131,6 +135,7 @@ function renderChoices() {
     const fieldset = textElement('fieldset', 'rule-group', '');
     fieldset.id = `rule-group-${group.id}`;
     const legend = textElement('legend', '', group.title);
+    if (group.id === 'development') legend.className = 'visually-hidden';
     legend.id = `group-title-${group.id}`;
     const description = textElement('p', 'group-description', group.description);
     description.id = `group-description-${group.id}`;
@@ -143,7 +148,7 @@ function renderChoices() {
       clear.id = 'clear-os-selection';
       clear.type = 'button';
       clear.addEventListener('click', () => {
-        clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation');
+        clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation', 'browser-split');
         OS_RULES.forEach(rule => selected.delete(rule.id));
         updateSelection();
       });
@@ -152,13 +157,29 @@ function renderChoices() {
     if (group.id === 'development') {
       const disclosure = textElement('details', 'software-guidance', '');
       disclosure.id = 'software-guidance';
-      disclosure.append(textElement('summary', '', 'Choose optional software project rules'), fieldset);
+      disclosure.append(textElement('summary', '', 'More software rules (optional)'), fieldset);
       element('rule-groups').append(disclosure);
     } else element('rule-groups').append(fieldset);
-    group.rules.forEach((rule) => containers.set(rule.id, choices));
+    if (group.id === 'development') {
+      const webRules = textElement('div', 'web-rule-group', '');
+      const webRulesLabel = textElement('p', 'web-rule-group-label', 'Web work: build and verify');
+      webRulesLabel.id = 'web-rule-group-label';
+      webRules.setAttribute('role', 'group');
+      webRules.setAttribute('aria-labelledby', webRulesLabel.id);
+      const webChoices = textElement('div', 'web-rule-choices', '');
+      webRules.append(webRulesLabel, webChoices);
+      choices.append(webRules);
+      for (const rule of group.rules) {
+        containers.set(rule.id, ['web', 'browser-verification'].includes(rule.id) ? webChoices : choices);
+      }
+    } else group.rules.forEach((rule) => containers.set(rule.id, choices));
   }
   for (const rule of RULE_GROUPS.flatMap(group => group.rules)) {
     const card = textElement('div', 'rule-card', '');
+    if (rule.id === 'general') card.className += ' rule-card--general';
+    if (rule.id === 'browser-operation') {
+      containers.get(rule.id).append(textElement('p', 'activity-label', 'Other activities (optional)'));
+    }
     const label = document.createElement('label');
     const input = document.createElement('input');
     input.type = rule.environment ? 'radio' : 'checkbox';
@@ -167,7 +188,7 @@ function renderChoices() {
     input.id = `rule-${rule.id}`;
     input.setAttribute('aria-labelledby', `name-${rule.id}`);
     input.addEventListener('change', () => {
-      clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation');
+      clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation', 'browser-split');
       if (rule.environment && input.checked) OS_RULES.forEach(os => selected.delete(os.id));
       if (rule.id === 'coding' && input.checked) {
         selected.add('version-control');
@@ -346,7 +367,7 @@ element('copy-setup-link').addEventListener('click', async () => {
 });
 
 element('clear-selection').addEventListener('click', () => {
-  clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation');
+  clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation', 'browser-split');
   selected.clear();
   updateSelection();
 });
