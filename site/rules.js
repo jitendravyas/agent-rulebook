@@ -159,7 +159,7 @@ const SOFTWARE_AREAS = [
   {
     id: 'web',
     title: 'Web development',
-    description: 'Web-specific development and browser verification guidance, including mobile browsers and embedded web views.',
+    description: 'Software development covers coding across platforms; Web development adds browser-specific guidance, including browser verification. You can select both.',
     rules: [WEB_RULE],
   },
   {

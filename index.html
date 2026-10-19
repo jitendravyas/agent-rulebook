@@ -129,14 +129,13 @@
           <button class="text-button" id="clear-selection" type="button">Clear selection</button>
         </div>
         <div class="selection-guide">
-          <p id="agent-fit"><strong>Check your agent first.</strong> This builder is for agents that can read the linked rule files and your existing instruction files. If you only have a Custom Instructions text box, do not paste the generated prompt there.</p>
-          <p id="selection-purpose"><strong>Start with General rules.</strong> They cover safety, privacy, checking work, and clear replies. They start selected but are optional. Add only the activities your agent does and, if useful, its operating-system rules.</p>
-          <p id="placement-guide"><strong>Where to keep them:</strong> General and operating-system rules are global defaults. Keep an activity globally if your agent does it regularly across projects; otherwise use project or task guidance.</p>
-          <p id="selection-next"><strong>Then preview and copy the prompt.</strong> It asks your agent to review existing instructions, propose useful changes and a backup plan, then wait for your approval. Return later for a fresh review when the rules change.</p>
-          <details><summary>Where do global and project rules go?</summary><p>Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Project-scoped rules are reusable across matching projects, but belong only in each project where they apply. The prompt asks your agent to recommend the right location. This website does not replace your instructions.</p></details>
+          <p id="agent-fit">For agents that can read public rule files and your existing instruction files. Paste the prompt into agent chat, not a Custom Instructions box.</p>
+          <p id="selection-purpose"><strong>Start with General rules.</strong> They start selected but are optional. Add only the choices relevant to your work.</p>
+          <p id="selection-next"><strong>Then preview and copy the prompt.</strong> Your agent proposes changes and a backup plan, then waits for your approval.</p>
+          <details><summary>Where do global and project rules go?</summary><p>General and operating-system rules are global defaults. Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Keep an activity globally if your agent does it regularly across projects; otherwise use project or task guidance.</p><p>Project-scoped rules are reusable across matching projects, but belong only in each project where they apply. The prompt asks your agent to review existing instructions and recommend the right location. This website does not replace your instructions. Return later for a fresh review when the rules change.</p></details>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
-        <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose placement-guide selection-next">
+        <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose selection-next">
           <div id="rule-groups"></div>
           <button id="preview-prompt" class="button primary review-selection" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt <span aria-hidden="true">→</span></button>
           <p id="empty-selection-note" class="section-description" role="status" hidden>Select at least one rule set to preview a prompt.</p>

@@ -258,10 +258,10 @@ test('README and website distinguish relevant modules from loading the whole col
   const defaults = html.match(/<p\b[^>]*id="selection-purpose"[^>]*>([\s\S]*?)<\/p>/)?.[1];
   assert.match(defaults, /Start with General/);
   assert.match(defaults, /start selected but are optional/i);
-  assert.match(defaults, /only the activities your agent does and, if useful, its operating-system rules/i);
+  assert.match(defaults, /only the choices relevant to your work/i);
   assert.ok(html.indexOf('id="selection-next"') < html.indexOf('id="rule-form"'));
   const descriptions = html.match(/<form\b[^>]*id="rule-form"[^>]*aria-describedby="([^"]+)"/)?.[1].split(/\s+/);
-  assert.deepEqual(descriptions, ['agent-fit', 'selection-purpose', 'placement-guide', 'selection-next']);
+  assert.deepEqual(descriptions, ['agent-fit', 'selection-purpose', 'selection-next']);
   assert.doesNotMatch(html, /id="scope-global"|id="scope-project"|name="review-scope"/);
   assert.match(html, /This website does not replace your instructions/);
   assert.match(html, /open that project first; review another project separately/);
