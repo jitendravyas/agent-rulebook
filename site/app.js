@@ -68,8 +68,12 @@ function restoreLinkedSelection() {
   const mergedNames = [['communication', 'Communication'], ['tools-execution', 'Tools and execution']]
     .filter(([id]) => originalRequested.includes(id)).map(([, name]) => name);
   const requested = originalRequested.flatMap(id => ['communication', 'tools-execution'].includes(id) ? ['general']
-    : id === 'browser-animation' ? ['ui-animation']
+    : id === 'browser-verification' ? ['web']
+      : id === 'browser-animation' ? ['ui-animation']
       : id === 'browser-use' ? ['browser-operation', 'computer-use'] : [id]);
+  if (originalRequested.includes('browser-verification')) {
+    linkWarnings.set('verification-merged', 'Browser verification is now part of Web development. This saved choice selects Web development for review; check its broader scope before previewing.');
+  } else linkWarnings.delete('verification-merged');
   if (originalRequested.includes('browser-use')) {
     linkWarnings.set('browser-split', 'Browser and computer use is now two choices. This older link kept both; uncheck Computer use if your agent cannot control desktop apps.');
   } else linkWarnings.delete('browser-split');

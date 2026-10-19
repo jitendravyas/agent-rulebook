@@ -22,18 +22,9 @@ const WEB_RULE = {
   id: 'web',
   label: 'Web development rules',
   description:
-    'For building or changing browser-rendered pages and supporting web endpoints, including temporary pages.',
-  purpose: 'For building or changing websites and web apps. Covers browser behavior, resource loading, and web security.',
+    'For building or changing browser-rendered pages and supporting web endpoints, including temporary pages. Includes verifying rendered pages and interactions through manual or automated checks, with target and isolation safeguards.',
+  purpose: 'For building, changing, or verifying websites and web apps. Covers web security, resource loading, and browser checks.',
   path: 'project/web-development-rules.md',
-};
-
-const BROWSER_VERIFICATION_RULE = {
-  id: 'browser-verification',
-  label: 'Browser verification rules',
-  description:
-    'For checking browser-rendered software in its intended browser or embedded runtime. Covers target selection, test isolation, and honest reporting of observed results.',
-  purpose: 'For verifying rendered pages and interactions through manual or automated checks in a browser.',
-  path: 'project/browser-verification-rules.md',
 };
 
 const APPLE_APPS_RULE = {
@@ -143,7 +134,6 @@ export const RULES = [
   GENERAL_RULE,
   CODING_RULE,
   WEB_RULE,
-  BROWSER_VERIFICATION_RULE,
   APPLE_APPS_RULE,
   ANDROID_APPS_RULE,
   TESTING_RULE,
@@ -170,7 +160,7 @@ const SOFTWARE_AREAS = [
     id: 'web',
     title: 'Websites and web apps',
     description: 'Web-specific development and browser verification guidance, including mobile browsers and embedded web views.',
-    rules: [WEB_RULE, BROWSER_VERIFICATION_RULE],
+    rules: [WEB_RULE],
   },
   {
     id: 'native',

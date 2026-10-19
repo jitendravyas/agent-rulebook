@@ -175,6 +175,21 @@ test('rule files stand alone without website-driven formatting or imports', () =
   assert.match(read('AGENTS.md'), /not a copy of the whole general-purpose rule set/);
 });
 
+test('platform-agnostic guidance leaves browser translation mechanisms in Web development', () => {
+  const area = RULE_GROUPS.find(group => group.id === 'development').areas.find(area => area.id === 'across');
+  for (const rule of area.rules) {
+    assert.doesNotMatch(read(rule.path), /translate="no"|browser-delivered interfaces|Browser translation or language-detection APIs/i);
+  }
+  const localization = read('project/internationalization-localization-rules.md');
+  assert.match(localization, /Follow existing glossaries and do-not-translate terms/);
+  assert.match(localization, /use the platform's language and direction mechanisms/);
+  const web = read('project/web-development-rules.md');
+  assert.match(web, /For browser translation, use `translate="no"` where applicable/);
+  assert.match(web, /Do not disable whole-page translation merely to protect a few names or terms/);
+  assert.match(web, /verify document language and direction, logical layout behavior, and focus order/);
+  assert.match(web, /Browser translation or language-detection APIs do not replace approved product translations, locale selection, or server-side support/);
+});
+
 test('README and scenarios cover the separate browser and desktop choices', () => {
   const readme = read('README.md');
   for (const rule of RULES) {
@@ -187,13 +202,14 @@ test('README and scenarios cover the separate browser and desktop choices', () =
   assert.match(scenarios, /Browser use alone, without Computer use/);
 });
 
-test('browser verification preserves required isolation and covers automated rendering checks', () => {
-  const verification = read('project/browser-verification-rules.md');
+test('Web development preserves browser verification safeguards and covers automated checks', () => {
+  const verification = read('project/web-development-rules.md');
+  assert.match(verification, /^## Browser verification$/m);
   assert.match(verification, /Preserve required test isolation when reusing sessions/);
   assert.match(verification, /a disposable browser profile does not isolate backend data/);
   assert.match(verification, /Use real accounts or persistent profiles only when required and authorized/);
-  const purpose = RULES.find(rule => rule.id === 'browser-verification').purpose;
-  const readmeEntry = read('README.md').split('\n').find(line => line.startsWith('- [Browser verification]'));
+  const purpose = RULES.find(rule => rule.id === 'web').description;
+  const readmeEntry = read('README.md').split('\n').find(line => line.startsWith('- [Web development]'));
   for (const text of [purpose, readmeEntry]) {
     assert.match(text, /manual or automated checks/);
     assert.doesNotMatch(text, /separate from .*writing or running automated tests/);

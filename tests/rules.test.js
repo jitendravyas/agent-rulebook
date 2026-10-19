@@ -44,7 +44,7 @@ test('every selectable rule and category explains its purpose', () => {
   assert.deepEqual(development.rules.slice(0, 4).map(rule => rule.id), ['coding', 'testing', 'ui-animation', 'i18n']);
   assert.deepEqual(development.areas.map(area => [area.title, area.rules.map(rule => rule.id)]), [
     ['Platform Agnostic Rules', ['testing', 'ui-animation', 'i18n']],
-    ['Websites and web apps', ['web', 'browser-verification']],
+    ['Websites and web apps', ['web']],
     ['Native app development', ['apple-apps', 'android-apps']],
   ]);
   assert.deepEqual(development.areas.flatMap(area => area.rules), development.rules.slice(1));
@@ -61,9 +61,10 @@ test('every selectable rule and category explains its purpose', () => {
   assert.match(readFileSync(new URL('project/software-testing-rules.md', repository), 'utf8'), /For accessibility assessments, use the agreed standard/);
   assert.match(readFileSync(new URL('global/browser-use-rules.md', repository), 'utf8'), /Before browser actions that can change data, confirm the backing environment and account/);
   assert.match(readFileSync(new URL('global/general-rules.md', repository), 'utf8'), /Inspect requested appearance or interaction in the actual result when possible/);
-  assert.match(readFileSync(new URL('project/browser-verification-rules.md', repository), 'utf8'), /Confirm the intended file, page, or application/);
+  assert.match(readFileSync(new URL('project/web-development-rules.md', repository), 'utf8'), /Confirm the intended file, page, or application/);
   assert.ok(!RULES.some(rule => rule.id === 'native-verification'));
-  assert.match(RULES.find(rule => rule.id === 'browser-verification').purpose, /rendered pages and interactions/);
+  assert.ok(!RULES.some(rule => rule.id === 'browser-verification'));
+  assert.match(RULES.find(rule => rule.id === 'web').description, /rendered pages and interactions/);
   assert.match(readFileSync(new URL('README.md', repository), 'utf8'), /Detailed browser or device verification workflows/);
   assert.match(RULES.find(rule => rule.id === 'ui-animation').purpose, /websites or native apps/);
   assert.match(RULES.find(rule => rule.id === 'i18n').purpose, /any platform/);

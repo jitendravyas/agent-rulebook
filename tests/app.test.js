@@ -537,14 +537,19 @@ test('software testing and web development remain independent choices', () => {
   assert.equal(page.get('link-warning').hidden, true);
 });
 
-test('browser verification saved links keep the choice without selecting Web development', () => {
-  const page = boot('https://example.test/agent-rulebook/?rules=browser-verification');
-  assert.equal(page.get('rule-browser-verification').checked, true);
-  assert.equal(page.get('rule-web').checked, false);
-  assert.equal(page.get('rule-general').checked, false);
-  assert.equal(page.get('link-warning').hidden, true);
-  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['browser-verification']));
-  assert.match(page.get('setup-link').value, /browser-verification/);
+test('browser verification saved links select Web development once with a scope notice', () => {
+  for (const selection of ['browser-verification', 'browser-verification,web']) {
+    const page = boot(`https://example.test/agent-rulebook/?rules=${selection}`);
+    assert.equal(page.get('rule-web').checked, true);
+    assert.equal(page.get('rule-general').checked, false);
+    assert.equal(page.get('your-file').hidden, true);
+    assert.equal(page.get('link-warning').hidden, false);
+    assert.match(page.get('link-warning').textContent, /Browser verification is now part of Web development/);
+    assert.match(page.get('link-warning').textContent, /broader scope/);
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web']));
+    assert.doesNotMatch(page.get('setup-link').value, /browser-verification/);
+    assert.equal(new URL(page.get('setup-link').value).searchParams.get('rules'), 'web');
+  }
 });
 
 test('retired native verification choice shows a notice without selecting a replacement', () => {

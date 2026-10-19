@@ -6,6 +6,12 @@ Apply when developing, changing, reviewing, or testing browser-rendered content,
 
   * Before using a browser feature with uncertain support or removing a fallback, identify supported browsers and embedded runtimes from the task, project instructions, configuration, or usage data. Reuse targets already established by the user or project. Check current compatibility; general compatibility summaries do not replace project policy. If the target remains unclear and support matters, propose a target for approval.
 
+## Browser verification
+
+  * Confirm the intended file, page, or application and, when applicable, its source checkout; a familiar host, port, or tab may show different work. Distinguish application failures from browser-tool or connection failures.
+  * For development checks, use isolated browser state and controlled test data when practical. Preserve required test isolation when reusing sessions. Check the backing environment and account before actions that change data; a disposable browser profile does not isolate backend data. Use real accounts or persistent profiles only when required and authorized.
+  * Inspect the rendered result, relevant interactions, and errors in the intended browser or embedded runtime. Report what was checked and any gaps without generalizing beyond the observed result. Do not change application behavior merely to make browser automation pass.
+
 ## Web security and privacy
 
   * In application code, request location, notification, or other browser permissions in the context of a feature the user wants to use, not merely because the page loaded. Explain the need and handle refusal without breaking unrelated features or repeatedly prompting.
@@ -21,6 +27,11 @@ Apply when developing, changing, reviewing, or testing browser-rendered content,
 
   * Preserve existing content bindings when changing titles or text alternatives. Do not insert document-level markup into embedded fragments.
   * When copying or repeating page elements, keep identifiers unique within their document object model (DOM) tree and keep references pointing to the intended elements.
+
+## Localization and browser translation
+
+  * When creating or changing web content, follow task or project conventions for marking text explicitly designated as non-translatable. For browser translation, use `translate="no"` where applicable. Keep exclusions narrow and surrounding text translatable. Do not disable whole-page translation merely to protect a few names or terms.
+  * For browser-delivered interfaces, verify document language and direction, logical layout behavior, and focus order where relevant to that scope. Browser translation or language-detection APIs do not replace approved product translations, locale selection, or server-side support.
 
 ## Style changes
 
