@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Select global defaults and project-specific AI agent rules together. Copy a prompt that reviews each rule at its recommended location for useful additions, duplicates, and conflicts.">
+  <meta name="description" content="Select global defaults and reusable project-scoped AI agent rules together. Copy a prompt that reviews each rule at its recommended location for useful additions, duplicates, and conflicts.">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#101716">
   <title>AI Agent Rules for Coding and Everyday Work | Agent Rulebook</title>
@@ -13,11 +13,11 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Agent Rulebook">
   <meta property="og:title" content="AI Agent Rules for Coding and Everyday Work | Agent Rulebook">
-  <meta property="og:description" content="Select global defaults and project additions together. Your agent proposes edits separately for each location; you approve what to keep. Free, with no account needed.">
+  <meta property="og:description" content="Select global defaults and reusable project-scoped rules together. Your agent proposes edits separately for each location; you approve what to keep. Free, with no account needed.">
   <meta property="og:url" content="https://jitendravyas.github.io/agent-rulebook/">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="AI Agent Rules for Coding and Everyday Work | Agent Rulebook">
-  <meta name="twitter:description" content="Select global defaults and project additions together. Your agent proposes edits separately for each location; you approve what to keep. Free, with no account needed.">
+  <meta name="twitter:description" content="Select global defaults and reusable project-scoped rules together. Your agent proposes edits separately for each location; you approve what to keep. Free, with no account needed.">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -133,7 +133,7 @@
           <p id="selection-purpose"><strong>Start with General rules.</strong> They cover safety, privacy, checking work, and clear replies. They start selected but are optional. Add only the activities your agent does and, if useful, its operating-system rules.</p>
           <p id="placement-guide"><strong>Where to keep them:</strong> General and operating-system rules are global defaults. Keep an activity globally if your agent does it regularly across projects; otherwise use project or task guidance.</p>
           <p id="selection-next"><strong>Then preview and copy the prompt.</strong> It asks your agent to review existing instructions, propose useful changes and a backup plan, then wait for your approval. Return later for a fresh review when the rules change.</p>
-          <details><summary>Where do global and project rules go?</summary><p>Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Project rules belong with the relevant project. The prompt asks your agent to recommend the right location. This website does not replace your instructions.</p></details>
+          <details><summary>Where do global and project rules go?</summary><p>Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Project-scoped rules are reusable across matching projects, but belong only in each project where they apply. The prompt asks your agent to recommend the right location. This website does not replace your instructions.</p></details>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
         <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose placement-guide selection-next">
@@ -173,7 +173,7 @@
         </details>
         <section class="next-step" aria-labelledby="use-rules-title">
           <h3 id="use-rules-title">3. Ask your agent to review</h3>
-          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file or Custom Instructions box. If you selected project additions for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance that applies only to this conversation. The prompt asks your agent to review each group at its relevant scope and recommend where to use each selected activity.</p>
+          <p>Paste the prompt into a <strong>conversation with your agent</strong>, not into a rules file or Custom Instructions box. If you selected project-scoped rules for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance that applies only to this conversation. The prompt asks your agent to review each group at its relevant scope and recommend where to use each selected activity.</p>
           <p>If you don’t have instructions yet, ask your agent to propose supported locations for the selected groups. Approve edits and backup locations separately for each affected file before saving.</p>
           <p>Your agent needs access to the public links and the instructions being reviewed.</p>
           <p>This website does not read or upload your existing instructions. Review the suggestions yourself; an agent may miss a conflict or recommend no changes.</p>
@@ -223,7 +223,7 @@
           <li><a data-rule-id="web" href="./project/web-development-rules.md" type="text/markdown">Web development rules</a></li>
           <li><a data-rule-id="browser-verification" href="./project/browser-verification-rules.md" type="text/markdown">Browser verification rules</a></li>
         </ul>
-        <h4>Native app platforms</h4>
+        <h4>Native app development</h4>
         <ul>
           <li><a data-rule-id="apple-apps" href="./project/apple-app-development-rules.md" type="text/markdown">Apple app development rules</a></li>
           <li><a data-rule-id="android-apps" href="./project/android-app-development-rules.md" type="text/markdown">Android app development rules</a></li>

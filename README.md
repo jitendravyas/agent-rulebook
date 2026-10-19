@@ -1,6 +1,6 @@
 # Agent Rulebook
 
-Reusable instructions for AI agents, with broad global defaults, optional activity guidance, and project-specific additions. Global defaults protect work and guide everyday behavior. Activity guidance applies only to the work it covers; project additions cover relevant technologies and requirements.
+Reusable instructions for AI agents, with broad global defaults, optional activity guidance, and reusable project-scoped rules. Global defaults protect work and guide everyday behavior. Activity guidance applies only to the work it covers; project-scoped rules can serve many projects of the relevant kind without loading in unrelated projects.
 
 When supported and enabled, user-level **global instructions** load across an agent's sessions, so keep them broadly useful. A **project handbook** loads for its own project and is the place for that repository's build and test commands, layout, style, and conventions. **Skills** are separate, on-demand playbooks for repeatable specialized work where the agent supports them; this repository provides rules, not skills. Do not put a detailed skill procedure into always-loaded instructions merely because the agent can use skills.
 
@@ -21,7 +21,7 @@ The rule files are for agents; this README is for people choosing and installing
 
 - **Global defaults:** General and the applicable OS safety file suit user-level instructions across tasks.
 - **Optional activities:** Coding, Version control, Browser use, and Computer use suit global use when they recur across tasks; otherwise use relevant project, task-scoped, or supported conditional guidance. A file in `global/` does not require global installation.
-- **Project additions:** Files in `project/` belong in relevant project instructions or supported project-scoped loading. For one-off work without project instructions, ask for task-scoped guidance that applies only to that conversation. Keep project-specific commands, layout, style, tools, and requirements in the owning project's handbook, not user-level global rules.
+- **Reusable project-scoped rules:** Files in `project/` can be used in many matching projects, but belong only in the projects where their topic applies. For one-off work without project instructions, ask for task-scoped guidance that applies only to that conversation. Keep each project's own commands, layout, style, tools, and requirements in its handbook, not user-level global rules.
 
 If narrower loading is unavailable for occasional work, use task-specific guidance instead of adding permanent instructions.
 
@@ -33,16 +33,21 @@ When combining sets, merge equivalent guidance without losing any distinct requi
 
 | Agent setup | Relevant standalone file | Covers |
 | --- | --- | --- |
+| Agent works on macOS | [macOS rules](global/macos-agent-rules.md) | System protection, app permissions, synced files, and local-processing boundaries. |
+| Agent works on Windows | [Windows rules](global/windows-agent-rules.md) | Protected files, redirected and synced folders, and Windows Subsystem for Linux boundaries. |
+| Agent works on Linux | [Linux rules](global/linux-agent-rules.md) | Distribution differences, protected system interfaces, permissions, and persistent state. |
 | Any task | [General rules](global/general-rules.md) | Scope, approvals, safety, privacy, verification, communication, tool use, basic efficiency, and file-reference maintenance. |
-| Version control, including non-code files | [Version control rules](global/version-control-rules.md) | Using tools like Git to review changes, preserve work, and check identities, commits, pushes, and exposed history. |
-| Software development | [Software development rules](global/coding-rules.md) | Software implementation, security, maintenance, performance, and static checks. |
-| Web development | [Web development rules](project/web-development-rules.md) | Browser-specific implementation, resource loading, and web security. |
-| Apple app development | [Apple app development rules](project/apple-app-development-rules.md) | App-specific approvals, file-access boundaries, and privacy declarations. |
-| Android app development | [Android app development rules](project/android-app-development-rules.md) | App-specific approvals, component exposure, and merged manifests. |
-| Software testing | [Software testing rules](project/software-testing-rules.md) | Running existing tests and writing or updating tests for software changes. |
-| Browser verification | [Browser verification rules](project/browser-verification-rules.md) | Checking rendered pages, interactions, and accessibility when relevant. |
 | Browser operation | [Browser use rules](global/browser-use-rules.md) | Browser choice, sessions, tabs, and page state for any task. |
 | Desktop operation | [Computer use rules](global/computer-use-rules.md) | Focus, selection, and window control for agents with desktop access. |
+| Version control, including non-code files | [Version control rules](global/version-control-rules.md) | Using tools like Git to review changes, preserve work, and check identities, commits, pushes, and exposed history. |
+| Software development | [Software development rules](global/coding-rules.md) | Software implementation, security, maintenance, performance, and static checks. |
+| Software testing | [Software testing rules](project/software-testing-rules.md) | Running existing tests and writing or updating tests for software changes. |
+| Live UI animation | [Web and native UI animation rules](project/interactive-ui-animation-rules.md) | Animation behavior, reduced motion, interruption, and cleanup in browser and native apps. |
+| Software localization | [Software localization rules](project/internationalization-localization-rules.md) | Multiple languages, regional formats, and text direction in software. |
+| Web development | [Web development rules](project/web-development-rules.md) | Browser-specific implementation, resource loading, and web security. |
+| Browser verification | [Browser verification rules](project/browser-verification-rules.md) | Checking the intended rendered result and interactions, with isolated test state and bounded claims. |
+| Apple app development | [Apple app development rules](project/apple-app-development-rules.md) | App-specific approvals, file-access boundaries, and privacy declarations. |
+| Android app development | [Android app development rules](project/android-app-development-rules.md) | App-specific approvals, component exposure, and merged manifests. |
 
 "Global" means reusable across tasks or projects, not permission to act everywhere. Project instructions govern implementation choices, not waivers of required approval or safety.
 
@@ -52,21 +57,21 @@ Before copying rules, check [instruction loading and size](#instruction-loading-
 
 American English is used consistently in the supplied rules; it does not prescribe how agents must write your content.
 
-The [behavior scenarios](https://github.com/jitendravyas/agent-rulebook/blob/main/tests/agent-rule-scenarios.md) provide eight safe scenarios for checking loading and behavior across agents.
+The [behavior scenarios](https://github.com/jitendravyas/agent-rulebook/blob/main/tests/agent-rule-scenarios.md) provide nine safe scenarios for checking loading and behavior across agents.
 
 These rules change over time and have not been tested with every agent, model, or workflow. Treat them as a starting point, not a guarantee of better or safer results. Review and adapt them, try them on a low-risk task, and review updates before adopting them.
 
 ## Use the review prompt builder
 
-The [website](https://jitendravyas.github.io/agent-rulebook/) offers separate choices so you can keep your agent's always-loaded instructions focused. Use it with an agent that can read the linked public rule files and the instruction files being reviewed. If your app only offers a Custom Instructions text box, do not paste the generated prompt there. Global guidance may live in a user-level `AGENTS.md` or `CLAUDE.md` when supported. Project-specific choices belong in the relevant project, not the global file. The website generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
+The [website](https://jitendravyas.github.io/agent-rulebook/) offers separate choices so you can keep your agent's always-loaded instructions focused. Use it with an agent that can read the linked public rule files and the instruction files being reviewed. If your app only offers a Custom Instructions text box, do not paste the generated prompt there. Global guidance may live in a user-level `AGENTS.md` or `CLAUDE.md` when supported. Reusable project-scoped choices belong in each relevant project, not the global file. The website generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
 
-OS choices appear first: choose where the agent operates, not the apps it builds. General appears next as a suggested starting point, followed by optional Browser use, Computer use, and Version control. Select Computer use only if your agent can control desktop apps. General and OS choices are labeled **Global default**; recurring activities are labeled **Global if recurring**. The prompt asks your agent to confirm placement before suggesting edits. Software development has its own section: select it when your agent builds or maintains software. Its specialist choices start collapsed and open when you expand them or follow a saved link containing one. They usually belong with a relevant project; for one-off work, use them only for that task. The groups appear in this order: Platform Agnostic Rules, Websites and web apps, and Native app platforms. Software testing, UI animation, and localization can apply to web, native, or other software when relevant. Browser verification is for browser-rendered interfaces. **Details** explains each choice and links to its source without selecting it. Skills are not selections here; use them separately when their workflow is needed and your agent supports them.
+OS choices appear first: choose where the agent operates, not the apps it builds. General appears next as a suggested starting point, followed by optional Browser use, Computer use, and Version control. Select Computer use only if your agent can control desktop apps. General and OS choices are labeled **Global default**; recurring activities are labeled **Global if recurring**. The prompt asks your agent to confirm placement before suggesting edits. Software development has its own section: select it when your agent builds or maintains software. Its specialist choices start collapsed and open when you expand them or follow a saved link containing one. They usually belong with a relevant project; for one-off work, use them only for that task. The groups appear in this order: Platform Agnostic Rules, Websites and web apps, and Native app development. Software testing, UI animation, and localization can apply to web, native, or other software when relevant. Browser verification is for checking rendered software in a browser. **Details** explains each choice and links to its source without selecting it. Skills are not selections here; use them separately when their workflow is needed and your agent supports them.
 
 **General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. **Clear selection** removes all choices.
 
 1. **Choose relevant rules.** Use the [selection guide above](#choose-only-relevant-rule-sets); select only the groups that fit your work.
 2. **Click Preview prompt, then copy it.** The full prompt stays hidden until you click **Preview prompt**. Check its labeled source lists; changing choices hides the preview.
-3. **Ask your agent to review.** Paste the prompt into a conversation, not an instruction file or Custom Instructions box. If you selected project additions for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance instead. The agent first reads existing instructions without changing them, then summarizes proposed additions, their value, unchanged personal or machine-specific guidance, and a private backup plan. It asks for approval for each affected location before creating backups or editing. It must confirm an unclear project target and leave unselected locations unchanged. It may recommend no changes.
+3. **Ask your agent to review.** Paste the prompt into a conversation, not an instruction file or Custom Instructions box. If you selected project-scoped rules for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance instead. The agent first reads existing instructions without changing them, then summarizes proposed additions, their value, unchanged personal or machine-specific guidance, and a private backup plan. It asks for approval for each affected location before creating backups or editing. It must confirm an unclear project target and leave unselected locations unchanged. It may recommend no changes.
 
 The agent needs access to the public links and relevant instructions. The website never reads or uploads private instructions, project files, or agent settings, and does not merge rules, install anything, or change settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
 
@@ -188,8 +193,8 @@ Choose an optional operating-system file for the system where the agent works, n
 
 ### Browser and computer use
 
-- [Browser use](global/browser-use-rules.md): guidance for agents that can navigate and interact with websites. Covers browser choice, tabs, sessions, and page state for any task. Unlike Browser verification, this is about operating websites, not checking software rendering or behavior.
-- [Computer use](global/computer-use-rules.md): guidance for agents that can control desktop apps or system interfaces. Covers choosing the intended app, window, and control before acting. Browser access does not imply desktop control. Select each file only if your agent has the relevant tools; the rules do not add them or authorize installation.
+- [Browser use](global/browser-use-rules.md): guidance for agents that can navigate and interact with websites. Covers browser choice, tabs, sessions, and page state for any task.
+- [Computer use](global/computer-use-rules.md): guidance for agents that can control desktop apps or system interfaces. Covers choosing the intended app, window, and control before acting. Select each file only if your agent has the relevant tools.
 
 ### Project-specific software additions
 
@@ -199,12 +204,14 @@ Keep these additions in the relevant project's instructions or supported project
 
 - [Coding and maintenance](global/coding-rules.md): shared implementation guidance for native apps, browser apps, and temporary software, including whole-feature performance and static code checks. It applies only to software work.
 - [Web development](project/web-development-rules.md): browser-specific implementation, resource-loading safeguards, and security guidance.
+- [Browser verification](project/browser-verification-rules.md): optional guidance for verifying rendered results and interactions through manual or automated checks in the intended browser or embedded runtime. Software testing covers test design and execution; Browser use covers ordinary browser operation.
 - [Apple app development](project/apple-app-development-rules.md): three optional safeguards for app-specific approvals, file-access boundaries, and privacy declarations. Applies to the Apple app platforms you target, not merely using an Apple device.
 - [Android app development](project/android-app-development-rules.md): three optional safeguards for app-specific approvals, component exposure, and merged manifests. Applies to Android apps, not merely using an Android device. Both modules are separate from the agent's operating-system choice. They complement shared Coding guidance without summarizing platform documentation or prescribing a framework or development tool.
-- [Software testing](project/software-testing-rules.md): optional guidance for agents that run existing tests or write and update tests for software changes. Covers affected input boundaries, representative interface content, and spelling in changed user-facing text while avoiding duplicate coverage. It does not trigger a full test suite or audit just because it is loaded. General retains the basic expectations to verify outcomes and report unchecked work honestly.
-- [Browser verification](project/browser-verification-rules.md): checking rendered pages, interactions, and accessibility when relevant. Separate from ordinary browser operation. Software testing and Browser verification are independently optional; neither selects or requires the other.
-- [Web and native UI animation](project/interactive-ui-animation-rules.md): optional guidance for live animation in browser and native app interfaces. Keeps state, controls, and cleanup reliable when motion is interrupted. Not for exported video.
-- [Software localization](project/internationalization-localization-rules.md): optional guidance for apps, websites, and other software that support multiple languages or regional formats. Not for translating ordinary documents or messages.
+- [Software testing](project/software-testing-rules.md): optional guidance for agents that run existing tests or write and update tests for software changes, including browser end-to-end tests when relevant. Covers affected input boundaries, representative interface content, accessibility assessment boundaries, and spelling in changed user-facing text while avoiding duplicate coverage. It does not trigger a full test suite or audit just because it is loaded. General retains the basic expectations to verify outcomes and report unchecked work honestly.
+- [Web and native UI animation](project/interactive-ui-animation-rules.md): optional guidance for live animation in browser and native app interfaces. Keeps state, controls, and cleanup reliable when motion is interrupted.
+- [Software localization](project/internationalization-localization-rules.md): optional guidance for apps, websites, and other software that support multiple languages or regional formats.
+
+General asks agents to check requested appearance or interaction in the actual result when possible. Software testing covers writing and running tests, including browser end-to-end tests when relevant. Browser verification adds safeguards for checking rendered software in the intended browser. Detailed browser or device verification workflows, and project-specific cross-browser targets, belong in the relevant project or an on-demand skill.
 
 ### Tool reference
 
@@ -227,13 +234,13 @@ Communication and Tools and execution are now part of General rather than separa
 
 `global/coding-rules.md` remains a separate opt-in file. General does not include its software-specific guidance. Website links preserve General and Coding as separate choices; review the changed sources before adopting them.
 
-The earlier combined testing choice was split into Software testing and Browser verification. If you used the combined file, replace it with the updated testing file and add Browser verification only when relevant. Older links with a former scope or agent choice show a split notice; new links do not. Browser verification is never selected automatically.
+Browser verification remains a separate optional rule file for checking rendered software. The former Native app verification choice is no longer a separate rule file; older saved links selecting it show a notice without adding a replacement. Review previously adopted guidance before removing it from your own instructions.
 
 Browser and computer use are now separate choices. Older website links selecting the combined choice keep both and show a notice. New links can select Browser use without Computer use. When updating installed guidance, retain only the capabilities your agent actually has.
 
 Browser animation is now Web and native UI animation, with guidance for live browser and native interfaces. Older website links keep the selection and show a scope-change notice. Replace the older copied module rather than adding a second copy.
 
-Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional Web and native UI animation rules only when relevant. The former standalone accessibility file is no longer needed; implementation safeguards remain in Coding and assessment boundaries are in Browser verification.
+Replace older copied web rules to remove the bundled animation section and detailed browser-testing checklist. Add the optional Web and native UI animation rules only when relevant. The former standalone accessibility file is no longer needed; implementation safeguards remain in Coding and assessment boundaries are in Software testing.
 
 The former standalone web-performance rules are also no longer needed. Basic resource-efficiency guidance is in General, software performance assessment is in Coding, and browser-loading safeguards are in Web. Remove older copied performance guidance when replacing it to avoid duplicates; none of these defaults requests an unrelated audit.
 

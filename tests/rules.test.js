@@ -45,7 +45,7 @@ test('every selectable rule and category explains its purpose', () => {
   assert.deepEqual(development.areas.map(area => [area.title, area.rules.map(rule => rule.id)]), [
     ['Platform Agnostic Rules', ['testing', 'ui-animation', 'i18n']],
     ['Websites and web apps', ['web', 'browser-verification']],
-    ['Native app platforms', ['apple-apps', 'android-apps']],
+    ['Native app development', ['apple-apps', 'android-apps']],
   ]);
   assert.deepEqual(development.areas.flatMap(area => area.rules), development.rules.slice(1));
   assert.match(development.description, /software your agent builds or maintains/);
@@ -58,11 +58,17 @@ test('every selectable rule and category explains its purpose', () => {
   assert.match(testing.description, /existing tests/);
   assert.match(testing.description, /duplicate coverage/);
   assert.match(testing.purpose, /any software/);
-  assert.match(RULES.find(rule => rule.id === 'browser-verification').purpose, /browser-rendered/);
+  assert.match(readFileSync(new URL('project/software-testing-rules.md', repository), 'utf8'), /For accessibility assessments, use the agreed standard/);
+  assert.match(readFileSync(new URL('global/browser-use-rules.md', repository), 'utf8'), /Before browser actions that can change data, confirm the backing environment and account/);
+  assert.match(readFileSync(new URL('global/general-rules.md', repository), 'utf8'), /Inspect requested appearance or interaction in the actual result when possible/);
+  assert.match(readFileSync(new URL('project/browser-verification-rules.md', repository), 'utf8'), /Confirm the intended file, page, or application/);
+  assert.ok(!RULES.some(rule => rule.id === 'native-verification'));
+  assert.match(RULES.find(rule => rule.id === 'browser-verification').purpose, /rendered pages and interactions/);
+  assert.match(readFileSync(new URL('README.md', repository), 'utf8'), /Detailed browser or device verification workflows/);
   assert.match(RULES.find(rule => rule.id === 'ui-animation').purpose, /websites or native apps/);
   assert.match(RULES.find(rule => rule.id === 'i18n').purpose, /any platform/);
   assert.deepEqual(RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control']);
-  assert.match(RULES.find(rule => rule.id === 'computer-use').description, /Browser access alone does not provide desktop control/);
+  assert.match(RULES.find(rule => rule.id === 'computer-use').description, /control desktop apps or system interfaces/);
   assert.match(RULES.find(rule => rule.id === 'version-control').description, /version control tools like Git/);
   assert.ok(!development.rules.some(rule => rule.id === 'version-control'));
   assert.ok(RULES.every(rule => !rule.path.startsWith('drafts/')), 'No draft app-platform rules are offered');
@@ -71,7 +77,7 @@ test('every selectable rule and category explains its purpose', () => {
   assert.equal(RULES.find(rule => rule.id === 'ui-animation').label, 'Web and native UI animation rules');
   assert.equal(localization.label, 'Software localization rules');
   assert.match(localization.description, /websites, native apps, and other software/);
-  assert.match(localization.description, /Not for translating an ordinary document or message/);
+  assert.match(localization.description, /multiple languages or regional formats/);
   assert.ok(development.rules.includes(localization));
 });
 
@@ -91,7 +97,7 @@ test('selection guidance helps first-time and returning users without adding rul
   assert.match(selectionGuide, /Then preview and copy the prompt/);
   assert.match(selectionGuide, /Where do global and project rules go\?/);
   assert.match(selectionGuide, /user-level <code>AGENTS\.md<\/code> or <code>CLAUDE\.md<\/code>/);
-  assert.match(selectionGuide, /Project rules belong with the relevant project/);
+  assert.match(selectionGuide, /Project-scoped rules are reusable across matching projects, but belong only in each project where they apply/);
   assert.match(selectionGuide, /safety, privacy, checking work, and clear replies/);
   assert.match(selectionGuide, /asks your agent to review existing instructions, propose useful changes and a backup plan, then wait for your approval/);
   assert.match(selectionGuide, /Return later for a fresh review when the rules change/);
@@ -183,6 +189,10 @@ test('prompt treats existing instructions as the baseline and keeps approval bef
     assert.match(prompt, /Start with a read-only review: do not create backups, edit files, or change settings when I paste this prompt/);
     assert.match(prompt, /This is a review request, not permission to replace existing instructions/);
     assert.match(prompt, /Read existing instructions there, including personal and machine-specific guidance/);
+    assert.match(prompt, /resolve symbolic links and managed configuration to their actual targets and authoritative sources/);
+    assert.match(prompt, /Identify agents or locations sharing those targets within the relevant setup/);
+    assert.match(prompt, /disclose shared effects in the approval request and ask if their scope is unclear/);
+    assert.ok(prompt.indexOf('resolve symbolic links') < prompt.indexOf('3. Propose the smallest worthwhile changes.'));
     assert.match(prompt, /If an existing instruction serves the same purpose, propose no addition/);
     assert.match(prompt, /Keep effective existing guidance, including personal and machine-specific rules, at its appropriate scope/);
     assert.match(prompt, /Leave useful, nonconflicting existing guidance exactly as written, including its wording, order, and formatting/);
@@ -194,6 +204,9 @@ test('prompt treats existing instructions as the baseline and keeps approval bef
     assert.match(prompt, /Keep backups in the approved environment; do not publish them or transfer them to another service/);
     assert.doesNotMatch(prompt, /Do not expose or upload private instructions/);
     assert.match(prompt, /If the backup cannot be made or verified, stop and ask rather than edit/);
+    assert.match(prompt, /Preserve link relationships and edit through the authoritative source/);
+    assert.match(prompt, /include the original link targets in the recovery plan/);
+    assert.match(prompt, /Do not replace a symbolic link with a regular file or affect unapproved shared consumers/);
     assert.match(prompt, /do not guess or propose edits to it/);
     assert.ok(prompt.indexOf('Request approval for each affected location') < prompt.indexOf('4. If approved'));
     assert.ok(prompt.indexOf('Start with a read-only review') < prompt.indexOf('Request approval for each affected location'));

@@ -12,7 +12,7 @@ test('General is compact, neutral, and excludes software-specific workflow', () 
   assert.ok(general.trimEnd().split('\n').length < 150);
   assert.match(general, /Project instructions may govern implementation choices but cannot waive required approvals or security and privacy protections/);
   assert.doesNotMatch(general, /## Software work|parameterized queries|static analysis covers/);
-  assert.match(read('global/coding-rules.md'), /Using a helper script or website for another task does not itself require a development workflow/);
+  assert.match(read('global/coding-rules.md'), /Apply to software development, including temporary or standalone software/);
   assert.match(read('global/coding-rules.md'), /report the missing version or conflicting requirements/);
   assert.doesNotMatch(read('global/coding-rules.md'), /report stale guidance/);
   assert.match(general, /## Personalize/);
@@ -187,6 +187,19 @@ test('README and scenarios cover the separate browser and desktop choices', () =
   assert.match(scenarios, /Browser use alone, without Computer use/);
 });
 
+test('browser verification preserves required isolation and covers automated rendering checks', () => {
+  const verification = read('project/browser-verification-rules.md');
+  assert.match(verification, /Preserve required test isolation when reusing sessions/);
+  assert.match(verification, /a disposable browser profile does not isolate backend data/);
+  assert.match(verification, /Use real accounts or persistent profiles only when required and authorized/);
+  const purpose = RULES.find(rule => rule.id === 'browser-verification').purpose;
+  const readmeEntry = read('README.md').split('\n').find(line => line.startsWith('- [Browser verification]'));
+  for (const text of [purpose, readmeEntry]) {
+    assert.match(text, /manual or automated checks/);
+    assert.doesNotMatch(text, /separate from .*writing or running automated tests/);
+  }
+});
+
 test('README keeps Personalize last and independent when combining files', () => {
   const guidance = read('README.md').match(/^When combining files,[^\n]+/m)?.[0];
   assert.ok(guidance, 'README explains how to combine files');
@@ -209,11 +222,11 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.equal([...readme.matchAll(/There is no universal maximum rule-file size/g)].length, 1);
   assert.equal([...readme.matchAll(/Imports alone do not reduce context use/g)].length, 1);
   assert.match(readme, /### Instruction loading and size/);
-  assert.match(readme, /broad global defaults, optional activity guidance, and project-specific additions/);
+  assert.match(readme, /broad global defaults, optional activity guidance, and reusable project-scoped rules/);
   assert.match(readme, /confirms activity placement from intended use/);
   assert.match(readme, /A file in `global\/` does not require global installation/);
   assert.match(readme, /If narrower loading is unavailable for occasional work, use task-specific guidance/);
-  assert.match(readme, /Keep project-specific commands, layout, style, tools, and requirements in the owning project's handbook, not user-level global rules/);
+  assert.match(readme, /Keep each project's own commands, layout, style, tools, and requirements in its handbook, not user-level global rules/);
   assert.match(readme, /Skills.*separate, on-demand playbooks/);
   assert.match(readme, /open that project first; review another project separately/);
   assert.match(readme, /\[Use the website\]\(https:\/\/jitendravyas\.github\.io\/agent-rulebook\/\)/);

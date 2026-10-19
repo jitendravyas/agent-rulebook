@@ -174,7 +174,8 @@ test('choices put OS first and keep specialist software guidance available on de
   assert.ok(page.get('rule-group-development').contains(softwareGuidance));
   assert.equal(softwareGuidance.children[0].textContent, 'More software rules (optional)');
   assert.equal(softwareGuidance.children[1].id, 'specialist-placement');
-  assert.match(softwareGuidance.children[1].textContent, /relevant project/);
+  assert.match(softwareGuidance.children[1].textContent, /reused across matching projects/);
+  assert.match(softwareGuidance.children[1].textContent, /only in projects where they apply/);
   assert.match(softwareGuidance.children[1].textContent, /one-off work/);
   for (const group of catalog.RULE_GROUPS) {
     const fieldset = page.get(`rule-group-${group.id}`);
@@ -205,10 +206,10 @@ test('choices put OS first and keep specialist software guidance available on de
   assert.equal(page.get('rule-general').checked, true);
   assert.match(page.get('description-browser-operation').textContent, /navigate and interact with websites/);
   assert.equal(page.get('name-browser-operation').textContent, 'Browser use rules');
-  assert.match(page.get('details-browser-operation').textContent, /Browser verification is separate guidance/);
+  assert.match(page.get('details-browser-operation').textContent, /browser choice, tabs, sessions, and page state/);
   assert.match(page.get('description-computer-use').textContent, /operate desktop apps/);
   assert.equal(page.get('name-computer-use').textContent, 'Computer use rules');
-  assert.match(page.get('details-computer-use').textContent, /Browser access alone does not provide desktop control/);
+  assert.match(page.get('details-computer-use').textContent, /focus, selection, windows, and controls/);
   assert.equal(page.get('rule-computer-use').checked, false);
   for (const rule of catalog.RULES) {
     const description = page.get(`description-${rule.id}`);
@@ -518,37 +519,35 @@ test('saved multiple-OS choices ask for review and keep one OS', () => {
   assert.match(page.get('link-warning').textContent, /multiple operating systems/i);
 });
 
-test('software testing and browser verification are independently optional', () => {
-  for (const id of ['testing', 'browser-verification']) {
-    const other = id === 'testing' ? 'browser-verification' : 'testing';
-    const page = boot(`https://example.test/agent-rulebook/?rules=${id}`);
-    assert.equal(page.get(`rule-${id}`).checked, true);
-    assert.equal(page.get(`rule-${other}`).checked, false);
-    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt([id]));
-    assert.equal(page.get('link-warning').hidden, true, 'Current selections do not show migration warnings');
-    const restored = boot(page.get('setup-link').value);
-    assert.equal(restored.get('link-warning').hidden, true, 'New saved selections stay free of migration warnings');
-    page.get(`rule-${other}`).checked = true;
-    page.get(`rule-${other}`).dispatch('change');
-    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['testing', 'browser-verification']));
-    assert.equal(page.get('link-warning').hidden, true);
-  }
-  const legacy = boot('https://example.test/agent-rulebook/?rules=testing&scope=project');
-  assert.match(legacy.get('link-warning').textContent, /no longer include browser checks/);
+test('software testing and web development remain independent choices', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=testing');
+  assert.equal(page.get('rule-testing').checked, true);
+  assert.equal(page.get('rule-web').checked, false);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['testing']));
+  assert.equal(page.get('link-warning').hidden, true);
+  page.get('rule-web').checked = true;
+  page.get('rule-web').dispatch('change');
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['testing', 'web']));
+  assert.equal(page.get('link-warning').hidden, true);
 });
 
-test('web development and browser verification remain separate choices inside the web group', () => {
-  const page = boot('https://example.test/agent-rulebook/?rules=web');
-  assert.equal(page.get('rule-web').checked, true);
-  assert.equal(page.get('rule-browser-verification').checked, false);
-  page.get('rule-browser-verification').checked = true;
-  page.get('rule-browser-verification').dispatch('change');
-  assert.equal(page.get('rule-web').checked, true);
-  assert.match(page.get('prompt-preview').value, /project\/browser-verification-rules\.md/);
-  page.get('rule-web').checked = false;
-  page.get('rule-web').dispatch('change');
+test('browser verification saved links keep the choice without selecting Web development', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=browser-verification');
   assert.equal(page.get('rule-browser-verification').checked, true);
-  assert.doesNotMatch(page.get('prompt-preview').value, /project\/web-development-rules\.md/);
+  assert.equal(page.get('rule-web').checked, false);
+  assert.equal(page.get('rule-general').checked, false);
+  assert.equal(page.get('link-warning').hidden, true);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['browser-verification']));
+  assert.match(page.get('setup-link').value, /browser-verification/);
+});
+
+test('retired native verification choice shows a notice without selecting a replacement', () => {
+  const page = boot('https://example.test/agent-rulebook/?rules=apple-apps,native-verification');
+  assert.equal(page.get('rule-apple-apps').checked, true);
+  assert.equal(page.get('rule-general').checked, false);
+  assert.match(page.get('link-warning').textContent, /no longer separate rule choices/);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['apple-apps']));
+  assert.ok(!page.get('setup-link').value.includes('native-verification'));
 });
 
 test('published app-platform rules are optional and independent of the agent OS', () => {

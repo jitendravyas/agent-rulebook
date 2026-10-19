@@ -85,10 +85,11 @@ function restoreLinkedSelection() {
   if (mergedNames.length) {
     linkWarnings.set('merged', `${mergedNames.join(' and ')} ${mergedNames.length === 1 ? 'is' : 'are'} now part of General. This saved choice selects General for review; check it before previewing.`);
   } else linkWarnings.delete('merged');
-  if ((params.has('scope') || params.has('agent'))
-    && originalRequested.includes('testing') && !originalRequested.includes('browser-verification')) {
-    linkWarnings.set('split', 'Software testing rules no longer include browser checks. Select Browser verification rules separately if you need them.');
-  } else linkWarnings.delete('split');
+  const retiredVerification = ['native-verification'].filter(id => originalRequested.includes(id));
+  if (retiredVerification.length) {
+    const names = retiredVerification.map(() => 'Native app verification');
+    linkWarnings.set('retired-verification', `${names.join(' and ')} ${names.length === 1 ? 'is' : 'are'} no longer separate rule choices. Review your remaining choices; no replacement was selected automatically.`);
+  } else linkWarnings.delete('retired-verification');
   const known = new Set(RULES.map((rule) => rule.id));
   const requestedOS = OS_RULES.filter(rule => requested.includes(rule.id));
   const selectedOSId = requestedOS[0]?.id;
@@ -98,7 +99,7 @@ function restoreLinkedSelection() {
   else linkWarnings.delete('os');
   const oldScopes = params.getAll('scope');
   const invalidChoices = {
-    rules: requested.some((id) => !known.has(id)) || params.getAll('rules').length > 1,
+    rules: requested.some((id) => !known.has(id) && !retiredVerification.includes(id)) || params.getAll('rules').length > 1,
     scope: oldScopes.length > 0,
   };
   const warnings = {
@@ -147,7 +148,7 @@ function renderChoices() {
       clear.id = 'clear-os-selection';
       clear.type = 'button';
       clear.addEventListener('click', () => {
-        clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation', 'browser-split');
+        clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'retired-verification', 'animation', 'browser-split');
         OS_RULES.forEach(rule => selected.delete(rule.id));
         updateSelection();
       });
@@ -156,7 +157,7 @@ function renderChoices() {
     if (group.id === 'development') {
       const disclosure = textElement('details', 'software-guidance', '');
       disclosure.id = 'software-guidance';
-      const placementGuidance = textElement('p', 'software-placement', 'These rules usually belong with a relevant project. For one-off work, use them only for that task.');
+      const placementGuidance = textElement('p', 'software-placement', 'These rules can be reused across matching projects. Include them only in projects where they apply; for one-off work, use them only for that task.');
       placementGuidance.id = 'specialist-placement';
       const specialistChoices = textElement('div', 'software-rule-choices', '');
       disclosure.append(textElement('summary', '', 'More software rules (optional)'), placementGuidance, specialistChoices);
@@ -194,7 +195,7 @@ function renderChoices() {
     input.id = `rule-${rule.id}`;
     input.setAttribute('aria-labelledby', `name-${rule.id}`);
     input.addEventListener('change', () => {
-      clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation', 'browser-split');
+      clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'retired-verification', 'animation', 'browser-split');
       if (rule.environment && input.checked) OS_RULES.forEach(os => selected.delete(os.id));
       if (rule.id === 'coding' && input.checked) {
         selected.add('version-control');
@@ -378,7 +379,7 @@ element('copy-setup-link').addEventListener('click', async () => {
 });
 
 element('clear-selection').addEventListener('click', () => {
-  clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'split', 'animation', 'browser-split');
+  clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'retired-verification', 'animation', 'browser-split');
   selected.clear();
   updateSelection();
 });

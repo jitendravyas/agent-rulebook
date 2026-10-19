@@ -22,16 +22,25 @@ const WEB_RULE = {
   id: 'web',
   label: 'Web development rules',
   description:
-    'Applies to browser-rendered pages and supporting web endpoints, including temporary pages. Not for simply visiting a website.',
+    'For building or changing browser-rendered pages and supporting web endpoints, including temporary pages.',
   purpose: 'For building or changing websites and web apps. Covers browser behavior, resource loading, and web security.',
   path: 'project/web-development-rules.md',
+};
+
+const BROWSER_VERIFICATION_RULE = {
+  id: 'browser-verification',
+  label: 'Browser verification rules',
+  description:
+    'For checking browser-rendered software in its intended browser or embedded runtime. Covers target selection, test isolation, and honest reporting of observed results.',
+  purpose: 'For verifying rendered pages and interactions through manual or automated checks in a browser.',
+  path: 'project/browser-verification-rules.md',
 };
 
 const APPLE_APPS_RULE = {
   id: 'apple-apps',
   label: 'Apple app development rules',
   description:
-    'For apps targeting Apple platforms, not simply because the agent runs on a Mac. Includes approval boundaries for signing and store settings.',
+    'For building apps targeting Apple platforms. Includes approval boundaries for signing and store settings.',
   purpose: 'For building Apple apps. Covers signing, file access, and privacy declarations.',
   path: 'project/apple-app-development-rules.md',
 };
@@ -40,7 +49,7 @@ const ANDROID_APPS_RULE = {
   id: 'android-apps',
   label: 'Android app development rules',
   description:
-    'For apps targeting Android devices, not simply because the agent runs on Android. Includes approval boundaries for signing and store settings.',
+    'For building apps targeting Android devices. Includes approval boundaries for signing and store settings.',
   purpose: 'For building Android apps. Covers signing, exposed components, and packaged permissions.',
   path: 'project/android-app-development-rules.md',
 };
@@ -49,18 +58,9 @@ const TESTING_RULE = {
   id: 'testing',
   label: 'Software testing rules',
   description:
-    'For agents running existing tests or writing and updating tests. Covers meaningful edge cases without duplicate coverage across test levels.',
+    'For agents running existing tests or writing and updating tests, including browser end-to-end tests when relevant. Covers meaningful edge cases without duplicate coverage across test levels.',
   purpose: 'For writing or running tests in any software, including edge cases and regression checks.',
   path: 'project/software-testing-rules.md',
-};
-
-const BROWSER_VERIFICATION_RULE = {
-  id: 'browser-verification',
-  label: 'Browser verification rules',
-  description:
-    'For checking rendered web pages and apps, including interactions and accessibility when relevant. Not for ordinary browsing.',
-  purpose: 'For checking browser-rendered pages and apps, including interactions and accessibility.',
-  path: 'project/browser-verification-rules.md',
 };
 
 const MAC_RULE = {
@@ -97,7 +97,7 @@ const BROWSER_USE_RULE = {
   id: 'browser-operation',
   label: 'Browser use rules',
   description:
-    'For agents with browser control tools. Covers browser choice, tabs, sessions, and page state. Does not enable browser access. Browser verification is separate guidance for checking software.',
+    'For agents with browser control tools. Covers browser choice, tabs, sessions, and page state.',
   purpose: 'For agents that can navigate and interact with websites. Protects tabs and sessions.',
   path: 'global/browser-use-rules.md',
 };
@@ -106,7 +106,7 @@ const COMPUTER_USE_RULE = {
   id: 'computer-use',
   label: 'Computer use rules',
   description:
-    'For agents that can control desktop apps or system interfaces. Browser access alone does not provide desktop control; these rules do not enable it.',
+    'For agents that can control desktop apps or system interfaces. Covers focus, selection, windows, and controls.',
   purpose: 'For agents that can operate desktop apps. Helps avoid acting in the wrong window or control.',
   path: 'global/computer-use-rules.md',
 };
@@ -124,8 +124,8 @@ const UI_ANIMATION_RULE = {
   id: 'ui-animation',
   label: 'Web and native UI animation rules',
   description:
-    'For live motion in browser or native app interfaces. Covers reduced motion, interruption, and cleanup. Not for exported video.',
-  purpose: 'For live UI animation in websites or native apps, not exported video.',
+    'For live motion in browser or native app interfaces. Covers reduced motion, interruption, and cleanup.',
+  purpose: 'For live UI animation in websites or native apps.',
   path: 'project/interactive-ui-animation-rules.md',
 };
 
@@ -133,8 +133,8 @@ const I18N_RULE = {
   id: 'i18n',
   label: 'Software localization rules',
   description:
-    'For websites, native apps, and other software with multiple languages or regional formats, including right-to-left interfaces. Not for translating an ordinary document or message.',
-  purpose: 'For multilingual or region-aware software on any platform, not ordinary document translation.',
+    'For websites, native apps, and other software with multiple languages or regional formats, including right-to-left interfaces.',
+  purpose: 'For multilingual or region-aware software on any platform.',
   path: 'project/internationalization-localization-rules.md',
 };
 
@@ -143,10 +143,10 @@ export const RULES = [
   GENERAL_RULE,
   CODING_RULE,
   WEB_RULE,
+  BROWSER_VERIFICATION_RULE,
   APPLE_APPS_RULE,
   ANDROID_APPS_RULE,
   TESTING_RULE,
-  BROWSER_VERIFICATION_RULE,
   MAC_RULE,
   WINDOWS_RULE,
   LINUX_RULE,
@@ -169,13 +169,13 @@ const SOFTWARE_AREAS = [
   {
     id: 'web',
     title: 'Websites and web apps',
-    description: 'Web-specific guidance and browser checks, including embedded browser interfaces.',
+    description: 'Web-specific development and browser verification guidance, including mobile browsers and embedded web views.',
     rules: [WEB_RULE, BROWSER_VERIFICATION_RULE],
   },
   {
     id: 'native',
-    title: 'Native app platforms',
-    description: 'Choose the apps you build for, not the operating system your agent uses.',
+    title: 'Native app development',
+    description: 'Choose rules for the app platforms you target, independently of the operating system your agent uses.',
     rules: [APPLE_APPS_RULE, ANDROID_APPS_RULE],
   },
 ];
@@ -304,6 +304,7 @@ export function buildReviewPrompt(selectedIds) {
     ...sources,
     '1. Read existing instructions and complete sources.',
     'Confirm the target agent and relevant instruction locations. Read existing instructions there, including personal and machine-specific guidance. If none exist, propose supported locations without creating files yet. Inspect only relevant accessible locations, not the whole device. If an existing file is unreadable, ask for it; do not guess or propose edits to it. Do not send private instructions or project content to additional external services for comparison.',
+    'Before proposing edits, resolve symbolic links and managed configuration to their actual targets and authoritative sources. Identify agents or locations sharing those targets within the relevant setup; disclose shared effects in the approval request and ask if their scope is unclear.',
     'Check each selected source for truncated or omitted text, even after a successful request. Retrieve missing text; if completeness cannot be confirmed, report the gap and do not adopt from that source.',
     'If a selected rule file is missing or has moved, ask me to refresh my choices on the current website. Do not guess a replacement or review an unselected file.',
     `Read the source license separately before proposing adoption: ${new URL('LICENSE', SOURCE_ROOT).href}. Check that it is complete. If unreadable or unclear, report the gap and do not adopt copied text. Do not infer requirements from missing notices in rule files.`,
@@ -325,6 +326,7 @@ export function buildReviewPrompt(selectedIds) {
     '',
     '4. If approved, apply and verify only those edits.',
     'Before modifying an existing instruction file, make and verify a recoverable copy of its original contents in the approved private backup location, outside instruction-loading paths and version control. Keep backups in the approved environment; do not publish them or transfer them to another service. If the backup cannot be made or verified, stop and ask rather than edit.',
+    'Preserve link relationships and edit through the authoritative source; include the original link targets in the recovery plan. Do not replace a symbolic link with a regular file or affect unapproved shared consumers.',
     'Use source links only to perform this review. In adopted instructions, include the rule text without repository branding, source links, repository paths, or tracking metadata such as commit IDs or sync comments.',
     'Preserve unrelated instructions and required license notices. Read saved files back, check them against the approved edits, and report mismatches. Verify that the intended agent loads the update when possible; otherwise report loading as unverified, not complete.',
   ].join('\n');

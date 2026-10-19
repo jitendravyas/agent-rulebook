@@ -1,6 +1,6 @@
 # Coding-agent rules for software work
 
-Apply only to software development, including temporary or standalone software. Using a helper script or website for another task does not itself require a development workflow.
+Apply to software development, including temporary or standalone software.
 
 ## Project inspection and planning
 
