@@ -64,8 +64,8 @@ function clearLinkWarnings(...keys) {
 
 function revealSelectedSoftware() {
   const hasProjectChoice = RULE_GROUPS.find((group) => group.id === 'development')
-    .rules.some((rule) => selected.has(rule.id));
-  if (selected.has('coding') || hasProjectChoice) element('software-guidance').open = true;
+    .rules.some((rule) => rule.id !== 'coding' && selected.has(rule.id));
+  if (hasProjectChoice) element('software-guidance').open = true;
 }
 
 function restoreLinkedSelection() {
@@ -80,7 +80,7 @@ function restoreLinkedSelection() {
     linkWarnings.set('browser-split', 'Browser and computer use is now two choices. This older link kept both; uncheck Computer use if your agent cannot control desktop apps.');
   } else linkWarnings.delete('browser-split');
   if (originalRequested.includes('browser-animation')) {
-    linkWarnings.set('animation', 'Browser animation is now Interactive UI animation, covering browser and native interfaces. Your selection is kept; review its updated scope.');
+    linkWarnings.set('animation', 'Browser animation is now Web and native UI animation, covering browser and native interfaces. Your selection is kept; review its updated scope.');
   } else linkWarnings.delete('animation');
   if (mergedNames.length) {
     linkWarnings.set('merged', `${mergedNames.join(' and ')} ${mergedNames.length === 1 ? 'is' : 'are'} now part of General. This saved choice selects General for review; check it before previewing.`);
@@ -135,7 +135,6 @@ function renderChoices() {
     const fieldset = textElement('fieldset', 'rule-group', '');
     fieldset.id = `rule-group-${group.id}`;
     const legend = textElement('legend', '', group.title);
-    if (group.id === 'development') legend.className = 'visually-hidden';
     legend.id = `group-title-${group.id}`;
     const description = textElement('p', 'group-description', group.description);
     description.id = `group-description-${group.id}`;
@@ -157,22 +156,29 @@ function renderChoices() {
     if (group.id === 'development') {
       const disclosure = textElement('details', 'software-guidance', '');
       disclosure.id = 'software-guidance';
-      disclosure.append(textElement('summary', '', 'More software rules (optional)'), fieldset);
-      element('rule-groups').append(disclosure);
-    } else element('rule-groups').append(fieldset);
-    if (group.id === 'development') {
-      const webRules = textElement('div', 'web-rule-group', '');
-      const webRulesLabel = textElement('p', 'web-rule-group-label', 'Web work: build and verify');
-      webRulesLabel.id = 'web-rule-group-label';
-      webRules.setAttribute('role', 'group');
-      webRules.setAttribute('aria-labelledby', webRulesLabel.id);
-      const webChoices = textElement('div', 'web-rule-choices', '');
-      webRules.append(webRulesLabel, webChoices);
-      choices.append(webRules);
-      for (const rule of group.rules) {
-        containers.set(rule.id, ['web', 'browser-verification'].includes(rule.id) ? webChoices : choices);
+      const placementGuidance = textElement('p', 'software-placement', 'These rules usually belong with a relevant project. For one-off work, use them only for that task.');
+      placementGuidance.id = 'specialist-placement';
+      const specialistChoices = textElement('div', 'software-rule-choices', '');
+      disclosure.append(textElement('summary', '', 'More software rules (optional)'), placementGuidance, specialistChoices);
+      fieldset.append(disclosure);
+      containers.set('coding', choices);
+      for (const area of group.areas) {
+        const areaGroup = textElement('div', 'software-area', '');
+        areaGroup.id = `software-area-${area.id}`;
+        areaGroup.setAttribute('role', 'group');
+        areaGroup.setAttribute('aria-labelledby', `software-area-title-${area.id}`);
+        areaGroup.setAttribute('aria-describedby', `software-area-description-${area.id}`);
+        const title = textElement('p', 'software-area-title', area.title);
+        title.id = `software-area-title-${area.id}`;
+        const explanation = textElement('p', 'software-area-description', area.description);
+        explanation.id = `software-area-description-${area.id}`;
+        const areaChoices = textElement('div', 'software-area-choices', '');
+        areaGroup.append(title, explanation, areaChoices);
+        specialistChoices.append(areaGroup);
+        area.rules.forEach((rule) => containers.set(rule.id, areaChoices));
       }
     } else group.rules.forEach((rule) => containers.set(rule.id, choices));
+    element('rule-groups').append(fieldset);
   }
   for (const rule of RULE_GROUPS.flatMap(group => group.rules)) {
     const card = textElement('div', 'rule-card', '');
@@ -195,17 +201,22 @@ function renderChoices() {
       }
       if (input.checked) selected.add(rule.id);
       else selected.delete(rule.id);
-      if (rule.id === 'coding' && input.checked) revealSelectedSoftware();
       updateSelection();
     });
     const text = document.createElement('span');
     const name = textElement('strong', 'rule-name', rule.label);
     name.id = `name-${rule.id}`;
     text.append(name);
+    const scope = ruleReviewScope(rule);
+    if (scope !== 'project') {
+      const placement = textElement('span', 'rule-placement', scope === 'global' ? 'Global default' : 'Global if recurring');
+      placement.id = `placement-${rule.id}`;
+      text.append(placement);
+    }
     const description = textElement('span', 'rule-description', rule.purpose
       + (rule.id === 'coding' ? ' Also selects Version control rules; you can uncheck them.' : ''));
     description.id = `description-${rule.id}`;
-    input.setAttribute('aria-describedby', description.id
+    input.setAttribute('aria-describedby', `${scope === 'project' ? 'specialist-placement' : `placement-${rule.id}`} ${description.id}`
       + (rule.environment ? ' group-description-environment' : ''));
     text.append(description);
     label.append(input, text);

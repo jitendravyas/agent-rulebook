@@ -1,4 +1,4 @@
-# Interactive UI animation rules
+# Web and native UI animation rules
 
 Apply when creating or changing live user interface (UI) animations in browser or native applications. Do not apply to video compositions merely because their previews run in an interactive interface.
 

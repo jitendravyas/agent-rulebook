@@ -1,4 +1,4 @@
-# Internationalization and localization rules
+# Software localization rules
 
 Apply to internationalization and localization of software and its user-facing content, including right-to-left interfaces. Do not apply the software workflow to ordinary message or document translation.
 

@@ -50,7 +50,7 @@ const TESTING_RULE = {
   label: 'Software testing rules',
   description:
     'For agents running existing tests or writing and updating tests. Covers meaningful edge cases without duplicate coverage across test levels.',
-  purpose: 'For writing or running software tests, including edge cases and regression checks.',
+  purpose: 'For writing or running tests in any software, including edge cases and regression checks.',
   path: 'project/software-testing-rules.md',
 };
 
@@ -59,7 +59,7 @@ const BROWSER_VERIFICATION_RULE = {
   label: 'Browser verification rules',
   description:
     'For checking rendered web pages and apps, including interactions and accessibility when relevant. Not for ordinary browsing.',
-  purpose: 'For verifying rendered pages, interactions, and accessibility in a browser.',
+  purpose: 'For checking browser-rendered pages and apps, including interactions and accessibility.',
   path: 'project/browser-verification-rules.md',
 };
 
@@ -122,19 +122,19 @@ const VERSION_CONTROL_RULE = {
 
 const UI_ANIMATION_RULE = {
   id: 'ui-animation',
-  label: 'Interactive UI animation rules',
+  label: 'Web and native UI animation rules',
   description:
     'For live motion in browser or native app interfaces. Covers reduced motion, interruption, and cleanup. Not for exported video.',
-  purpose: 'For animations inside a live website or app, not an exported video.',
+  purpose: 'For live UI animation in websites or native apps, not exported video.',
   path: 'project/interactive-ui-animation-rules.md',
 };
 
 const I18N_RULE = {
   id: 'i18n',
-  label: 'Internationalization and localization rules',
+  label: 'Software localization rules',
   description:
-    'For multilingual software and regional formats, including right-to-left interfaces. Not for translating an ordinary document or message.',
-  purpose: 'For apps or websites with multiple languages, regional formats, or right-to-left text.',
+    'For websites, native apps, and other software with multiple languages or regional formats, including right-to-left interfaces. Not for translating an ordinary document or message.',
+  purpose: 'For multilingual or region-aware software on any platform, not ordinary document translation.',
   path: 'project/internationalization-localization-rules.md',
 };
 
@@ -159,6 +159,26 @@ export const RULES = [
 
 export const OS_RULES = RULES.filter((rule) => rule.environment);
 const ACTIVITY_RULE_PATHS = new Set([CODING_RULE, VERSION_CONTROL_RULE, BROWSER_USE_RULE, COMPUTER_USE_RULE].map(rule => rule.path));
+const SOFTWARE_AREAS = [
+  {
+    id: 'across',
+    title: 'Platform Agnostic Rules',
+    description: 'Software testing, UI animation, and localization can apply to web, native, or other software when relevant.',
+    rules: [TESTING_RULE, UI_ANIMATION_RULE, I18N_RULE],
+  },
+  {
+    id: 'web',
+    title: 'Websites and web apps',
+    description: 'Web-specific guidance and browser checks, including embedded browser interfaces.',
+    rules: [WEB_RULE, BROWSER_VERIFICATION_RULE],
+  },
+  {
+    id: 'native',
+    title: 'Native app platforms',
+    description: 'Choose the apps you build for, not the operating system your agent uses.',
+    rules: [APPLE_APPS_RULE, ANDROID_APPS_RULE],
+  },
+];
 
 export const RULE_GROUPS = [
   {
@@ -171,21 +191,14 @@ export const RULE_GROUPS = [
     id: 'general',
     title: 'General rules and optional activities',
     description: 'General applies across tasks. Add only activities your agent does; the prompt checks where each belongs.',
-    rules: [GENERAL_RULE, BROWSER_USE_RULE, COMPUTER_USE_RULE, VERSION_CONTROL_RULE, CODING_RULE],
+    rules: [GENERAL_RULE, BROWSER_USE_RULE, COMPUTER_USE_RULE, VERSION_CONTROL_RULE],
   },
   {
     id: 'development',
-    title: 'More software rules (optional)',
-    description: 'Choose the work relevant to your project. For one-off work without project instructions, use the guidance for that task instead.',
-    rules: [
-      WEB_RULE,
-      BROWSER_VERIFICATION_RULE,
-      APPLE_APPS_RULE,
-      ANDROID_APPS_RULE,
-      TESTING_RULE,
-      UI_ANIMATION_RULE,
-      I18N_RULE,
-    ],
+    title: 'Software development',
+    description: 'Select rules for software your agent builds or maintains. For one-off work without project instructions, use the guidance for that task instead.',
+    rules: [CODING_RULE, ...SOFTWARE_AREAS.flatMap((area) => area.rules)],
+    areas: SOFTWARE_AREAS,
   },
 ];
 

@@ -79,6 +79,7 @@ test('General includes communication and tool guidance without duplicate bullets
   assert.match(general, /Before recommending or adopting a third-party tool for a new workflow or purpose, check official sources for its license or service terms/);
   assert.match(general, /Use authoritative documentation or built-in help for uncertain version-sensitive commands/);
   assert.match(general, /Before starting long-running processes, check for a suitable running instance/);
+  assert.match(general, /Reply in chat instead of saving plans, notes, reports, or other documents unless the user requested the file or approves it first/);
   const communication = general.split('## Communication\n')[1].split('\n## ')[0];
   assert.match(communication, /When a visual or interactive explanation would be clearer than chat, recommend an available format/);
   assert.doesNotMatch(communication, /\bHTML\b|\bPDF\b|Mermaid/);
@@ -231,7 +232,7 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.match(defaults, /only the activities your agent does and, if useful, its operating-system rules/i);
   assert.ok(html.indexOf('id="selection-next"') < html.indexOf('id="rule-form"'));
   const descriptions = html.match(/<form\b[^>]*id="rule-form"[^>]*aria-describedby="([^"]+)"/)?.[1].split(/\s+/);
-  assert.deepEqual(descriptions, ['agent-fit', 'selection-purpose', 'selection-next']);
+  assert.deepEqual(descriptions, ['agent-fit', 'selection-purpose', 'placement-guide', 'selection-next']);
   assert.doesNotMatch(html, /id="scope-global"|id="scope-project"|name="review-scope"/);
   assert.match(html, /This website does not replace your instructions/);
   assert.match(html, /open that project first; review another project separately/);
@@ -336,7 +337,7 @@ test('README setup advice and standalone scenarios stay outside agent rule sourc
     assert.ok(setup.includes(requirement));
   }
   const plan = read('tests/agent-rule-scenarios.md');
-  assert.equal([...plan.matchAll(/^\| “/gm)].length, 8);
+  assert.equal([...plan.matchAll(/^\| “/gm)].length, 9);
   assert.match(plan, /not evidence that every agent passes/);
   assert.match(plan, /## Explanation-artifact approval checks/);
   assert.match(plan, /No artifact files are created before approval/);

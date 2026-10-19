@@ -167,12 +167,15 @@ test('prompt stays hidden until Preview prompt and hides again when choices chan
 test('choices put OS first and keep specialist software guidance available on demand', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.deepEqual(page.get('rule-groups').children.map(group => group.id), [
-    'rule-group-environment', 'rule-group-general', 'software-guidance',
+    'rule-group-environment', 'rule-group-general', 'rule-group-development',
   ]);
   const softwareGuidance = page.get('software-guidance');
   assert.equal(softwareGuidance.open, false, 'Specialist choices start collapsed');
-  assert.ok(softwareGuidance.contains(page.get('rule-group-development')));
+  assert.ok(page.get('rule-group-development').contains(softwareGuidance));
   assert.equal(softwareGuidance.children[0].textContent, 'More software rules (optional)');
+  assert.equal(softwareGuidance.children[1].id, 'specialist-placement');
+  assert.match(softwareGuidance.children[1].textContent, /relevant project/);
+  assert.match(softwareGuidance.children[1].textContent, /one-off work/);
   for (const group of catalog.RULE_GROUPS) {
     const fieldset = page.get(`rule-group-${group.id}`);
     const description = page.get(`group-description-${group.id}`);
@@ -181,18 +184,24 @@ test('choices put OS first and keep specialist software guidance available on de
     assert.ok(fieldset.contains(description), `${group.id} displays its description`);
     assert.equal(fieldset['aria-describedby'], description.id);
   }
-  assert.deepEqual(catalog.RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control', 'coding']);
+  assert.deepEqual(catalog.RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control']);
   const generalChoices = page.get('rule-group-general').children[2];
   assert.match(generalChoices.children[0].className, /rule-card--general/);
   assert.equal(generalChoices.children[1].textContent, 'Other activities (optional)');
   assert.deepEqual(generalChoices.children.slice(2).map(card => card.children[0].children[0].value),
-    ['browser-operation', 'computer-use', 'version-control', 'coding']);
-  assert.equal(page.get('group-title-development').className, 'visually-hidden');
-  const webGroup = page.get('rule-group-development').children[2].children[0];
-  assert.equal(webGroup.className, 'web-rule-group');
-  assert.equal(webGroup['aria-labelledby'], 'web-rule-group-label');
-  assert.equal(page.get('web-rule-group-label').textContent, 'Web work: build and verify');
-  assert.deepEqual(webGroup.children[1].children.map(card => card.children[0].children[0].value), ['web', 'browser-verification']);
+    ['browser-operation', 'computer-use', 'version-control']);
+  assert.equal(page.get('group-title-development').textContent, 'Software development');
+  assert.ok(page.get('rule-group-development').children[2].contains(page.get('rule-coding')));
+  const softwareAreas = catalog.RULE_GROUPS.find(group => group.id === 'development').areas;
+  assert.deepEqual(softwareGuidance.children[2].children.map(area => area.id), softwareAreas.map(area => `software-area-${area.id}`));
+  for (const area of softwareAreas) {
+    const areaGroup = page.get(`software-area-${area.id}`);
+    assert.equal(areaGroup['aria-labelledby'], `software-area-title-${area.id}`);
+    assert.equal(areaGroup['aria-describedby'], `software-area-description-${area.id}`);
+    assert.equal(page.get(`software-area-title-${area.id}`).textContent, area.title);
+    assert.equal(page.get(`software-area-description-${area.id}`).textContent, area.description);
+    assert.deepEqual(areaGroup.children[2].children.map(card => card.children[0].children[0].value), area.rules.map(rule => rule.id));
+  }
   assert.equal(page.get('rule-general').checked, true);
   assert.match(page.get('description-browser-operation').textContent, /navigate and interact with websites/);
   assert.equal(page.get('name-browser-operation').textContent, 'Browser use rules');
@@ -203,6 +212,14 @@ test('choices put OS first and keep specialist software guidance available on de
   assert.equal(page.get('rule-computer-use').checked, false);
   for (const rule of catalog.RULES) {
     const description = page.get(`description-${rule.id}`);
+    const scope = catalog.ruleReviewScope(rule);
+    if (scope === 'project') {
+      assert.ok(page.get(`rule-${rule.id}`)['aria-describedby'].split(' ').includes('specialist-placement'));
+    } else {
+      const placement = page.get(`placement-${rule.id}`);
+      assert.equal(placement.textContent, scope === 'global' ? 'Global default' : 'Global if recurring');
+      assert.ok(page.get(`rule-${rule.id}`)['aria-describedby'].split(' ').includes(placement.id));
+    }
     assert.ok(description.textContent.includes(rule.purpose), `${rule.id} explains its purpose without opening Details`);
     assert.notEqual(description.hidden, true);
     assert.ok(page.get(`rule-${rule.id}`)['aria-describedby'].split(' ').includes(description.id));
@@ -234,7 +251,7 @@ test('choices put OS first and keep specialist software guidance available on de
   assert.match(page.get('prompt-preview').value, /global\/computer-use-rules\.md/);
   page.get('rule-coding').checked = true;
   page.get('rule-coding').dispatch('change');
-  assert.equal(softwareGuidance.open, true, 'Selecting software development reveals specialist choices');
+  assert.equal(softwareGuidance.open, false, 'Selecting software development keeps specialist choices optional');
   page.get('rule-coding').checked = false;
   page.get('rule-coding').dispatch('change');
   assert.equal(page.get('rule-browser-operation').checked, true);

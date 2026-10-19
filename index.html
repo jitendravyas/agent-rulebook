@@ -131,11 +131,12 @@
         <div class="selection-guide">
           <p id="agent-fit"><strong>Check your agent first.</strong> This builder is for agents that can read the linked rule files and your existing instruction files. If you only have a Custom Instructions text box, do not paste the generated prompt there.</p>
           <p id="selection-purpose"><strong>Start with General rules.</strong> They cover safety, privacy, checking work, and clear replies. They start selected but are optional. Add only the activities your agent does and, if useful, its operating-system rules.</p>
+          <p id="placement-guide"><strong>Where to keep them:</strong> General and operating-system rules are global defaults. Keep an activity globally if your agent does it regularly across projects; otherwise use project or task guidance.</p>
           <p id="selection-next"><strong>Then preview and copy the prompt.</strong> It asks your agent to review existing instructions, propose useful changes and a backup plan, then wait for your approval. Return later for a fresh review when the rules change.</p>
           <details><summary>Where do global and project rules go?</summary><p>Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Project rules belong with the relevant project. The prompt asks your agent to recommend the right location. This website does not replace your instructions.</p></details>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
-        <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose selection-next">
+        <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose placement-guide selection-next">
           <div id="rule-groups"></div>
           <button id="preview-prompt" class="button primary review-selection" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt <span aria-hidden="true">→</span></button>
           <p id="empty-selection-note" class="section-description" role="status" hidden>Select at least one rule set to preview a prompt.</p>
@@ -206,17 +207,26 @@
           <li><a data-rule-id="browser-operation" href="./global/browser-use-rules.md" type="text/markdown">Browser use rules</a></li>
           <li><a data-rule-id="computer-use" href="./global/computer-use-rules.md" type="text/markdown">Computer use rules</a></li>
           <li><a data-rule-id="version-control" href="./global/version-control-rules.md" type="text/markdown">Version control rules</a></li>
+        </ul>
+        <h3>Software development</h3>
+        <ul>
           <li><a data-rule-id="coding" href="./global/coding-rules.md" type="text/markdown">Software development rules</a></li>
         </ul>
-        <h3>More software rules (optional)</h3>
+        <h4>Platform Agnostic Rules</h4>
+        <ul>
+          <li><a data-rule-id="testing" href="./project/software-testing-rules.md" type="text/markdown">Software testing rules</a></li>
+          <li><a data-rule-id="ui-animation" href="./project/interactive-ui-animation-rules.md" type="text/markdown">Web and native UI animation rules</a></li>
+          <li><a data-rule-id="i18n" href="./project/internationalization-localization-rules.md" type="text/markdown">Software localization rules</a></li>
+        </ul>
+        <h4>Websites and web apps</h4>
         <ul>
           <li><a data-rule-id="web" href="./project/web-development-rules.md" type="text/markdown">Web development rules</a></li>
           <li><a data-rule-id="browser-verification" href="./project/browser-verification-rules.md" type="text/markdown">Browser verification rules</a></li>
+        </ul>
+        <h4>Native app platforms</h4>
+        <ul>
           <li><a data-rule-id="apple-apps" href="./project/apple-app-development-rules.md" type="text/markdown">Apple app development rules</a></li>
           <li><a data-rule-id="android-apps" href="./project/android-app-development-rules.md" type="text/markdown">Android app development rules</a></li>
-          <li><a data-rule-id="testing" href="./project/software-testing-rules.md" type="text/markdown">Software testing rules</a></li>
-          <li><a data-rule-id="ui-animation" href="./project/interactive-ui-animation-rules.md" type="text/markdown">Interactive UI animation rules</a></li>
-          <li><a data-rule-id="i18n" href="./project/internationalization-localization-rules.md" type="text/markdown">Internationalization and localization rules</a></li>
         </ul>
       </details>
       <p>General rules are a suggested starting point. For software work, consider “Software development rules”. Read the <a href="https://github.com/jitendravyas/agent-rulebook#safe-setup">safe setup advice</a> and <a href="./README.md" type="text/markdown">usage guide</a>. Retain the <a href="./LICENSE" rel="license">MIT license</a> when reusing the rules.</p>

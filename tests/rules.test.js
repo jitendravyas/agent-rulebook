@@ -38,11 +38,17 @@ test('every selectable rule and category explains its purpose', () => {
   }
   assert.deepEqual(RULE_GROUPS.map(group => group.id), ['environment', 'general', 'development']);
   assert.deepEqual(RULE_GROUPS.map(group => group.title), [
-    'Your agent’s operating system (optional)', 'General rules and optional activities', 'More software rules (optional)',
+    'Your agent’s operating system (optional)', 'General rules and optional activities', 'Software development',
   ]);
   const development = RULE_GROUPS.find(group => group.id === 'development');
-  assert.deepEqual(development.rules.slice(0, 2).map(rule => rule.id), ['web', 'browser-verification']);
-  assert.match(development.description, /relevant to your project/);
+  assert.deepEqual(development.rules.slice(0, 4).map(rule => rule.id), ['coding', 'testing', 'ui-animation', 'i18n']);
+  assert.deepEqual(development.areas.map(area => [area.title, area.rules.map(rule => rule.id)]), [
+    ['Platform Agnostic Rules', ['testing', 'ui-animation', 'i18n']],
+    ['Websites and web apps', ['web', 'browser-verification']],
+    ['Native app platforms', ['apple-apps', 'android-apps']],
+  ]);
+  assert.deepEqual(development.areas.flatMap(area => area.rules), development.rules.slice(1));
+  assert.match(development.description, /software your agent builds or maintains/);
   assert.match(development.description, /one-off work/);
   assert.match(html, /An HTML report presenting research can use General alone/);
   assert.match(html, /interactive website can benefit from software and web guidance/);
@@ -51,14 +57,20 @@ test('every selectable rule and category explains its purpose', () => {
   assert.equal(testing.label, 'Software testing rules');
   assert.match(testing.description, /existing tests/);
   assert.match(testing.description, /duplicate coverage/);
-  assert.deepEqual(RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control', 'coding']);
+  assert.match(testing.purpose, /any software/);
+  assert.match(RULES.find(rule => rule.id === 'browser-verification').purpose, /browser-rendered/);
+  assert.match(RULES.find(rule => rule.id === 'ui-animation').purpose, /websites or native apps/);
+  assert.match(RULES.find(rule => rule.id === 'i18n').purpose, /any platform/);
+  assert.deepEqual(RULE_GROUPS.find(group => group.id === 'general').rules.map(rule => rule.id), ['general', 'browser-operation', 'computer-use', 'version-control']);
   assert.match(RULES.find(rule => rule.id === 'computer-use').description, /Browser access alone does not provide desktop control/);
   assert.match(RULES.find(rule => rule.id === 'version-control').description, /version control tools like Git/);
   assert.ok(!development.rules.some(rule => rule.id === 'version-control'));
   assert.ok(RULES.every(rule => !rule.path.startsWith('drafts/')), 'No draft app-platform rules are offered');
   assert.ok(RULES.filter(rule => rule.environment).every(rule => !development.rules.includes(rule)), 'Agent OS is not an app target');
   const localization = RULES.find(rule => rule.id === 'i18n');
-  assert.equal(localization.label, 'Internationalization and localization rules');
+  assert.equal(RULES.find(rule => rule.id === 'ui-animation').label, 'Web and native UI animation rules');
+  assert.equal(localization.label, 'Software localization rules');
+  assert.match(localization.description, /websites, native apps, and other software/);
   assert.match(localization.description, /Not for translating an ordinary document or message/);
   assert.ok(development.rules.includes(localization));
 });
@@ -74,6 +86,8 @@ test('selection guidance helps first-time and returning users without adding rul
   assert.match(selectionGuide, /only have a Custom Instructions text box, do not paste the generated prompt there/);
   assert.match(selectionGuide, /Start with General rules/);
   assert.match(selectionGuide, /They start selected but are optional/);
+  assert.match(selectionGuide, /General and operating-system rules are global defaults/);
+  assert.match(selectionGuide, /Keep an activity globally if your agent does it regularly across projects/);
   assert.match(selectionGuide, /Then preview and copy the prompt/);
   assert.match(selectionGuide, /Where do global and project rules go\?/);
   assert.match(selectionGuide, /user-level <code>AGENTS\.md<\/code> or <code>CLAUDE\.md<\/code>/);
@@ -323,6 +337,8 @@ test('static source links and categories match the live catalog', () => {
       assert.equal(link.text, group.rules[position].label);
     });
   });
+  assert.deepEqual([...groups[2][2].matchAll(/<h4>([^<]+)<\/h4>/g)].map(([, title]) => title),
+    RULE_GROUPS.find(group => group.id === 'development').areas.map(area => area.title));
 });
 
 test('the retired performance set is not offered or linked in review prompts', () => {
