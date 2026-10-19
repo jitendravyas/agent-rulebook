@@ -136,6 +136,8 @@ function boot(address, { intersectionObserver = true, clipboard } = {}) {
 
 test('prompt stays hidden until Preview prompt and hides again when choices change', () => {
   assert.ok(html.indexOf('id="copy-prompt"') < html.indexOf('id="selection-summary"'), 'Copy is available before the long selection recap');
+  assert.ok(html.indexOf('id="prompt-preview"') < html.indexOf('id="selection-summary"'), 'The prompt is visible before the long selection recap');
+  assert.ok(html.indexOf('id="prompt-preview"') < html.indexOf('id="copy-prompt"'), 'Visitors can review the prompt before the Copy control');
   assert.equal([...html.matchAll(/id="copy-prompt"/g)].length, 1, 'There is one Copy control');
   const page = boot('https://example.test/agent-rulebook/?rules=general,mac#your-file');
   assert.equal(page.get('your-file').hidden, true);
@@ -463,10 +465,9 @@ test('project-only choices also explain the one-off task route', () => {
 test('project and activity choices describe both review scopes', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=coding,web');
   assert.match(page.get('output-scope').textContent, /one project or one-off software task and selected activity guidance/);
-  assert.match(page.get('output-scope').textContent, /For selected activity rules, your agent will suggest whether each belongs globally, in a project, or only in this conversation/);
+  assert.match(page.get('output-scope').textContent, /It asks your agent to suggest whether each selected activity rule belongs globally, in a project, or only in this conversation/);
   assert.match(page.get('selection-summary').textContent, /Global, project, or this conversation/);
-  assert.match(page.get('action-status').textContent, /Review prompt ready with 2 rule sets\./);
-  assert.doesNotMatch(page.get('action-status').textContent, /grouped by/);
+  assert.equal(page.get('action-status').textContent, '');
   assert.match(page.get('prompt-preview').value, /Project sources/);
   assert.match(page.get('prompt-preview').value, /Activity sources/);
 });
@@ -558,10 +559,10 @@ test('OS choices explain that they select safety rules, with help after the radi
   const osGroup = page.get('rule-group-environment');
   const [legend, choices, clear, help] = osGroup.children;
   assert.equal(legend.tag, 'legend');
-  assert.equal(legend.textContent, 'Your agent’s operating system');
+  assert.equal(legend.textContent, 'Your agent’s operating system (optional)');
   assert.equal(clear.id, 'clear-os-selection');
   assert.equal(help.id, 'group-description-environment');
-  assert.equal(help.textContent, 'These OS rules are optional. Choose the system where your agent works, not the apps you build.');
+  assert.equal(help.textContent, 'Choose the system where your agent works, not the apps you build.');
   assert.equal(osGroup['aria-describedby'], help.id);
   assert.deepEqual(choices.children.map(card => card.children[0].children[0].value), ['mac', 'windows', 'linux']);
   const descendants = node => [node, ...node.children.filter(child => typeof child === 'object').flatMap(descendants)];
@@ -686,12 +687,12 @@ test('mobile shortcut previews and returns without IntersectionObserver', () => 
   assert.equal(page.get('choose-title').scrollOptions.block, 'start');
 });
 
-test('keeps a static favicon and separate review approval guidance', () => {
+test('keeps a static favicon and accurate review approval guidance', () => {
   assert.match(html, /<link id="favicon"[^>]+type="image\/svg\+xml"[^>]+data:image\/svg\+xml/);
   assert.match(html, /Nothing is installed or activated here\./);
-  assert.match(html, /Your agent combines useful guidance, removes duplicates, and preserves scope and safeguards before you approve changes\./);
   assert.equal((html.match(/installed or activated/g) ?? []).length, 1);
-  assert.match(html, /show proposed changes and ask for your approval before editing instructions/);
+  assert.match(html, /It asks your agent to show proposed changes and request approval before editing/);
+  assert.doesNotMatch(html, /Your agent must show proposed changes/);
   assert.doesNotMatch(app, /animateFavicon/);
   assert.match(html, /id="pause-motion"/);
 });

@@ -153,8 +153,8 @@ const ACTIVITY_RULE_PATHS = new Set([CODING_RULE, VERSION_CONTROL_RULE, BROWSER_
 export const RULE_GROUPS = [
   {
     id: 'environment',
-    title: 'Your agent’s operating system',
-    description: 'These OS rules are optional. Choose the system where your agent works, not the apps you build.',
+    title: 'Your agent’s operating system (optional)',
+    description: 'Choose the system where your agent works, not the apps you build.',
     rules: OS_RULES,
   },
   {

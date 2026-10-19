@@ -213,15 +213,15 @@ test('README and website distinguish relevant modules from loading the whole col
   }
   const html = read('index.html');
   assert.match(html, /The review scope for your selected rules appears here/);
-  const defaults = html.match(/<p\b[^>]*id="selection-defaults"[^>]*>([\s\S]*?)<\/p>/)?.[1];
+  const defaults = html.match(/<p\b[^>]*id="selection-purpose"[^>]*>([\s\S]*?)<\/p>/)?.[1];
   assert.match(defaults, /Start with General/);
   assert.match(defaults, /start selected but are optional/i);
-  assert.match(defaults, /skip software choices if you do not build software/i);
-  assert.ok(html.indexOf('id="selection-defaults"') < html.indexOf('id="rule-form"'));
+  assert.match(defaults, /only the activities your agent does and, if useful, its operating-system rules/i);
+  assert.ok(html.indexOf('id="selection-next"') < html.indexOf('id="rule-form"'));
   const descriptions = html.match(/<form\b[^>]*id="rule-form"[^>]*aria-describedby="([^"]+)"/)?.[1].split(/\s+/);
-  assert.deepEqual(descriptions, ['selection-purpose', 'selection-defaults']);
+  assert.deepEqual(descriptions, ['selection-purpose', 'selection-next']);
   assert.doesNotMatch(html, /id="scope-global"|id="scope-project"|name="review-scope"/);
-  assert.match(html, /Nothing here replaces your instructions automatically/);
+  assert.match(html, /This website does not replace your instructions/);
   assert.match(html, /open that project first; review another project separately/);
   assert.match(html, /For one-off work without project instructions, ask for task-scoped guidance/);
   const nextStep = html.match(/<section class="next-step"[^>]*>([\s\S]*?)<\/section>/)?.[1];

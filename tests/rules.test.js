@@ -38,7 +38,7 @@ test('every selectable rule and category explains its purpose', () => {
   }
   assert.deepEqual(RULE_GROUPS.map(group => group.id), ['environment', 'general', 'development', 'capabilities']);
   assert.deepEqual(RULE_GROUPS.map(group => group.title), [
-    'Your agent’s operating system', 'General and recurring work', 'Software work', 'When your agent controls apps',
+    'Your agent’s operating system (optional)', 'General and recurring work', 'Software work', 'When your agent controls apps',
   ]);
   assert.deepEqual(RULE_GROUPS.at(-1).rules.map(rule => rule.id), ['browser-use']);
   assert.match(RULE_GROUPS.at(-1).description, /only if your agent can control/);
@@ -69,15 +69,16 @@ test('selection guidance helps first-time and returning users without adding rul
   const sourceHelp = html.match(/<p>General rules are a suggested starting point[^<]+/)?.[0];
   assert.ok(sourceHelp?.includes(coding.label), 'Software guidance names its selection card');
   const selectionGuide = html.match(/<div class="selection-guide">([\s\S]*?)<\/div>/)?.[1];
-  assert.match(selectionGuide, /Why separate choices\?/);
-  assert.match(selectionGuide, /Choose global rules for recurring work across tasks, and project rules for the project where they apply/);
-  assert.match(selectionGuide, /user-level <code>AGENTS\.md<\/code> or <code>CLAUDE\.md<\/code>/);
-  assert.match(selectionGuide, /project rules belong in that project's instructions/);
   assert.match(selectionGuide, /Start with General rules/);
+  assert.match(selectionGuide, /They start selected but are optional/);
+  assert.match(selectionGuide, /Then preview and copy the prompt/);
+  assert.match(selectionGuide, /Where do global and project rules go\?/);
+  assert.match(selectionGuide, /user-level <code>AGENTS\.md<\/code> or <code>CLAUDE\.md<\/code>/);
+  assert.match(selectionGuide, /Project rules belong with the relevant project/);
   assert.match(selectionGuide, /safety, privacy, checking work, and clear replies/);
-  assert.match(selectionGuide, /skip software choices if you do not build software/);
-  assert.match(selectionGuide, /Already have rules\?/);
-  assert.match(selectionGuide, /propose only useful changes/);
+  assert.match(selectionGuide, /asks your agent to compare your choices with existing instructions and seek approval before editing/);
+  assert.match(selectionGuide, /Return later for a fresh review when the rules change/);
+  assert.match(selectionGuide, /This website does not replace your instructions/);
   assert.ok(html.indexOf('Start with General') < html.indexOf('id="rule-form"'));
 });
 
@@ -288,7 +289,7 @@ test('static source links and categories match the live catalog', () => {
   assert.equal(groups.length, RULE_GROUPS.length);
   groups.forEach(([, title, list], index) => {
     const group = RULE_GROUPS[index];
-    assert.equal(title, group.title);
+    assert.equal(title, group.id === 'environment' ? 'Your agent’s operating system' : group.title);
     const links = [...list.matchAll(/<a\b([^>]+)>([^<]+)<\/a>/g)].map(([, attributes, text]) => ({
       ...Object.fromEntries([...attributes.matchAll(/([\w-]+)="([^"]*)"/g)].map(([, key, value]) => [key, value])),
       text,

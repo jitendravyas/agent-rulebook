@@ -227,15 +227,15 @@ function updateSelection() {
   const placementRuleIds = chosen.filter(rule => ruleReviewScope(rule) === 'global-or-project').map(rule => rule.id);
   element('clear-os-selection').disabled = !chosen.some(rule => rule.environment);
   const scopeText = globalRuleIds.length && projectRuleIds.length
-    ? 'The prompt reviews global instructions separately from guidance for one project or one-off software task. Each source is labeled with its scope.'
+    ? 'The prompt asks your agent to review global instructions separately from guidance for one project or one-off software task. Each source is labeled with its scope.'
     : projectRuleIds.length ? placementRuleIds.length
-      ? 'The prompt reviews guidance for one project or one-off software task and selected activity guidance.'
-      : 'The prompt reviews guidance for one project or one-off software task.'
-    : globalRuleIds.length ? 'The prompt reviews global instructions.'
-    : 'The prompt reviews the selected activity guidance.';
+      ? 'The prompt asks your agent to review guidance for one project or one-off software task and selected activity guidance.'
+      : 'The prompt asks your agent to review guidance for one project or one-off software task.'
+    : globalRuleIds.length ? 'The prompt asks your agent to review global instructions.'
+    : 'The prompt asks your agent to review the selected activity guidance.';
   element('output-scope').textContent = scopeText + (placementRuleIds.length
-    ? ' For selected activity rules, your agent will suggest whether each belongs globally, in a project, or only in this conversation.'
-    : ' Unselected instruction locations remain unchanged.');
+    ? ' It asks your agent to suggest whether each selected activity rule belongs globally, in a project, or only in this conversation.'
+    : ' It asks your agent to leave unselected instruction locations unchanged.');
   currentPrompt = buildReviewPrompt(selected);
   hidePrompt();
   element('preview-prompt').disabled = !currentPrompt;
@@ -256,9 +256,7 @@ function updateSelection() {
     return item;
   }));
   if (!chosen.length) element('selection-summary').append(textElement('li', '', 'No rules selected'));
-  status.textContent = chosen.length
-    ? `Review prompt ready with ${chosen.length} rule ${chosen.length === 1 ? 'set' : 'sets'}.`
-    : 'Select at least one rule set to create a review prompt.';
+  status.textContent = '';
 }
 
 function setMobileReview(promptVisible) {
