@@ -264,11 +264,14 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.deepEqual(descriptions, ['agent-fit', 'selection-purpose', 'selection-next']);
   assert.doesNotMatch(html, /id="scope-global"|id="scope-project"|name="review-scope"/);
   assert.match(html, /This website does not replace your instructions/);
-  assert.match(html, /open that project first; review another project separately/);
-  assert.match(html, /For one-off work without project instructions, ask for task-scoped guidance/);
   const nextStep = html.match(/<section class="next-step"[^>]*>([\s\S]*?)<\/section>/)?.[1];
-  assert.match(nextStep, /(?:don’t|don't|do not) have instructions yet[^<]*propose[^<]*supported locations/i);
-  assert.match(nextStep, /Approve edits and backup locations separately for each affected file before saving/i);
+  assert.match(nextStep, /your agent’s chat/);
+  assert.match(nextStep, /not a rules file or Custom Instructions box/);
+  assert.match(nextStep, /For project rules, open that project first/);
+  assert.match(nextStep, /Review one project at a time/);
+  assert.match(nextStep, /For one-off work without project instructions, ask for guidance only for that conversation/);
+  assert.match(nextStep, /don’t have instructions yet[^<]*propose where to create them/i);
+  assert.match(nextStep, /Review the proposed changes and backup locations before approving edits to each file/i);
   assert.match(nextStep, /instructions being reviewed/);
   assert.match(html, /Preserve required approval, security, and privacy protections/);
   assert.match(html, /An “Apply when” sentence does not keep unused text out of context/);

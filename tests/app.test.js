@@ -508,19 +508,36 @@ test('software choices stay visible after unrelated changes and clearing selecti
 
 test('project-only choices also explain the one-off task route', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=web');
-  assert.match(page.get('output-scope').textContent, /one project or one-off software task/);
+  assert.match(page.get('output-scope').textContent, /one project or one-off task/);
   assert.match(page.get('selection-summary').textContent, /Project or task-scoped guidance/);
   assert.match(page.get('prompt-preview').value, /without creating a persistent project or global rule file/);
 });
 
 test('project and activity choices describe both review scopes', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=coding,web');
-  assert.match(page.get('output-scope').textContent, /one project or one-off software task and selected activity guidance/);
-  assert.match(page.get('output-scope').textContent, /It asks your agent to suggest whether each selected activity rule belongs globally, in a project, or only in this conversation/);
+  assert.match(page.get('output-scope').textContent, /one project or one-off task/);
+  assert.match(page.get('output-scope').textContent, /Your agent will recommend where the activity rules belong/);
   assert.match(page.get('selection-summary').textContent, /Global, project, or this conversation/);
   assert.equal(page.get('action-status').textContent, '');
   assert.match(page.get('prompt-preview').value, /Project sources/);
   assert.match(page.get('prompt-preview').value, /Activity sources/);
+});
+
+test('mobile selection label names General only when it is the sole selection', () => {
+  const page = boot('https://example.test/agent-rulebook/');
+  assert.equal(page.get('mobile-rule-count').textContent, 'General');
+  page.get('rule-web').checked = true;
+  page.get('rule-web').dispatch('change');
+  assert.equal(String(page.get('mobile-rule-count').textContent), '2');
+  page.get('rule-general').checked = false;
+  page.get('rule-general').dispatch('change');
+  assert.equal(String(page.get('mobile-rule-count').textContent), '1');
+  page.get('clear-selection').dispatch('click');
+  assert.equal(String(page.get('mobile-rule-count').textContent), '0');
+  page.get('rule-general').checked = true;
+  page.get('rule-general').dispatch('change');
+  assert.equal(page.get('mobile-rule-count').textContent, 'General');
+  assert.equal(boot('https://example.test/agent-rulebook/?rules=general').get('mobile-rule-count').textContent, 'General');
 });
 
 test('saved multiple-OS choices ask for review and keep one OS', () => {
@@ -896,10 +913,10 @@ test('keeps a static favicon and accurate review approval guidance', () => {
   assert.match(html, /<link id="favicon"[^>]+type="image\/svg\+xml"[^>]+data:image\/svg\+xml/);
   assert.match(html, /Nothing is installed or activated here\./);
   assert.equal((html.match(/installed or activated/g) ?? []).length, 1);
-  assert.match(html, /This is a one-time review request/);
-  assert.match(html, /Paste it into a conversation with your agent, not an instruction file or Custom Instructions box/);
+  assert.match(html, /Copy the whole prompt\. It requests a review, not immediate changes/);
+  assert.match(html, /your agent’s chat<\/strong>, not a rules file or Custom Instructions box/);
   assert.match(html, /Copy prompt for agent chat/);
-  assert.match(html, /propose changes and a backup plan, then wait for approval/);
+  assert.match(html, /Review the proposed changes and backup locations before approving edits to each file/);
   assert.doesNotMatch(html, /Your agent must show proposed changes/);
   assert.doesNotMatch(app, /animateFavicon/);
   assert.match(html, /id="pause-motion"/);

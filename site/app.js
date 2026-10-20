@@ -257,15 +257,13 @@ function updateSelection() {
   const placementRuleIds = chosen.filter(rule => ruleReviewScope(rule) === 'global-or-project').map(rule => rule.id);
   element('clear-os-selection').disabled = !chosen.some(rule => rule.environment);
   const scopeText = globalRuleIds.length && projectRuleIds.length
-    ? 'The prompt asks your agent to review global instructions separately from guidance for one project or one-off software task. Each source is labeled with its scope.'
-    : projectRuleIds.length ? placementRuleIds.length
-      ? 'The prompt asks your agent to review guidance for one project or one-off software task and selected activity guidance.'
-      : 'The prompt asks your agent to review guidance for one project or one-off software task.'
-    : globalRuleIds.length ? 'The prompt asks your agent to review global instructions.'
-    : 'The prompt asks your agent to review the selected activity guidance.';
+    ? 'Review global and project instructions separately.'
+    : projectRuleIds.length ? 'Review guidance for one project or one-off task.'
+    : globalRuleIds.length ? 'Review your global instructions.'
+    : 'Review your selected activity rules.';
   element('output-scope').textContent = scopeText + (placementRuleIds.length
-    ? ' It asks your agent to suggest whether each selected activity rule belongs globally, in a project, or only in this conversation.'
-    : ' It asks your agent to leave unselected instruction locations unchanged.');
+    ? ' Your agent will recommend where the activity rules belong.'
+    : '');
   currentPrompt = buildReviewPrompt(selected);
   hidePrompt();
   element('preview-prompt').disabled = !currentPrompt;
@@ -275,7 +273,7 @@ function updateSelection() {
   copyButton.disabled = !currentPrompt;
   element('rule-count').textContent = chosen.length;
   element('rule-count-label').textContent = chosen.length === 1 ? 'rule set' : 'rule sets';
-  element('mobile-rule-count').textContent = chosen.length;
+  element('mobile-rule-count').textContent = chosen.length === 1 && selected.has('general') ? 'General' : chosen.length;
   element('selection-summary').replaceChildren(...chosen.map((rule) => {
     const item = textElement('li', '', '');
     const scope = ruleReviewScope(rule);
