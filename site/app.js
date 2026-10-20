@@ -222,13 +222,6 @@ function renderChoices() {
     input.setAttribute('aria-describedby', `${scope === 'project' ? 'group-description-project' : `placement-${rule.id}`} ${description.id}`
       + (rule.environment ? ' group-description-environment' : ''));
     text.append(description);
-    if (codingSuggestions.includes(rule.id)) {
-      const note = textElement('span', 'rule-description', 'Software development rules added for shared coding guidance. Uncheck if already covered.');
-      note.id = `coding-added-${rule.id}`;
-      note.setAttribute('role', 'status');
-      note.hidden = true;
-      text.append(note);
-    }
     label.append(input, text);
     card.append(label);
     const source = textElement('a', 'source-link', 'Read rules');
@@ -252,6 +245,23 @@ function renderChoices() {
       toggle.setAttribute('aria-expanded', String(!details.hidden));
     });
     card.append(toggle, details);
+    if (codingSuggestions.includes(rule.id)) {
+      const note = textElement('div', 'rule-detail-panel', '');
+      note.id = `coding-added-${rule.id}`;
+      note.hidden = true;
+      const message = textElement('p', '', 'Software development rules added for shared coding guidance.');
+      message.setAttribute('role', 'status');
+      const remove = textElement('button', 'text-button', 'Remove Software development');
+      remove.id = `remove-coding-${rule.id}`;
+      remove.type = 'button';
+      remove.addEventListener('click', () => {
+        selected.delete('coding');
+        updateSelection();
+        input.focus();
+      });
+      note.append(message, remove);
+      card.append(note);
+    }
     containers.get(rule.id).append(card);
     checkboxes.set(rule.id, input);
   }

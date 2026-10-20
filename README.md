@@ -74,7 +74,7 @@ All choices remain visible and independently selectable. The prompt asks your ag
 
 The published website checks for a newer version once when opened. Before interaction, it can reload once with your selections preserved; otherwise it offers **Load latest**. Failed checks leave the page usable. It does not poll for changes while you work.
 
-**General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting Web, Apple, or Android development adds **Software development rules**; you can uncheck them if already covered. Testing, localization, and animation do not add Software development. Directly selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. Saved links restore your exact choices. **Clear selection** removes all choices.
+**General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting Web, Apple, or Android development adds **Software development rules**; use **Remove Software development** beside the notice, or uncheck those rules, if already covered. Testing, localization, and animation do not add Software development. Directly selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. Saved links restore your exact choices. **Clear selection** removes all choices.
 
 1. **Choose relevant rules.** Use the [selection guide above](#choose-only-relevant-rule-sets); select only the groups that fit your work.
 2. **Click Preview prompt, then copy it.** The full prompt stays hidden until you click **Preview prompt**. Check its labeled source lists; changing choices hides the preview.

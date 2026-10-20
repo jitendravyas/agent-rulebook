@@ -501,7 +501,7 @@ test('platform development suggests only Coding and preserves manual opt-outs', 
     assert.equal(page.get('rule-coding').disabled, false);
     assert.equal(page.get('rule-version-control').checked, false);
     assert.equal(page.get(`coding-added-${id}`).hidden, false);
-    assert.match(page.get(`coding-added-${id}`).textContent, /Uncheck if already covered/);
+    assert.match(page.get(`coding-added-${id}`).textContent, /Remove Software development/);
     assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt([id, 'coding']));
     page.get('rule-coding').click();
     assert.equal(page.get(`rule-${id}`).checked, true);
@@ -511,6 +511,32 @@ test('platform development suggests only Coding and preserves manual opt-outs', 
     const restored = boot(page.get('setup-link').value);
     assert.equal(restored.get('rule-coding').checked, false);
     assert.equal(restored.get(`rule-${id}`).checked, true);
+  }
+});
+
+test('platform notices are outside labels and removal changes only Coding', () => {
+  for (const id of ['web', 'apple-apps', 'android-apps']) {
+    const page = boot('https://example.test/agent-rulebook/?rules=general,version-control,testing');
+    const input = page.get(`rule-${id}`);
+    input.click();
+    const note = page.get(`coding-added-${id}`);
+    const labels = node => [ ...(node.tag === 'label' ? [node] : []),
+      ...node.children.filter(child => typeof child === 'object').flatMap(labels) ];
+    const label = labels(page.get('rule-group-project')).find(node => node.contains(input));
+    assert.ok(label);
+    assert.equal(label.contains(note), false);
+    assert.ok(note.contains(page.get(`remove-coding-${id}`)));
+    page.get('preview-prompt').click();
+    page.get(`remove-coding-${id}`).click();
+    assert.equal(input.checked, true);
+    assert.equal(input.focused, true);
+    assert.equal(page.get('rule-coding').checked, false);
+    assert.equal(note.hidden, true);
+    assert.equal(page.get('your-file').hidden, true);
+    const remaining = ['general', 'version-control', 'testing', id];
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(remaining));
+    const restored = boot(page.get('setup-link').value);
+    assert.equal(restored.get('prompt-preview').value, catalog.buildReviewPrompt(remaining));
   }
 });
 
