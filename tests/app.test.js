@@ -175,6 +175,33 @@ test('prompt stays hidden until Preview prompt and hides again when choices chan
   assert.equal(page.get('your-file').hidden, true);
 });
 
+test('desktop header shortcut shares preview, selection, and disabled states', () => {
+  const heading = html.split('<div class="section-heading">')[1].split('<div class="selection-guide">')[0];
+  assert.ok(heading.includes('id="clear-selection"'));
+  assert.ok(heading.includes('id="preview-prompt-top"'));
+  const page = boot('https://example.test/agent-rulebook/');
+  const buttons = ['preview-prompt-top', 'preview-prompt'].map(page.get);
+  const originalPrompt = page.get('prompt-preview').value;
+  assert.ok(buttons.every(button => !button.disabled && button['aria-expanded'] === 'false'));
+  buttons[0].click();
+  assert.equal(page.get('your-file').hidden, false);
+  assert.equal(page.get('your-file').focused, true);
+  assert.equal(page.get('prompt-preview').value, originalPrompt);
+  assert.ok(buttons.every(button => button['aria-expanded'] === 'true'));
+  page.get('rule-web').click();
+  assert.equal(page.get('your-file').hidden, true);
+  assert.notEqual(page.get('prompt-preview').value, originalPrompt);
+  assert.ok(buttons.every(button => button['aria-expanded'] === 'false'));
+  buttons[0].click();
+  assert.equal(page.get('your-file').hidden, false);
+  page.get('clear-selection').click();
+  assert.ok(buttons.every(button => button.disabled && button['aria-expanded'] === 'false'));
+  buttons[0].dispatch('click');
+  assert.equal(page.get('your-file').hidden, true);
+  page.get('rule-general').click();
+  assert.ok(buttons.every(button => !button.disabled));
+});
+
 test('choices group global defaults, activities, and visible project guidance', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.deepEqual(page.get('rule-groups').children.map(group => group.id), [

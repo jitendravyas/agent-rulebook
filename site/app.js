@@ -8,6 +8,7 @@ const checkboxes = new Map();
 const linkWarnings = new Map();
 const preview = element('prompt-preview');
 const copyButton = element('copy-prompt');
+const previewButtons = [element('preview-prompt'), element('preview-prompt-top')];
 const status = element('action-status');
 let currentPrompt = '';
 let revision = 0;
@@ -291,7 +292,7 @@ function updateSelection() {
     : '');
   currentPrompt = buildReviewPrompt(selected);
   hidePrompt();
-  element('preview-prompt').disabled = !currentPrompt;
+  previewButtons.forEach(button => { button.disabled = !currentPrompt; });
   element('empty-selection-note').hidden = Boolean(currentPrompt);
   element('mobile-review-link').setAttribute('aria-disabled', String(!currentPrompt));
   preview.value = currentPrompt;
@@ -332,7 +333,7 @@ function showPrompt() {
   if (!currentPrompt) return;
   const output = element('your-file');
   output.hidden = false;
-  element('preview-prompt').setAttribute('aria-expanded', 'true');
+  previewButtons.forEach(button => button.setAttribute('aria-expanded', 'true'));
   setMobileReview(true);
   output.focus({ preventScroll: true });
   output.scrollIntoView({ block: 'start' });
@@ -342,7 +343,7 @@ function hidePrompt() {
   const output = element('your-file');
   if (output.contains(document.activeElement)) element('preview-prompt').focus({ preventScroll: true });
   output.hidden = true;
-  element('preview-prompt').setAttribute('aria-expanded', 'false');
+  previewButtons.forEach(button => button.setAttribute('aria-expanded', 'false'));
   setMobileReview(false);
 }
 
@@ -353,7 +354,7 @@ function returnToSelection() {
   heading.scrollIntoView({ block: 'start' });
 }
 
-element('preview-prompt').addEventListener('click', showPrompt);
+previewButtons.forEach(button => button.addEventListener('click', showPrompt));
 element('back-to-selection').addEventListener('click', event => {
   event.preventDefault();
   returnToSelection();

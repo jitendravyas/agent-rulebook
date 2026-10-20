@@ -130,7 +130,10 @@
       <section class="choices" aria-labelledby="choose-title">
         <div class="section-heading">
           <h2 id="choose-title" tabindex="-1">1. Choose rules to review</h2>
-          <button class="text-button" id="clear-selection" type="button">Clear selection</button>
+          <div class="selection-actions">
+            <button class="text-button" id="clear-selection" type="button">Clear selection</button>
+            <button id="preview-prompt-top" class="button primary desktop-preview" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt</button>
+          </div>
         </div>
         <div class="selection-guide">
           <p id="agent-fit">For agents that can read public rule files and your existing instruction files. Paste the prompt into agent chat, not a Custom Instructions box.</p>
