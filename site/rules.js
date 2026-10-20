@@ -159,7 +159,7 @@ const SOFTWARE_AREAS = [
   {
     id: 'web',
     title: 'Web development',
-    description: 'Software development covers coding across platforms; Web development adds browser-specific guidance, including browser verification. You can select both.',
+    description: 'Software development covers coding across platforms; Web development adds browser-specific guidance, including browser verification. Selecting Web adds Software development; you can remove it.',
     rules: [WEB_RULE],
   },
   {

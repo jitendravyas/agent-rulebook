@@ -217,7 +217,7 @@ function renderChoices() {
       text.append(placement);
     }
     const description = textElement('span', 'rule-description', rule.purpose
-      + (rule.id === 'coding' ? ' Also selects Version control rules; you can uncheck them.' : ''));
+      + (rule.id === 'coding' ? ' Selecting this checkbox also adds Version control rules; you can uncheck them.' : ''));
     description.id = `description-${rule.id}`;
     input.setAttribute('aria-describedby', `${scope === 'project' ? 'group-description-project' : `placement-${rule.id}`} ${description.id}`
       + (rule.environment ? ' group-description-environment' : ''));

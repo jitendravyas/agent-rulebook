@@ -106,7 +106,7 @@ test('selection guidance helps first-time and returning users without adding rul
   const webArea = RULE_GROUPS.find(group => group.id === 'project').areas.find(area => area.id === 'web');
   assert.match(webArea.description, /Software development covers coding across platforms/);
   assert.match(webArea.description, /Web development adds browser-specific guidance/);
-  assert.match(webArea.description, /You can select both/);
+  assert.match(webArea.description, /Selecting Web adds Software development; you can remove it/);
   assert.match(selectionGuide, /Return later for a fresh review when the rules change/);
   assert.match(selectionGuide, /This website does not replace your instructions/);
   assert.ok(html.indexOf('Start with General') < html.indexOf('id="rule-form"'));

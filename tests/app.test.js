@@ -245,7 +245,7 @@ test('choices group global defaults, activities, and visible project guidance', 
     assert.equal(page.get(`details-${id}`).hidden, false);
     assert.equal(page.get(`rule-${id}`).checked, checked, 'Opening Details does not select a rule');
   }
-  assert.match(page.get('description-coding').textContent, /Also selects Version control rules; you can uncheck them/);
+  assert.match(page.get('description-coding').textContent, /Selecting this checkbox also adds Version control rules; you can uncheck them/);
   assert.equal(page.get('rule-browser-operation').checked, false);
   assert.equal(page.get('rule-computer-use').checked, false);
   page.get('rule-browser-operation').checked = true;
