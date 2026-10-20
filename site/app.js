@@ -3,6 +3,7 @@ import { RULE_GROUPS, RULES, OS_RULES, DEFAULT_RULE_IDS, buildReviewPrompt, rule
 const DEPLOYMENT_VERSION = '';
 const element = (id) => document.getElementById(id);
 const selected = new Set(DEFAULT_RULE_IDS);
+const codingSuggestions = ['web', 'apple-apps', 'android-apps'];
 const checkboxes = new Map();
 const linkWarnings = new Map();
 const preview = element('prompt-preview');
@@ -197,6 +198,10 @@ function renderChoices() {
       if (rule.id === 'coding' && input.checked) {
         selected.add('version-control');
       }
+      if (codingSuggestions.includes(rule.id) && input.checked && !selected.has('coding')) {
+        selected.add('coding');
+        element(`coding-added-${rule.id}`).hidden = false;
+      }
       if (input.checked) selected.add(rule.id);
       else selected.delete(rule.id);
       updateSelection();
@@ -217,6 +222,13 @@ function renderChoices() {
     input.setAttribute('aria-describedby', `${scope === 'project' ? 'group-description-project' : `placement-${rule.id}`} ${description.id}`
       + (rule.environment ? ' group-description-environment' : ''));
     text.append(description);
+    if (codingSuggestions.includes(rule.id)) {
+      const note = textElement('span', 'rule-description', 'Software development rules added for shared coding guidance. Uncheck if already covered.');
+      note.id = `coding-added-${rule.id}`;
+      note.setAttribute('role', 'status');
+      note.hidden = true;
+      text.append(note);
+    }
     label.append(input, text);
     card.append(label);
     const source = textElement('a', 'source-link', 'Read rules');
@@ -251,6 +263,9 @@ function updateSelection() {
   syncSelectionURL();
   for (const [id, input] of checkboxes) {
     input.checked = selected.has(id);
+  }
+  for (const id of codingSuggestions) {
+    if (!selected.has('coding') || !selected.has(id)) element(`coding-added-${id}`).hidden = true;
   }
   const globalRuleIds = chosen.filter(rule => ruleReviewScope(rule) === 'global').map(rule => rule.id);
   const projectRuleIds = chosen.filter(rule => ruleReviewScope(rule) === 'project').map(rule => rule.id);

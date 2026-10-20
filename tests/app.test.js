@@ -287,12 +287,12 @@ test('saved setup restores selected controls and the global prompt without host 
   assert.equal(new URL(saved).hash, '#builder');
 
   const restored = boot(saved);
-  const expectedIds = ['general', 'web', 'linux', 'i18n'];
+  const expectedIds = ['general', 'coding', 'web', 'linux', 'i18n'];
   assert.deepEqual(catalog.RULES.filter(rule => restored.get(`rule-${rule.id}`).checked).map(rule => rule.id), expectedIds);
   assert.equal(restored.get('rule-mac').disabled, false);
   assert.equal(restored.get('rule-linux').disabled, false);
-  assert.equal(restored.get('rule-coding').checked, false);
-  assert.equal(restored.get('rule-count').textContent, '4');
+  assert.equal(restored.get('rule-coding').checked, true);
+  assert.equal(restored.get('rule-count').textContent, '5');
   assert.equal(restored.get('copy-prompt').disabled, false);
   assert.equal(restored.get('setup-link').value, saved);
   const prompt = restored.get('prompt-preview').value;
@@ -493,6 +493,36 @@ test('saved project choices retain independent selections in the visible group',
   assert.equal(page.get('your-file').hidden, true);
 });
 
+test('platform development suggests only Coding and preserves manual opt-outs', () => {
+  for (const id of ['web', 'apple-apps', 'android-apps']) {
+    const page = boot('https://example.test/agent-rulebook/?rules=');
+    page.get(`rule-${id}`).click();
+    assert.equal(page.get('rule-coding').checked, true);
+    assert.equal(page.get('rule-coding').disabled, false);
+    assert.equal(page.get('rule-version-control').checked, false);
+    assert.equal(page.get(`coding-added-${id}`).hidden, false);
+    assert.match(page.get(`coding-added-${id}`).textContent, /Uncheck if already covered/);
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt([id, 'coding']));
+    page.get('rule-coding').click();
+    assert.equal(page.get(`rule-${id}`).checked, true);
+    assert.equal(page.get(`coding-added-${id}`).hidden, true);
+    page.get('rule-general').click();
+    assert.equal(page.get('rule-coding').checked, false);
+    const restored = boot(page.get('setup-link').value);
+    assert.equal(restored.get('rule-coding').checked, false);
+    assert.equal(restored.get(`rule-${id}`).checked, true);
+  }
+});
+
+test('testing, localization, and animation do not select Coding', () => {
+  for (const id of ['testing', 'i18n', 'ui-animation']) {
+    const page = boot('https://example.test/agent-rulebook/?rules=');
+    page.get(`rule-${id}`).click();
+    assert.equal(page.get('rule-coding').checked, false);
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt([id]));
+  }
+});
+
 test('software choices stay visible after unrelated changes and clearing selections', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,web');
   page.get('rule-mac').checked = true;
@@ -526,8 +556,8 @@ test('project and activity choices describe both review scopes', () => {
 test('mobile selection label names General only when it is the sole selection', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.equal(page.get('mobile-rule-count').textContent, 'General');
-  page.get('rule-web').checked = true;
-  page.get('rule-web').dispatch('change');
+  page.get('rule-testing').checked = true;
+  page.get('rule-testing').dispatch('change');
   assert.equal(String(page.get('mobile-rule-count').textContent), '2');
   page.get('rule-general').checked = false;
   page.get('rule-general').dispatch('change');
@@ -555,7 +585,7 @@ test('software testing and web development remain independent choices', () => {
   assert.equal(page.get('link-warning').hidden, true);
   page.get('rule-web').checked = true;
   page.get('rule-web').dispatch('change');
-  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['testing', 'web']));
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['testing', 'web', 'coding']));
   assert.equal(page.get('link-warning').hidden, true);
 });
 
@@ -589,13 +619,13 @@ test('published app-platform rules are optional and independent of the agent OS'
     assert.equal(page.get(`rule-${id}`).checked, false);
     page.get(`rule-${id}`).checked = true;
     page.get(`rule-${id}`).dispatch('change');
-    assert.equal(page.get('rule-coding').checked, false);
+    assert.equal(page.get('rule-coding').checked, true);
     assert.equal(page.get('rule-mac').checked, true);
   }
   const link = page.get('setup-link').value;
   const restored = boot(link);
   for (const id of ['apple-apps', 'android-apps', 'mac']) assert.equal(restored.get(`rule-${id}`).checked, true);
-  assert.equal(restored.get('prompt-preview').value, catalog.buildReviewPrompt(['general', 'apple-apps', 'android-apps', 'mac']));
+  assert.equal(restored.get('prompt-preview').value, catalog.buildReviewPrompt(['general', 'coding', 'apple-apps', 'android-apps', 'mac']));
 });
 
 test('old browser animation links retain the selection with its broadened scope explained', () => {
@@ -740,14 +770,14 @@ test('selected guidance explains its purpose and remains independently optional'
   page.get('rule-web').checked = true;
   page.get('rule-web').dispatch('change');
   const web = catalog.RULES.find(rule => rule.id === 'web');
-  assert.equal(summary.children.length, 1);
+  assert.equal(summary.children.length, 2);
   assert.ok(summary.textContent.includes(web.label));
   assert.ok(summary.textContent.includes(web.purpose));
-  assert.equal(page.get('rule-coding').checked, false);
+  assert.equal(page.get('rule-coding').checked, true);
   assert.equal(page.get('rule-browser-operation').checked, false);
   assert.equal(page.get('rule-testing').checked, false);
   assert.equal(page.get('rule-general').checked, false);
-  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web']));
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web', 'coding']));
 
   page.get('clear-selection').dispatch('click');
   assert.match(summary.textContent, /no.*selected/i);
