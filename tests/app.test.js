@@ -566,7 +566,7 @@ test('project-only choices also explain the one-off task route', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=web');
   assert.match(page.get('output-scope').textContent, /one project or one-off task/);
   assert.match(page.get('selection-summary').textContent, /Project or task-scoped guidance/);
-  assert.match(page.get('prompt-preview').value, /without creating a persistent project or global rule file/);
+  assert.match(page.get('prompt-preview').value, /guidance for this conversation only, not persistent files/);
 });
 
 test('project and activity choices describe both review scopes', () => {
