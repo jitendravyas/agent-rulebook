@@ -262,7 +262,8 @@ test('README and website distinguish relevant modules from loading the whole col
   const webExample = html.match(/<p\b[^>]*id="web-start"[^>]*>([\s\S]*?)<\/p>/)?.[1];
   assert.match(webExample, /Building websites\?/);
   assert.match(webExample, /Start with General, your agent’s OS, Software development, and Web development/);
-  assert.match(webExample, /Add Version control for Git and Software testing for writing or running tests/);
+  assert.match(webExample, /Select Version control for Git; it may already be selected automatically/);
+  assert.match(webExample, /Add Software testing for writing or running tests/);
   assert.ok(html.indexOf('id="web-start"') < html.indexOf('id="rule-form"'), 'Web example appears before the choices');
   assert.ok(html.indexOf('id="selection-next"') < html.indexOf('id="rule-form"'));
   const descriptions = html.match(/<form\b[^>]*id="rule-form"[^>]*aria-describedby="([^"]+)"/)?.[1].split(/\s+/);
