@@ -259,6 +259,12 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.match(defaults, /Start with General/);
   assert.match(defaults, /start selected but are optional/i);
   assert.match(defaults, /only the choices relevant to your work/i);
+  const nonCoderExample = html.match(/<p\b[^>]*id="non-coder-start"[^>]*>([\s\S]*?)<\/p>/)?.[1];
+  assert.match(nonCoderExample, /Not writing software\?/);
+  assert.match(nonCoderExample, /Start with General and your agent’s OS/);
+  assert.match(nonCoderExample, /Add Browser use or Computer use if your agent operates websites or desktop apps/);
+  assert.match(nonCoderExample, /Skip software-development and project rules/);
+  assert.match(html, /id="non-coder-start"[^>]*>[\s\S]*?<\/p>\s*<p id="web-start"/, 'Non-coder and web examples appear together before the choices');
   const webExample = html.match(/<p\b[^>]*id="web-start"[^>]*>([\s\S]*?)<\/p>/)?.[1];
   assert.match(webExample, /Building websites\?/);
   assert.match(webExample, /Start with General, your agent’s OS, Software development, and Web development/);
