@@ -265,8 +265,6 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.doesNotMatch(html, /id="scope-global"|id="scope-project"|name="review-scope"/);
   assert.match(html, /This website does not replace your instructions/);
   const nextStep = html.match(/<section class="next-step"[^>]*>([\s\S]*?)<\/section>/)?.[1];
-  assert.match(nextStep, /your agent’s chat/);
-  assert.match(nextStep, /not a rules file or Custom Instructions box/);
   assert.match(nextStep, /For project rules, open that project first/);
   assert.match(nextStep, /Review one project at a time/);
   assert.match(nextStep, /For one-off work without project instructions, ask for guidance only for that conversation/);

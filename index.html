@@ -160,7 +160,10 @@
         <div class="preview-heading"><label for="prompt-preview">Your review prompt</label><span>Exact copy contents</span></div>
         <textarea id="prompt-preview" class="preview" readonly spellcheck="false" aria-describedby="preview-help" placeholder="Choose a rule set to create a review prompt."></textarea>
         <p id="preview-help" class="preview-help">Copy the whole prompt. It requests a review, not immediate changes.</p>
-        <button id="copy-prompt" class="button primary" type="button" disabled>Copy prompt for agent chat <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
+        <div class="copy-actions">
+          <button id="copy-prompt" class="button primary" type="button" aria-describedby="copy-destination" disabled>Copy prompt for agent chat <svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg></button>
+          <p id="copy-destination">Paste this into <strong>your agent’s chat</strong>, not a rules file or Custom Instructions box.</p>
+        </div>
         <output id="action-status" class="action-status" aria-live="polite" aria-atomic="true"></output>
         <div class="metrics">
           <span><strong id="rule-count">0</strong> <span id="rule-count-label">rule sets</span></span>
@@ -179,7 +182,7 @@
         </details>
         <section class="next-step" aria-labelledby="use-rules-title">
           <h3 id="use-rules-title">3. Ask your agent to review</h3>
-          <p>Paste this into <strong>your agent’s chat</strong>, not a rules file or Custom Instructions box. For project rules, open that project first.</p>
+          <p>For project rules, open that project first.</p>
           <p>Review the proposed changes and backup locations before approving edits to each file. If you don’t have instructions yet, your agent can propose where to create them.</p>
           <p>Your agent needs access to the public links and the instructions being reviewed.</p>
           <p>This website does not read or upload your existing instructions. Review the suggestions yourself; an agent may miss a conflict or recommend no changes.</p>

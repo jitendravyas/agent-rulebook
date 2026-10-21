@@ -997,7 +997,12 @@ test('keeps a static favicon and accurate review approval guidance', () => {
   assert.match(html, /Nothing is installed or activated here\./);
   assert.equal((html.match(/installed or activated/g) ?? []).length, 1);
   assert.match(html, /Copy the whole prompt\. It requests a review, not immediate changes/);
-  assert.match(html, /your agent’s chat<\/strong>, not a rules file or Custom Instructions box/);
+  const copyActions = html.match(/<div class="copy-actions">([\s\S]*?)<\/div>/)?.[1];
+  assert.ok(copyActions, 'Copy and paste guidance share one action group');
+  assert.match(copyActions, /id="copy-prompt"[^>]*aria-describedby="copy-destination"/);
+  assert.match(copyActions, /id="copy-destination"[^>]*>Paste this into <strong>your agent’s chat<\/strong>, not a rules file or Custom Instructions box/);
+  assert.ok(html.indexOf('id="copy-destination"') < html.indexOf('id="selection-summary"'), 'Paste guidance is visible before the selection recap');
+  assert.equal((html.match(/Paste this into/g) ?? []).length, 1, 'Paste guidance is not duplicated in the later handoff');
   assert.match(html, /Copy prompt for agent chat/);
   assert.match(html, /Review the proposed changes and backup locations before approving edits to each file/);
   assert.doesNotMatch(html, /Your agent must show proposed changes/);
