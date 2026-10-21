@@ -2,6 +2,7 @@
 
 ## Reviewing and preserving work
 
+  * In a Git repository, start file discovery and content searches with Git-tracked files. Read untracked or ignored files only when relevant to the task, applicable instructions, or preserving existing work.
   * When asked to review a branch or proposed version-controlled changes, or to submit them for review or merging, check the comparison base and full diff within the requested review or submission scope, plus directly affected context. Account separately for relevant uncommitted changes; the working-tree diff alone is insufficient.
   * Resolve version-control conflicts by inspecting both versions, preserving intended content and behavior, and rerunning affected checks.
   * Before version-controlled handoff, compare task-owned changes with the starting state, including added, generated, renamed, and deleted paths; identify unrelated changes. Scope follows the request, not original authorship.
