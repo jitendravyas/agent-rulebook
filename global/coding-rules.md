@@ -27,9 +27,9 @@ Apply to software development, including temporary or standalone software.
 
 * Check existing capabilities before building. Extend or reuse only when requirements align; similarity alone does not justify shared behavior. Check reused code for defects rather than spreading problems for consistency; note reusable drawbacks only within scope, otherwise report them.
 * Keep responsibilities clear and separate them when that helps understanding, testing, or independent changes; follow project size constraints but do not split for an arbitrary limit. Use clear names, not sensitive data or vague abbreviations; make data sources and changes understandable.
-* Use maintained solutions compatible with supported versions. Recommend upgrades for current needs or identified risks; use new capabilities only after required upgrades are approved and installed.
+* For new choices, prefer maintained solutions compatible with supported versions. For existing dependencies, report relevant maintenance or compatibility risks without expanding the task into an upgrade. Recommend upgrades for current needs or identified risks; use new capabilities only after required upgrades are approved and installed.
 * Update generated files, lockfiles, and snapshots through their source and supported process. Avoid accidental dependency re-resolution; review regenerated output and sources. Preserve integrity, signatures, and provenance checks; investigate failures rather than bypassing them.
-* Keep environment-specific values in established configuration. Declare approved dependencies and versions instead of relying on global installations. Preserve defaults unless changes are required.
+* Keep environment-specific values in established configuration. Make approved dependencies and versions reproducible through the project's supported setup; do not rely on undocumented machine-specific installations. Preserve defaults unless changes are required.
 * Use stable identifiers, not translated labels or formatted text, for actions and data. Preserve Unicode without corruption; bytes and code units are not user-visible character counts. Follow explicit validation and normalization requirements.
 * Preserve locale, right-to-left and mixed text direction, and accessibility using established platform mechanisms. Check affected input methods and assistive-technology behavior against task or project requirements.
 * Handle relevant initial, loading, empty, success, validation, permission, failure, slow-network, offline, retry, and cancellation states. Preserve recoverable input and make the next action clear.
@@ -45,5 +45,5 @@ Apply to software development, including temporary or standalone software.
 
 ## Code checks and review
 
-* Check that static analysis covers changed paths, file types, and intended rules, respecting intentional exclusions. Fix in-scope findings at source. Use only narrow, justified, project-allowed suppressions or type-check bypasses; explain them and ask before policy changes. Coverage gaps alone do not justify new tools.
+* When using or relying on static analysis, check that it covers changed paths, file types, and intended rules, respecting intentional exclusions. Fix in-scope findings at source. Use only narrow, justified, project-allowed suppressions or type-check bypasses; explain them and ask before policy changes. Coverage gaps alone do not justify new tools.
 * Verify review findings against current requirements and code before acting on them. Recommend the smallest useful recurrence prevention only when benefit justifies upkeep and false positives; add it only when authorized.

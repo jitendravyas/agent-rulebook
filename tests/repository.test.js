@@ -76,7 +76,7 @@ test('General includes communication and tool guidance without duplicate bullets
   assert.match(general, /For repetitive or mechanical work, prefer available tools and skills/);
   assert.match(general, /recommend simpler steps, automation, or a reusable agent-led skill if the agent supports skills/);
   assert.match(general, /Search for or recommend alternatives only when expected benefits outweigh discovery, setup, upkeep, and delivery effort/);
-  assert.match(general, /Before recommending or adopting a third-party tool for a new workflow or purpose, check official sources for its license or service terms/);
+  assert.match(general, /Before recommending adoption of or adopting a third-party tool, check official sources for license or service terms relevant to the intended use/);
   assert.match(general, /Use authoritative documentation or built-in help for uncertain version-sensitive commands/);
   assert.match(general, /Before starting long-running processes, check for a suitable running instance/);
   assert.match(general, /Reply in chat instead of saving plans, notes, reports, or other documents unless the user requested the file or approves it first/);
@@ -94,6 +94,24 @@ test('General includes communication and tool guidance without duplicate bullets
   const combined = [general];
   const bullets = combined.flatMap(content => content.split('\n').filter(line => /^\s*\* /.test(line)).map(line => line.trim()));
   assert.equal(new Set(bullets).size, bullets.length, 'General contains each bullet once');
+});
+
+test('tool and coding guidance respects assessment scope and supported project setups', () => {
+  const general = read('global/general-rules.md');
+  assert.match(general, /including output, distribution, and attribution/);
+  assert.match(general, /Assess material maintenance, compatibility, access, and workplace-policy risks/);
+  assert.match(general, /Merely mentioning an option does not require a full assessment; do not present unchecked suitability as verified/);
+  assert.match(general, /Reuse valid assessments but recheck changed uses or concerns/);
+  const coding = read('global/coding-rules.md');
+  assert.match(coding, /For new choices, prefer maintained solutions compatible with supported versions/);
+  assert.match(coding, /For existing dependencies, report relevant maintenance or compatibility risks without expanding the task into an upgrade/);
+  assert.match(coding, /use new capabilities only after required upgrades are approved and installed/);
+  assert.match(coding, /Make approved dependencies and versions reproducible through the project's supported setup/);
+  assert.match(coding, /do not rely on undocumented machine-specific installations/);
+  assert.doesNotMatch(coding, /instead of relying on global installations/);
+  assert.match(coding, /When using or relying on static analysis, check that it covers changed paths, file types, and intended rules, respecting intentional exclusions/);
+  assert.match(coding, /Use only narrow, justified, project-allowed suppressions or type-check bypasses; explain them and ask before policy changes/);
+  assert.match(coding, /Coverage gaps alone do not justify new tools/);
 });
 
 test('grouped approval rules retain dependency safeguards and software exceptions', () => {
