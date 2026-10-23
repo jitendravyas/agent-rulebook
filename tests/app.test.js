@@ -10,7 +10,7 @@ const importLine = /^import \{([^}]+)\} from '\.\/rules\.js';\r?\n/;
 assert.match(app, importLine);
 const script = app.replace(importLine, (_, names) => `const {${names}} = catalog;\n`);
 
-function boot(address, { intersectionObserver = true, clipboard, version = '', fetch, visibility = 'visible' } = {}) {
+function boot(address, { intersectionObserver = true, clipboard, version = '', fetch, sourceFetch, visibility = 'visible' } = {}) {
   const nodes = new Map();
   const observers = [];
   const navigations = [];
@@ -135,17 +135,24 @@ function boot(address, { intersectionObserver = true, clipboard, version = '', f
     createElement: tag => new Node(tag),
     createElementNS: (namespace, tag) => new Node(tag),
   });
-  const ready = runInNewContext(script.replace("const DEPLOYMENT_VERSION = '';", `const DEPLOYMENT_VERSION = '${version}';`) + '\nupdateCheck;', {
+  const { ready, sizeReady } = runInNewContext(script.replace("const DEPLOYMENT_VERSION = '';", `const DEPLOYMENT_VERSION = '${version}';`) + '\n({ ready: Promise.all([updateCheck, sizeCheck]), sizeReady: () => sizeCheck });', {
     catalog, document, window, URL, performance: { timeOrigin: 1000 },
     navigator: { clipboard },
-    fetch, AbortController,
+    fetch: (url, options) => {
+      const rule = catalog.RULES.find(rule => url.pathname.endsWith(`/${rule.path}`));
+      if (!rule) return fetch(url, options);
+      if (sourceFetch) return sourceFetch(url, options);
+      const bytes = new Uint8Array(readFileSync(new URL(`../${rule.path}`, import.meta.url)));
+      return Promise.resolve({ ok: true, arrayBuffer: async () => bytes.buffer });
+    },
+    AbortController,
     setTimeout: (callback, delay) => { timers.set(callback, delay); return callback; },
     clearTimeout: callback => timers.delete(callback),
   }, { filename: 'site/app.js', timeout: 5000 });
-  return { get, window, observers, document, ready, navigations, timers };
+  return { get, window, observers, document, ready, sizeReady, navigations, timers };
 }
 
-test('prompt stays hidden on load until preview or a preset and hides when individual choices change', () => {
+test('prompt stays hidden until preview and hides when choices change', () => {
   assert.ok(html.indexOf('id="copy-prompt"') < html.indexOf('id="selection-summary"'), 'Copy is available before the long selection recap');
   assert.ok(html.indexOf('id="prompt-preview"') < html.indexOf('id="selection-summary"'), 'The prompt is visible before the long selection recap');
   assert.ok(html.indexOf('id="prompt-preview"') < html.indexOf('id="copy-prompt"'), 'Visitors can review the prompt before the Copy control');
@@ -175,7 +182,7 @@ test('prompt stays hidden on load until preview or a preset and hides when indiv
   assert.equal(page.get('your-file').hidden, true);
 });
 
-test('each task preset opens an exact minimal prompt and copy uses the complete selection', async () => {
+test('each task checkbox prepares an exact minimal prompt and waits for preview', async () => {
   const bundles = {
     everyday: ['general'],
     web: ['general', 'coding', 'web'],
@@ -185,19 +192,21 @@ test('each task preset opens an exact minimal prompt and copy uses the complete 
   assert.deepEqual(catalog.TASK_PRESETS.map(preset => preset.id), Object.keys(bundles));
   for (const preset of catalog.TASK_PRESETS) {
     let copied;
-    const page = boot('https://example.test/agent-rulebook/', { clipboard: { writeText: async text => { copied = text; } } });
+    const page = boot('https://example.test/agent-rulebook/?rules=', { clipboard: { writeText: async text => { copied = text; } } });
     assert.equal(page.get('customize-rules').open, false);
     const button = page.get(`preset-${preset.id}`);
-    assert.equal(button.type, 'button');
-    assert.equal(button['aria-controls'], 'your-file');
+    assert.equal(button.type, 'checkbox');
     assert.deepEqual(preset.rules, bundles[preset.id]);
-    for (const id of preset.rules) assert.ok(button.textContent.includes(catalog.RULES.find(rule => rule.id === id).label));
+    const label = page.get('task-presets').children.find(node => node.contains(button));
+    for (const id of preset.rules) assert.ok(label.textContent.includes(catalog.RULES.find(rule => rule.id === id).label));
     await button.click();
     const expected = catalog.buildReviewPrompt(bundles[preset.id]);
-    assert.equal(page.get('your-file').hidden, false);
+    assert.equal(page.get('your-file').hidden, true);
     assert.equal(page.get('prompt-preview').value, expected);
-    assert.equal(button['aria-pressed'], 'true');
+    assert.equal(button.checked, true);
     assert.deepEqual(catalog.RULES.filter(rule => page.get(`rule-${rule.id}`).checked).map(rule => rule.id), bundles[preset.id]);
+    await page.get('preview-prompt').click();
+    assert.equal(page.get('your-file').hidden, false);
     await page.get('copy-prompt').click();
     assert.equal(copied, expected);
     assert.match(page.get('action-status').textContent, /Prompt copied/);
@@ -207,18 +216,56 @@ test('each task preset opens an exact minimal prompt and copy uses the complete 
   }
 });
 
-test('switching presets replaces the bundle, keeps only the selected OS, and closes customization', () => {
+test('combining and removing tasks preserves shared rules, OS, and custom additions', () => {
   for (const os of catalog.OS_RULES) {
     const page = boot(`https://example.test/agent-rulebook/?rules=general,testing,i18n,version-control,${os.id}`);
-    for (const preset of catalog.TASK_PRESETS) {
+    const expected = new Set(['general', 'testing', 'i18n', 'version-control', os.id]);
+    for (const preset of catalog.TASK_PRESETS.filter(preset => preset.id !== 'everyday')) {
       page.get('customize-rules').open = true;
       page.get(`preset-${preset.id}`).click();
-      assert.equal(page.get('customize-rules').open, false);
-      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt([...preset.rules, os.id]));
+      preset.rules.forEach(id => expected.add(id));
+      assert.equal(page.get('customize-rules').open, true);
+      assert.equal(page.get('your-file').hidden, true);
+      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(expected));
       assert.equal(page.get(`rule-${os.id}`).checked, true);
-      for (const id of ['testing', 'i18n', 'version-control', 'ui-animation', 'browser-operation', 'computer-use']) {
-        assert.equal(page.get(`rule-${id}`).checked, false);
-      }
+    }
+    assert.ok(catalog.TASK_PRESETS.every(preset => page.get(`preset-${preset.id}`).checked));
+    page.get('preset-everyday').click();
+    assert.equal(page.get('rule-general').checked, true);
+    assert.equal(page.get('preset-everyday').checked, false);
+    page.get('preset-web').click();
+    assert.equal(page.get('rule-web').checked, false);
+    assert.equal(page.get('rule-coding').checked, true);
+    page.get('preset-apple').click();
+    assert.equal(page.get('rule-apple-apps').checked, false);
+    assert.equal(page.get('rule-coding').checked, true);
+    page.get('preset-android').click();
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['testing', 'i18n', 'version-control', os.id]));
+  }
+});
+
+test('all task combinations produce one deduplicated prompt and preserve exact saved rules', async () => {
+  for (let mask = 0; mask < 2 ** catalog.TASK_PRESETS.length; mask++) {
+    let copied;
+    const page = boot('https://example.test/agent-rulebook/?rules=', { clipboard: { writeText: async text => { copied = text; } } });
+    const tasks = catalog.TASK_PRESETS.filter((_, index) => mask & (1 << index));
+    for (const task of tasks) await page.get(`preset-${task.id}`).click();
+    const rules = new Set(tasks.flatMap(task => task.rules));
+    const expected = catalog.buildReviewPrompt(rules);
+    assert.equal(page.get('prompt-preview').value, expected, String(mask));
+    assert.equal(page.get('your-file').hidden, true);
+    const restored = boot(page.get('setup-link').value);
+    assert.equal(restored.get('prompt-preview').value, expected);
+    if (tasks.length) {
+      await page.get('preview-prompt').click();
+      await page.get('copy-prompt').click();
+      assert.equal(copied, expected);
+    }
+    for (const task of [...tasks].reverse()) {
+      await page.get(`preset-${task.id}`).click();
+      tasks.splice(tasks.indexOf(task), 1);
+      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(new Set(tasks.flatMap(item => item.rules))));
+      assert.equal(page.get('your-file').hidden, true);
     }
   }
 });
@@ -228,7 +275,7 @@ test('preset choices remain customizable, including removing General and Coding 
   page.get('preset-web').click();
   page.get('rule-general').click();
   page.get('rule-coding').click();
-  assert.equal(page.get('preset-web')['aria-pressed'], 'false');
+  assert.equal(page.get('preset-web').checked, false);
   assert.equal(page.get('your-file').hidden, true);
   assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web']));
   page.get('rule-testing').click();
@@ -239,13 +286,90 @@ test('preset choices remain customizable, including removing General and Coding 
   assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['coding', 'web', 'testing', 'android-apps']));
   const restored = boot(page.get('setup-link').value);
   assert.equal(restored.get('prompt-preview').value, page.get('prompt-preview').value);
-  assert.ok(catalog.TASK_PRESETS.every(preset => restored.get(`preset-${preset.id}`)['aria-pressed'] === 'false'));
+  assert.ok(catalog.TASK_PRESETS.every(preset => !restored.get(`preset-${preset.id}`).checked));
   page.get('clear-selection').click();
   assert.equal(page.get('chosen-rules').textContent, 'No rules selected.');
-  assert.ok(catalog.TASK_PRESETS.every(preset => page.get(`preset-${preset.id}`)['aria-pressed'] === 'false'));
+  assert.ok(catalog.TASK_PRESETS.every(preset => !page.get(`preset-${preset.id}`).checked));
   page.get('preset-everyday').click();
-  assert.equal(page.get('your-file').hidden, false);
+  assert.equal(page.get('your-file').hidden, true);
   assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['general']));
+});
+
+test('as-is size counts actual selected source bytes once and reuses cached source sizes', async () => {
+  const requests = [];
+  const page = boot('https://example.test/agent-rulebook/?rules=', {
+    version: 'a'.repeat(40), fetch: async () => ({ ok: false }),
+    sourceFetch: async (url, options) => {
+      requests.push(url);
+      assert.equal(options.credentials, 'omit');
+      assert.equal(url.searchParams.get('v'), 'a'.repeat(40));
+      const rule = catalog.RULES.find(rule => url.pathname.endsWith(`/${rule.path}`));
+      const bytes = new Uint8Array(readFileSync(new URL(`../${rule.path}`, import.meta.url)));
+      return { ok: true, arrayBuffer: async () => bytes.buffer };
+    },
+  });
+  await page.ready;
+  assert.equal(page.get('selection-size').textContent, 'As-is rule size: 0 KB (0 bytes).');
+  const selected = new Set(['mac']);
+  page.get('rule-mac').click();
+  for (const preset of catalog.TASK_PRESETS) {
+    page.get(`preset-${preset.id}`).click();
+    preset.rules.forEach(id => selected.add(id));
+    await page.sizeReady();
+    const bytes = catalog.RULES.filter(rule => selected.has(rule.id))
+      .reduce((total, rule) => total + readFileSync(new URL(`../${rule.path}`, import.meta.url)).byteLength, 0);
+    assert.equal(page.get('selection-size').textContent, `As-is rule size: ${(bytes / 1000).toFixed(1)} KB (${bytes.toLocaleString('en-US')} bytes).`);
+  }
+  assert.equal(requests.length, selected.size);
+  assert.equal(new Set(requests.map(url => url.pathname)).size, selected.size);
+  page.get('preset-android').click();
+  page.get('preset-android').click();
+  await page.sizeReady();
+  assert.equal(requests.length, selected.size);
+  assert.equal(page.timers.size, 0);
+});
+
+test('size failures and timeouts do not block preview or report a partial total', async () => {
+  for (const result of ['http-error', 'offline', 'timeout']) {
+    const page = boot('https://example.test/agent-rulebook/?rules=general', {
+      sourceFetch: async (url, { signal }) => {
+        if (result === 'http-error') return { ok: false };
+        if (result === 'offline') throw new Error('Offline');
+        return new Promise((resolve, reject) => signal.addEventListener('abort', () => reject(new Error('Aborted'))));
+      },
+    });
+    if (result === 'timeout') {
+      const [[expire, delay]] = page.timers;
+      assert.equal(delay, 5000);
+      expire();
+    }
+    await page.ready;
+    assert.match(page.get('selection-size').textContent, /size unavailable/);
+    assert.equal(page.get('preview-prompt').disabled, false);
+    page.get('preview-prompt').click();
+    assert.equal(page.get('your-file').hidden, false);
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['general']));
+    assert.equal(page.timers.size, 0);
+  }
+});
+
+test('late size results cannot overwrite a newer or cleared selection', async () => {
+  let resolveGeneral;
+  const page = boot('https://example.test/agent-rulebook/?rules=general', {
+    sourceFetch: url => url.pathname.endsWith('/general-rules.md')
+      ? new Promise(resolve => { resolveGeneral = resolve; })
+      : Promise.resolve({ ok: true, arrayBuffer: async () => new ArrayBuffer(1234) }),
+  });
+  page.get('clear-selection').click();
+  page.get('rule-mac').click();
+  await page.sizeReady();
+  assert.equal(page.get('selection-size').textContent, 'As-is rule size: 1.2 KB (1,234 bytes).');
+  resolveGeneral({ ok: true, arrayBuffer: async () => new ArrayBuffer(5000) });
+  await page.ready;
+  assert.equal(page.get('selection-size').textContent, 'As-is rule size: 1.2 KB (1,234 bytes).');
+  page.get('clear-selection').click();
+  await page.sizeReady();
+  assert.equal(page.get('selection-size').textContent, 'As-is rule size: 0 KB (0 bytes).');
 });
 
 test('desktop header shortcut shares preview, selection, and disabled states', () => {
@@ -296,8 +420,8 @@ test('customization groups global defaults, activities, and project guidance', (
   }
   const globalGroup = page.get('rule-group-global');
   assert.ok(globalGroup.children[2].contains(page.get('rule-general')));
-  assert.ok(globalGroup.children[3].contains(page.get('rule-mac')));
-  assert.equal(globalGroup.children[3].id, 'os-rules');
+  assert.ok(!globalGroup.contains(page.get('rule-mac')));
+  assert.ok(page.get('operating-system').contains(page.get('rule-mac')));
   assert.deepEqual(page.get('rule-group-activities').children[2].children.map(card => card.children[0].children[0].value),
     ['browser-operation', 'computer-use', 'version-control', 'coding']);
   const softwareAreas = catalog.RULE_GROUPS.find(group => group.id === 'project').areas;
@@ -694,7 +818,7 @@ test('project handoff appears only with project rules and updates when selection
   const page = boot('https://example.test/agent-rulebook/');
   page.get('preset-web').click();
   assert.equal(page.get('project-handoff').hidden, false);
-  page.get('preset-everyday').click();
+  page.get('preset-web').click();
   assert.equal(page.get('project-handoff').hidden, true);
   page.get('preset-apple').click();
   assert.equal(page.get('project-handoff').hidden, false);
@@ -842,15 +966,21 @@ test('OS choices switch through radio clicks and clear without losing other guid
   }
 });
 
-test('OS choices explain that they select safety rules, with help after the radios and no dropdown', () => {
+test('optional OS safety rules appear above tasks with conditional guidance and no dropdown', () => {
   const page = boot('https://example.test/agent-rulebook/');
   const osGroup = page.get('os-rules');
-  const [legend, choices, clear, help] = osGroup.children;
+  const [legend, help, choices, clear] = osGroup.children;
   assert.equal(legend.tag, 'legend');
-  assert.equal(legend.textContent, 'Operating-system rules (optional)');
+  assert.equal(legend.textContent, 'Operating System (optional)');
   assert.equal(clear.id, 'clear-os-selection');
   assert.equal(help.id, 'group-description-environment');
-  assert.equal(help.textContent, 'Choose the system where your agent works, not the apps you build.');
+  assert.match(help.textContent, /Which operating system will your agent run on\?/);
+  assert.match(help.textContent, /Select it if your agent manages files, apps, permissions, or system settings on that machine/);
+  assert.match(help.textContent, /system protection and safe file handling/);
+  assert.doesNotMatch(help.textContent, /Selecting it is recommended/);
+  assert.match(help.textContent, /not the app platform you build for/);
+  assert.ok(html.indexOf('id="operating-system"') < html.indexOf('id="task-presets"'));
+  assert.ok(html.indexOf('id="task-presets"') < html.indexOf('id="customize-rules"'));
   assert.equal(osGroup['aria-describedby'], help.id);
   assert.deepEqual(choices.children.map(card => card.children[0].children[0].value), ['mac', 'windows', 'linux']);
   const descendants = node => [node, ...node.children.filter(child => typeof child === 'object').flatMap(descendants)];
@@ -1063,6 +1193,7 @@ test('update check times out and skips unversioned or local previews', async () 
       signal.addEventListener('abort', () => reject(new Error('Aborted')));
     }),
   });
+  await page.sizeReady();
   const [[expire, delay]] = page.timers;
   assert.equal(delay, 5000);
   expire();

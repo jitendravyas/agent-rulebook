@@ -3,9 +3,12 @@ import { RULE_GROUPS, RULES, OS_RULES, DEFAULT_RULE_IDS, TASK_PRESETS, buildRevi
 const DEPLOYMENT_VERSION = '';
 const element = (id) => document.getElementById(id);
 const selected = new Set(DEFAULT_RULE_IDS);
+const selectedPresets = new Set();
 const codingSuggestions = ['web', 'apple-apps', 'android-apps'];
 const checkboxes = new Map();
 const linkWarnings = new Map();
+const sourceSizes = new Map();
+let sizeCheck = Promise.resolve();
 const preview = element('prompt-preview');
 const copyButton = element('copy-prompt');
 const previewButtons = [element('preview-prompt'), element('preview-prompt-top')];
@@ -120,6 +123,9 @@ function restoreLinkedSelection() {
   const changed = ids.length !== selected.size || ids.some((id) => !selected.has(id));
   selected.clear();
   ids.forEach((id) => selected.add(id));
+  selectedPresets.clear();
+  TASK_PRESETS.filter(preset => preset.rules.every(id => selected.has(id)))
+    .forEach(preset => selectedPresets.add(preset.id));
   return changed;
 }
 
@@ -132,24 +138,36 @@ function textElement(tag, className, text) {
 
 function renderPresets() {
   for (const preset of TASK_PRESETS) {
-    const button = textElement('button', 'task-preset', '');
-    button.id = `preset-${preset.id}`;
-    button.type = 'button';
-    button.setAttribute('aria-controls', 'your-file');
-    button.append(textElement('strong', 'rule-name', preset.label),
-      textElement('span', 'rule-description', preset.description),
-      textElement('span', 'preset-includes', `Includes: ${preset.rules.map(id => RULES.find(rule => rule.id === id).label).join(', ')}.`));
-    button.addEventListener('click', () => {
+    const label = textElement('label', 'task-preset', '');
+    const input = document.createElement('input');
+    input.id = `preset-${preset.id}`;
+    input.type = 'checkbox';
+    input.name = 'tasks';
+    input.value = preset.id;
+    input.setAttribute('aria-labelledby', `preset-name-${preset.id}`);
+    input.setAttribute('aria-describedby', `preset-description-${preset.id} preset-includes-${preset.id}`);
+    const text = document.createElement('span');
+    const name = textElement('strong', 'rule-name', preset.label);
+    name.id = `preset-name-${preset.id}`;
+    const description = textElement('span', 'rule-description', preset.description);
+    description.id = `preset-description-${preset.id}`;
+    const includes = textElement('span', 'preset-includes', `Includes: ${preset.rules.map(id => RULES.find(rule => rule.id === id).label).join(', ')}.`);
+    includes.id = `preset-includes-${preset.id}`;
+    text.append(name, description, includes);
+    input.addEventListener('change', () => {
       clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'retired-verification', 'animation', 'browser-split', 'verification-merged');
-      const environment = OS_RULES.filter(rule => selected.has(rule.id));
+      const owned = new Set(TASK_PRESETS.filter(item => selectedPresets.has(item.id)).flatMap(item => item.rules));
+      const independent = [...selected].filter(id => !owned.has(id));
+      if (input.checked) selectedPresets.add(preset.id);
+      else selectedPresets.delete(preset.id);
       selected.clear();
-      [...preset.rules, ...environment.map(rule => rule.id)].forEach(id => selected.add(id));
+      [...independent, ...TASK_PRESETS.filter(item => selectedPresets.has(item.id)).flatMap(item => item.rules)]
+        .forEach(id => selected.add(id));
       codingSuggestions.forEach(id => { element(`coding-added-${id}`).hidden = true; });
-      element('customize-rules').open = false;
       updateSelection();
-      showPrompt();
     });
-    element('task-presets').append(button);
+    label.append(input, text);
+    element('task-presets').append(label);
   }
 }
 
@@ -170,8 +188,8 @@ function renderChoices() {
       containers.set('general', choices);
       const osGroup = textElement('fieldset', 'os-group', '');
       osGroup.id = 'os-rules';
-      const osTitle = textElement('legend', '', 'Operating-system rules (optional)');
-      const osDescription = textElement('p', 'group-description', 'Choose the system where your agent works, not the apps you build.');
+      const osTitle = textElement('legend', '', 'Operating System (optional)');
+      const osDescription = textElement('p', 'group-description', 'Which operating system will your agent run on? Select it if your agent manages files, apps, permissions, or system settings on that machine. These rules cover system protection and safe file handling, not the app platform you build for.');
       osDescription.id = 'group-description-environment';
       osGroup.setAttribute('aria-describedby', osDescription.id);
       const osChoices = textElement('div', 'os-choices', '');
@@ -183,8 +201,8 @@ function renderChoices() {
         OS_RULES.forEach(rule => selected.delete(rule.id));
         updateSelection();
       });
-      osGroup.append(osTitle, osChoices, clear, osDescription);
-      fieldset.append(osGroup);
+      osGroup.append(osTitle, osDescription, osChoices, clear);
+      element('operating-system').append(osGroup);
       OS_RULES.forEach(rule => containers.set(rule.id, osChoices));
     } else if (group.id === 'project') {
       choices.className = 'software-rule-choices';
@@ -294,13 +312,13 @@ function renderChoices() {
 function updateSelection() {
   revision++;
   const chosen = RULES.filter((rule) => selected.has(rule.id));
-  const withoutOS = chosen.filter(rule => !rule.environment);
   for (const preset of TASK_PRESETS) {
-    element(`preset-${preset.id}`).setAttribute('aria-pressed', String(
-      withoutOS.length === preset.rules.length && preset.rules.every(id => selected.has(id))));
+    if (!preset.rules.every(id => selected.has(id))) selectedPresets.delete(preset.id);
+    element(`preset-${preset.id}`).checked = selectedPresets.has(preset.id);
   }
   element('chosen-rules').textContent = chosen.length
     ? `Selected rules: ${chosen.map(rule => rule.label).join(', ')}.` : 'No rules selected.';
+  sizeCheck = updateSourceSize(chosen, revision);
   syncSelectionURL();
   for (const [id, input] of checkboxes) {
     input.checked = selected.has(id);
@@ -342,6 +360,44 @@ function updateSelection() {
   }));
   if (!chosen.length) element('selection-summary').append(textElement('li', '', 'No rules selected'));
   status.textContent = '';
+}
+
+async function updateSourceSize(chosen, selectionRevision) {
+  const output = element('selection-size');
+  if (!chosen.length) {
+    output.textContent = 'As-is rule size: 0 KB (0 bytes).';
+    return;
+  }
+  output.textContent = 'As-is rule size: calculating…';
+  try {
+    const sizes = await Promise.all(chosen.map(rule => {
+      if (!sourceSizes.has(rule.id)) {
+        const request = (async () => {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 5000);
+          try {
+            const url = new URL(rule.path, document.baseURI);
+            if (DEPLOYMENT_VERSION) url.searchParams.set('v', DEPLOYMENT_VERSION);
+            const response = await fetch(url, { credentials: 'omit', signal: controller.signal });
+            if (!response.ok) throw new Error('Rule source unavailable');
+            return (await response.arrayBuffer()).byteLength;
+          } finally {
+            clearTimeout(timeout);
+          }
+        })().catch(error => {
+          sourceSizes.delete(rule.id);
+          throw error;
+        });
+        sourceSizes.set(rule.id, request);
+      }
+      return sourceSizes.get(rule.id);
+    }));
+    if (revision !== selectionRevision) return;
+    const bytes = sizes.reduce((total, size) => total + size, 0);
+    output.textContent = `As-is rule size: ${(bytes / 1000).toFixed(1)} KB (${bytes.toLocaleString('en-US')} bytes).`;
+  } catch {
+    if (revision === selectionRevision) output.textContent = 'As-is rule size unavailable: a selected source could not be read. You can still preview the prompt.';
+  }
 }
 
 function setMobileReview(promptVisible) {

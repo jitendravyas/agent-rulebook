@@ -99,8 +99,8 @@ h2 { font-size: 1.25rem; letter-spacing: -.025em; line-height: 1.3; margin: 0; f
 .text-button:hover { text-decoration-thickness: 2px; }
 .rule-group { margin: 0 0 32px; padding: 0; border: 0; min-inline-size: 0; }
 .rule-group > legend { font-size: 1.125rem; color: var(--accent); font-weight: 600; line-height: 1.5; max-inline-size: 100%; margin-block-end: 8px; padding: 0; }
-.os-group { min-inline-size: 0; border: 0; padding: 0; margin: 20px 0 0; }
-.os-group > legend { font-size: .9375rem; font-weight: 600; margin-block-end: 8px; padding: 0; }
+.os-group { min-inline-size: 0; border: 0; padding: 0; margin: 0 0 20px; }
+.os-group > legend { font-size: 1.125rem; font-weight: 600; margin-block-end: 8px; padding: 0; }
 #rule-group-activities, #rule-group-project { border-block-start: 1px solid var(--line); padding-block-start: 20px; }
 .software-rule-choices { display: grid; gap: 12px; margin-block-start: 12px; }
 .software-area { min-inline-size: 0; border: 1px solid #425c49; border-radius: 8px; padding: 12px; background: #192b21; }
@@ -140,9 +140,11 @@ h2 { font-size: 1.25rem; letter-spacing: -.025em; line-height: 1.3; margin: 0; f
 .selection-guide h3 { margin: 0 0 6px; font-size: .875rem; }
 .selection-guide p { margin: 0; color: var(--muted); font-size: .8125rem; line-height: 1.7; }
 .task-presets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block-end: 12px; }
-.task-preset { min-inline-size: 0; padding: 16px; text-align: start; font: inherit; color: #edf2ed; background: #15231b; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
+.task-preset { display: flex; align-items: start; gap: 12px; min-inline-size: 0; padding: 16px; text-align: start; font: inherit; color: #edf2ed; background: #15231b; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
+.task-preset input { flex: 0 0 auto; width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--accent); }
+.task-preset > span { min-inline-size: 0; }
 .task-preset:hover { background: #24382a; border-color: #88a18b; }
-.task-preset[aria-pressed="true"] { background: #253c2a; border-color: var(--accent); }
+.task-preset:has(input:checked) { background: #253c2a; border-color: var(--accent); }
 .preset-includes { display: block; color: #c9e8c2; margin-block-start: 12px; font-size: .75rem; line-height: 1.6; }
 .chosen-rules { font-size: .8125rem; line-height: 1.7; overflow-wrap: anywhere; }
 .customize-rules { margin-block-start: 16px; }

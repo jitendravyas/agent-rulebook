@@ -137,17 +137,21 @@
         </div>
         <div class="selection-guide">
           <p id="agent-fit">For agents that can read public rule files and your existing instruction files. Paste the prompt into agent chat, not a Custom Instructions box.</p>
-          <p id="selection-purpose">Choose a task to prepare and preview its prompt, or open <strong>Customize rules</strong> to make your own selection. Choose by the work, not your job title.</p>
+          <p id="selection-purpose">Select one or more tasks, then click <strong>Preview prompt</strong>. Open <strong>Customize rules</strong> to adjust individual rules.</p>
           <p id="selection-next">Your agent proposes changes and a backup plan, then waits for your approval.</p>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
         <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose selection-next">
-          <div id="task-presets" class="task-presets" role="group" aria-labelledby="choose-title" aria-describedby="preset-help"></div>
-          <p id="preset-help" class="section-description">Choosing a task replaces the selected rules but keeps your OS choice. Presets select rules, not tools or skills.</p>
+          <div id="operating-system"></div>
+          <h3 id="task-title">Tasks (select all that apply)</h3>
+          <div id="task-presets" class="task-presets" role="group" aria-labelledby="task-title" aria-describedby="preset-help"></div>
+          <p id="preset-help" class="section-description">Task choices combine rules without duplicates. Unchecking a task keeps rules shared with other selected tasks. Presets select rules, not tools or skills.</p>
           <p id="chosen-rules" class="chosen-rules" role="status" aria-live="polite"></p>
+          <p id="selection-size" class="section-description" role="status" aria-live="polite"></p>
+          <p class="section-description">Size if the selected rule files are used as-is, counted once each. This is not the prompt size or token count. Your agent may shorten or merge the rules after review.</p>
           <details id="customize-rules" class="customize-rules">
             <summary>Customize rules</summary>
-            <p class="section-description">Add OS safety rules, Git, testing, or other guidance only if relevant. You can remove any selection, including General. For other tasks, start with Everyday tasks and adjust here.</p>
+            <p class="section-description">Add Git, testing, or other guidance only if relevant. You can remove any selection, including General. For other tasks, start with Everyday tasks and adjust here.</p>
             <details class="placement-help"><summary>Where do global and project rules go?</summary><p>General and operating-system rules are global defaults. Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Keep an activity globally if your agent does it regularly across projects; otherwise use project or task guidance.</p><p>Project-scoped rules are reusable across matching projects, but belong only in each project where they apply. The prompt asks your agent to review existing instructions and recommend the right location. This website does not replace your instructions. Return later for a fresh review when the rules change.</p></details>
             <div id="rule-groups"></div>
           </details>
