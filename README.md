@@ -64,20 +64,31 @@ These rules change over time and have not been tested with every agent, model, o
 
 The [website](https://jitendravyas.github.io/agent-rulebook/) offers separate choices so you can keep your agent's always-loaded instructions focused. Use it with an agent that can read the linked public rule files and the instruction files being reviewed. If your app only offers a Custom Instructions text box, do not paste the generated prompt there. Global guidance may live in a user-level `AGENTS.md` or `CLAUDE.md` when supported. Reusable project-scoped choices belong in each relevant project, not the global file. The website generates a review prompt, not an installed rule file. The prompt keeps editing destinations separate and confirms activity placement from intended use. The website updates after its checks pass on `main`.
 
-The choices are grouped by where the rules belong:
+Start with **What will your agent help you do?** Choose the work, not your job title. Each task preset selects a small bundle and opens its review prompt:
+
+| Task preset | Selected rules |
+| --- | --- |
+| Everyday tasks | General, for writing, research, documents, and general assistance. |
+| Build websites or web apps | General, Software development, Web development. |
+| Build Apple apps | General, Software development, Apple app development. |
+| Build Android apps | General, Software development, Android app development. |
+
+Presets are shortcuts to existing rules, not new files, tools, or skills. Choosing a preset replaces the selection but keeps an OS choice you already made. They do not automatically add Git, testing, animation, localization, or browser/desktop operation. For other tasks, start with Everyday tasks and customize. General provides shared behavior and safety, not specialist writing, design, or translation guidance.
+
+Open **Customize rules** to add OS safety guidance, combine tasks, or adjust any individual choice. The individual choices are grouped by where the rules belong:
 
 1. **Global defaults:** General first, followed by optional operating-system rules. Choose the OS where your agent works, not the apps it builds.
 2. **Activity rules:** Browser use, Computer use, Version control, and Software development. Keep these global for regular use across projects; otherwise use them only in the relevant project or task. Select Computer use only if your agent can control desktop apps.
 3. **Project rules:** optional additions for relevant projects, grouped into Platform Agnostic Rules, Web development, and Native app development. Platform agnostic means independent of platform, not required for every project. Web development includes browser verification.
 
-All choices remain visible and independently selectable. The prompt asks your agent to confirm placement before suggesting edits. **Details** explains each choice and links to its source without selecting it. For one-off work, use project guidance only for that task. Skills remain separate, on-demand playbooks.
+All individual choices remain independently selectable under **Customize rules**, which starts collapsed. The visible selection summary lists the actual rules included, even when customization is closed. The prompt asks your agent to confirm placement before suggesting edits. **Details** explains each choice and links to its source without selecting it. For one-off work, use project guidance only for that task. Skills remain separate, on-demand playbooks.
 
 The published website checks for a newer version once when opened. Before interaction, it can reload once with your selections preserved; otherwise it offers **Load latest**. Failed checks leave the page usable. It does not poll for changes while you work.
 
-**General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting Web, Apple, or Android development adds **Software development rules**; use **Remove Software development** beside the notice, or uncheck those rules, if already covered. Testing, localization, and animation do not add Software development. Directly selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. Saved links restore your exact choices. **Clear selection** removes all choices.
+Inside **Customize rules**, **General rules** start selected; you can uncheck them. Choose one OS or use **Clear OS selection**, which keeps other choices. Selecting a Web, Apple, or Android development checkbox adds **Software development rules**; use **Remove Software development** beside the notice, or uncheck those rules, if already covered. Testing, localization, and animation do not add Software development. Directly selecting **Software development rules** also selects **Version control rules**; uncheck them if unnecessary. Saved links restore your exact choices. **Clear selection** removes all choices.
 
-1. **Choose relevant rules.** Use the [selection guide above](#choose-only-relevant-rule-sets); select only the groups that fit your work.
-2. **Click Preview prompt, then copy it.** The full prompt stays hidden until you click **Preview prompt**. Check its labeled source lists; changing choices hides the preview.
+1. **Choose a task preset or customize.** A preset prepares and previews the prompt in one click. Use **Customize rules** when you need different choices; no preset is required.
+2. **Review and copy the prompt.** Selecting a preset opens the full prompt. For individual changes or restored setup links, click **Preview prompt**. Changing individual choices hides the previous preview until you preview again. Check the labeled source lists before copying.
 3. **Ask your agent to review.** Paste the prompt into a conversation, not an instruction file or Custom Instructions box. If you selected project-scoped rules for an existing project, open that project first; review another project separately. For one-off work without project instructions, ask for task-scoped guidance instead. The agent first reads existing instructions without changing them, then summarizes proposed additions, their value, unchanged personal or machine-specific guidance, and a private backup plan. It asks for approval for each affected location before creating backups or editing. It must confirm an unclear project target and leave unselected locations unchanged. It may recommend no changes.
 
 The agent needs access to the public links and relevant instructions. The website never reads or uploads private instructions, project files, or agent settings, and does not merge rules, install anything, or change settings. Review recommendations yourself; an agent may miss conflicts or duplicates.
@@ -218,10 +229,6 @@ Keep these additions in the relevant project's instructions or supported project
 - [Software localization](project/internationalization-localization-rules.md): optional guidance for apps, websites, and other software that support multiple languages or regional formats. Browser-specific translation controls and document checks are in Web development.
 
 General asks agents to check requested appearance or interaction in the actual result when possible. Software testing covers writing and running tests, including browser end-to-end tests when relevant. Web development includes safeguards for checking rendered software in the intended browser. Detailed browser or device verification workflows, and project-specific cross-browser targets, belong in the relevant project or an on-demand skill.
-
-### Tool reference
-
-The [helper-tool reference](reference/helper-tools.md) covers utilities, integrations, and operating-system capabilities for research, browser use, files, and other tasks. It includes Windows and Linux diagnostics, Spotlight, text recognition, Shortcuts, and Apple Intelligence, with version conditions where needed. These tools are optional, not assumed to be installed. Provide relevant entries for a task or use supported conditional loading; do not load the whole reference in every session. No rule file imports it automatically. Git history records edits, not verification of every tool or requirement.
 
 </details>
 

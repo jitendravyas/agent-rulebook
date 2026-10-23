@@ -139,6 +139,18 @@ h2 { font-size: 1.25rem; letter-spacing: -.025em; line-height: 1.3; margin: 0; f
 .selection-guide { margin-block: 12px 20px; }
 .selection-guide h3 { margin: 0 0 6px; font-size: .875rem; }
 .selection-guide p { margin: 0; color: var(--muted); font-size: .8125rem; line-height: 1.7; }
+.task-presets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block-end: 12px; }
+.task-preset { min-inline-size: 0; padding: 16px; text-align: start; font: inherit; color: #edf2ed; background: #15231b; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
+.task-preset:hover { background: #24382a; border-color: #88a18b; }
+.task-preset[aria-pressed="true"] { background: #253c2a; border-color: var(--accent); }
+.preset-includes { display: block; color: #c9e8c2; margin-block-start: 12px; font-size: .75rem; line-height: 1.6; }
+.chosen-rules { font-size: .8125rem; line-height: 1.7; overflow-wrap: anywhere; }
+.customize-rules { margin-block-start: 16px; }
+.customize-rules > summary { min-block-size: 44px; padding-block: 12px; }
+.placement-help { margin-block-end: 20px; }
+@media (max-width: 720px) {
+  .task-presets { grid-template-columns: minmax(0, 1fr); }
+}
 .review-selection { display: flex; justify-content: space-between; align-items: center; gap: 20px; min-height: 44px; margin-block-start: 20px; font-size: .875rem; font-weight: 600; }
 .selection-footnote { color: var(--muted); font-size: .75rem; line-height: 1.65; max-width: 65ch; }
 .output { padding: 24px; color: #edf2ed; background: linear-gradient(145deg, #2a3b32, #202a25 48%, #182b29), #202a25; border: 5px solid #45534a; border-radius: 12px; outline: 1px solid #879484; box-shadow: inset 0 0 0 1px #879484, 0 6px 0 #070e09; scroll-margin-block-start: 8px; }

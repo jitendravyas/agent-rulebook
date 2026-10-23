@@ -20,11 +20,8 @@ test('General is compact, neutral, and excludes software-specific workflow', () 
   assert.doesNotMatch(general, /agent-info\.json|\/Users\/|C:\\|modern-web-guidance|Chrome DevTools|\bMCP\b/);
 });
 
-test('rules and the helper reference use Git revisions instead of manual date or version labels', () => {
-  const paths = [
-    ...RULES.map(rule => rule.path),
-    'reference/helper-tools.md',
-  ];
+test('rules use Git revisions instead of manual date or version labels', () => {
+  const paths = RULES.map(rule => rule.path);
   for (const path of paths) {
     const content = read(path);
     assert.match(content, /^# [^\n]+\n\n/, `${path} starts with its title`);
@@ -60,13 +57,13 @@ test('General includes communication and tool guidance without duplicate bullets
   const general = read('global/general-rules.md');
   for (const safeguard of [
     'Search narrowly, not across the whole home folder or device',
-    'Never replace private dependencies with public ones silently',
+    'Do not assume shared tools, accounts, or budgets',
     'Stop only your temporary processes',
     'Delegation cannot expand authority',
     'When attempts make no useful progress, pause affected work',
     'Establish recovery for partial or inconsistent changes',
     'During long work, report blockers',
-    'Keep extra artifacts in permitted temporary storage outside project sources and version control',
+    'Store artifacts in permitted temporary locations outside project sources and version control',
   ]) assert.ok(general.includes(safeguard), `General retains: ${safeguard}`);
   assert.match(general, /Simple status questions usually need one sentence/);
   assert.match(general, /Allow for spelling, dictation, transcription errors/);
@@ -81,11 +78,11 @@ test('General includes communication and tool guidance without duplicate bullets
   assert.match(general, /Before starting long-running processes, check for a suitable running instance/);
   assert.match(general, /Reply in chat instead of saving plans, notes, reports, or other documents unless the user requested the file or approves it first/);
   const communication = general.split('## Communication\n')[1].split('\n## ')[0];
-  assert.match(communication, /When a visual or interactive explanation would be clearer than chat, recommend an available format/);
+  assert.match(communication, /If a visual or interactive artifact would explain better than chat, propose an available format/);
   assert.doesNotMatch(communication, /\bHTML\b|\bPDF\b|Mermaid/);
-  assert.match(communication, /explain its benefit and how to view it, including remotely or without a graphical interface/);
-  assert.match(communication, /Create it only when requested or approved/);
-  assert.match(communication, /If safe access is unavailable, explain in chat/);
+  assert.match(communication, /its benefit, and safe viewing method, including remote or headless use/);
+  assert.match(communication, /Create only when requested or approved/);
+  assert.match(communication, /use chat if safe access is unavailable/);
   assert.match(communication, /unless another location is approved/);
   assert.match(communication, /Avoid disruption; use motion only when it helps explain/);
   assert.doesNotMatch(general, /Create temporary explanatory artifacts only when/);
@@ -103,6 +100,8 @@ test('tool and coding guidance respects assessment scope and supported project s
   assert.match(general, /Merely mentioning an option does not require a full assessment; do not present unchecked suitability as verified/);
   assert.match(general, /Reuse valid assessments but recheck changed uses or concerns/);
   const coding = read('global/coding-rules.md');
+  assert.doesNotMatch(general, /private dependencies/);
+  assert.equal(coding.split('Never replace private dependencies with public ones silently.').length - 1, 1);
   assert.match(coding, /For new choices, prefer maintained solutions compatible with supported versions/);
   assert.match(coding, /For existing dependencies, report relevant maintenance or compatibility risks without expanding the task into an upgrade/);
   assert.match(coding, /use new capabilities only after required upgrades are approved and installed/);
@@ -152,7 +151,7 @@ test('grouped approval rules retain dependency safeguards and software exception
 test('repository prose uses American spelling while source paths stay unchanged', () => {
   const paths = [
     ...RULES.map(rule => rule.path),
-    'AGENTS.md', 'README.md', 'reference/helper-tools.md',
+    'AGENTS.md', 'README.md',
   ];
   const britishSpellings = /\b(?:authorised|authorisation|behaviour|licence|personalis(?:e[ds]?|ing|ation)|generalis(?:e[ds]?|ing|ations?)|internationalisation|localisation|localisable|localised|organisations?|normalisation|parameterised|sanitisers?|sanitised|cancelled|colour|synchronisation|recognise)\b/i;
   for (const spelling of ['generalise', 'generalised', 'generalises', 'generalising', 'generalisation', 'personalise', 'personalised', 'personalises', 'personalising', 'personalisation']) {
@@ -274,21 +273,16 @@ test('README and website distinguish relevant modules from loading the whole col
   const html = read('index.html');
   assert.match(html, /The review scope for your selected rules appears here/);
   const defaults = html.match(/<p\b[^>]*id="selection-purpose"[^>]*>([\s\S]*?)<\/p>/)?.[1];
-  assert.match(defaults, /Start with General/);
-  assert.match(defaults, /start selected but are optional/i);
-  assert.match(defaults, /only the choices relevant to your work/i);
-  const nonCoderExample = html.match(/<p\b[^>]*id="non-coder-start"[^>]*>([\s\S]*?)<\/p>/)?.[1];
-  assert.match(nonCoderExample, /Not writing software\?/);
-  assert.match(nonCoderExample, /Start with General and your agent’s OS/);
-  assert.match(nonCoderExample, /Add Browser use or Computer use if your agent operates websites or desktop apps/);
-  assert.match(nonCoderExample, /Skip software-development and project rules/);
-  assert.match(html, /id="non-coder-start"[^>]*>[\s\S]*?<\/p>\s*<p id="web-start"/, 'Non-coder and web examples appear together before the choices');
-  const webExample = html.match(/<p\b[^>]*id="web-start"[^>]*>([\s\S]*?)<\/p>/)?.[1];
-  assert.match(webExample, /Building websites\?/);
-  assert.match(webExample, /Start with General, your agent’s OS, Software development, and Web development/);
-  assert.match(webExample, /Select Version control for Git; it may already be selected automatically/);
-  assert.match(webExample, /Add Software testing for writing or running tests/);
-  assert.ok(html.indexOf('id="web-start"') < html.indexOf('id="rule-form"'), 'Web example appears before the choices');
+  assert.match(defaults, /Choose a task to prepare and preview its prompt/);
+  assert.match(defaults, /Customize rules/);
+  assert.match(defaults, /work, not your job title/);
+  assert.match(html, /<details id="customize-rules" class="customize-rules">/);
+  assert.ok(html.indexOf('id="task-presets"') < html.indexOf('id="customize-rules"'));
+  assert.ok(html.indexOf('id="customize-rules"') < html.indexOf('id="rule-groups"'));
+  assert.match(html, /replaces the selected rules but keeps your OS choice/);
+  assert.match(html, /Presets select rules, not tools or skills/);
+  assert.match(readme, /All individual choices remain independently selectable under \*\*Customize rules\*\*/);
+  assert.match(readme, /Selecting a preset opens the full prompt/);
   assert.ok(html.indexOf('id="selection-next"') < html.indexOf('id="rule-form"'));
   const descriptions = html.match(/<form\b[^>]*id="rule-form"[^>]*aria-describedby="([^"]+)"/)?.[1].split(/\s+/);
   assert.deepEqual(descriptions, ['agent-fit', 'selection-purpose', 'selection-next']);
@@ -313,7 +307,6 @@ test('website workflow checks relevant changes and gates main deployment on succ
     const section = workflow.match(new RegExp(`^  ${event}:\n([\\s\\S]*?)(?=^  \\w+:|^\\S|(?![\\s\\S]))`, 'm'))?.[1];
     assert.ok(section, `${event} has a trigger configuration`);
     assert.match(section, /^      - AGENTS\.md$/m, `${event} covers AGENTS.md`);
-    assert.match(section, /^      - 'reference\/\*\*'$/m, `${event} covers reference material`);
     assert.match(section, /^      - 'tests\/\*\*'$/m, `${event} covers test changes`);
     assert.match(section, /^      - 'global\/\*\*'$/m, `${event} covers global rules`);
     assert.match(section, /^      - 'project\/\*\*'$/m, `${event} covers project rules`);
@@ -329,7 +322,7 @@ test('website workflow checks relevant changes and gates main deployment on succ
   assert.match(deploy, /uses: actions\/deploy-pages@[a-f0-9]{40}/);
   const checks = workflow.split('\n  deploy:\n')[0];
   assert.ok(checks.indexOf('run: node --test tests/*.test.js') < checks.indexOf('name: Prepare the static website'));
-  assert.match(checks, /cp -R global project reference "\$RUNNER_TEMP\/rulebook-site\/"/);
+  assert.match(checks, /cp -R global project "\$RUNNER_TEMP\/rulebook-site\/"/);
   assert.doesNotMatch(checks, /cp -R[^\n]*tests/, 'Behavior tests are not published as website assets');
   assert.match(checks, /uses: actions\/upload-pages-artifact@[a-f0-9]{40}/);
   assert.doesNotMatch(checks, /^      pages: write$|^      id-token: write$/m, 'The test job has no deployment permissions');
@@ -414,9 +407,9 @@ test('README setup advice and standalone scenarios stay outside agent rule sourc
   assert.match(plan, /regular and occasional/);
   assert.ok(!existsSync(new URL('docs/rule-scenarios.md', root)));
   assert.ok(!RULES.some(rule => /README|rule-scenarios/.test(rule.path)));
-  const helper = read('reference/helper-tools.md');
-  assert.match(helper, /^# Optional helper-tool reference\n/);
-  assert.match(helper, /Do not load this reference for every request/);
-  assert.ok(!RULES.some(rule => rule.path === 'reference/helper-tools.md'));
-  assert.match(read('README.md'), /Git history records edits, not verification of every tool or requirement/);
+  assert.ok(!existsSync(new URL('reference/helper-tools.md', root)));
+  assert.ok(!RULES.some(rule => rule.path.startsWith('reference/')));
+  for (const path of ['README.md', '.github/workflows/website.yml', '.github/workflows/vale.yml']) {
+    assert.doesNotMatch(read(path), /reference\/|helper-tool reference/, `${path} has no retired tool-reference dependency`);
+  }
 });

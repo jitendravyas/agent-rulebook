@@ -1,4 +1,4 @@
-import { RULE_GROUPS, RULES, OS_RULES, DEFAULT_RULE_IDS, buildReviewPrompt, ruleReviewScope } from './rules.js';
+import { RULE_GROUPS, RULES, OS_RULES, DEFAULT_RULE_IDS, TASK_PRESETS, buildReviewPrompt, ruleReviewScope } from './rules.js';
 
 const DEPLOYMENT_VERSION = '';
 const element = (id) => document.getElementById(id);
@@ -128,6 +128,29 @@ function textElement(tag, className, text) {
   node.className = className;
   node.textContent = text;
   return node;
+}
+
+function renderPresets() {
+  for (const preset of TASK_PRESETS) {
+    const button = textElement('button', 'task-preset', '');
+    button.id = `preset-${preset.id}`;
+    button.type = 'button';
+    button.setAttribute('aria-controls', 'your-file');
+    button.append(textElement('strong', 'rule-name', preset.label),
+      textElement('span', 'rule-description', preset.description),
+      textElement('span', 'preset-includes', `Includes: ${preset.rules.map(id => RULES.find(rule => rule.id === id).label).join(', ')}.`));
+    button.addEventListener('click', () => {
+      clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'retired-verification', 'animation', 'browser-split', 'verification-merged');
+      const environment = OS_RULES.filter(rule => selected.has(rule.id));
+      selected.clear();
+      [...preset.rules, ...environment.map(rule => rule.id)].forEach(id => selected.add(id));
+      codingSuggestions.forEach(id => { element(`coding-added-${id}`).hidden = true; });
+      element('customize-rules').open = false;
+      updateSelection();
+      showPrompt();
+    });
+    element('task-presets').append(button);
+  }
 }
 
 function renderChoices() {
@@ -271,6 +294,13 @@ function renderChoices() {
 function updateSelection() {
   revision++;
   const chosen = RULES.filter((rule) => selected.has(rule.id));
+  const withoutOS = chosen.filter(rule => !rule.environment);
+  for (const preset of TASK_PRESETS) {
+    element(`preset-${preset.id}`).setAttribute('aria-pressed', String(
+      withoutOS.length === preset.rules.length && preset.rules.every(id => selected.has(id))));
+  }
+  element('chosen-rules').textContent = chosen.length
+    ? `Selected rules: ${chosen.map(rule => rule.label).join(', ')}.` : 'No rules selected.';
   syncSelectionURL();
   for (const [id, input] of checkboxes) {
     input.checked = selected.has(id);
@@ -418,6 +448,7 @@ window.addEventListener('popstate', (event) => {
   if (changed) updateSelection();
   else syncSelectionURL();
 });
+renderPresets();
 renderChoices();
 restoreLinkedSelection();
 const isLocalPreview = /^(localhost|.*\.localhost|127\..*|\[::1\])$/.test(window.location.hostname);

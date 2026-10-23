@@ -11,7 +11,6 @@ on:
       - README.md
       - LICENSE
       - 'project/**'
-      - 'reference/**'
       - 'tests/**'
       - .github/workflows/website.yml
   pull_request:
@@ -23,7 +22,6 @@ on:
       - README.md
       - LICENSE
       - 'project/**'
-      - 'reference/**'
       - 'tests/**'
       - .github/workflows/website.yml
 
@@ -67,7 +65,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/rulebook-site/site"
           cp index.html README.md LICENSE "$RUNNER_TEMP/rulebook-site/"
           cp site/app.js site/rules.js site/styles.css "$RUNNER_TEMP/rulebook-site/site/"
-          cp -R global project reference "$RUNNER_TEMP/rulebook-site/"
+          cp -R global project "$RUNNER_TEMP/rulebook-site/"
           node - <<'NODE'
           const fs = require('node:fs');
           const dir = process.env.RULEBOOK_STATIC_DIR;

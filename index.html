@@ -67,7 +67,7 @@
       <div class="intro-copy">
         <p class="eyebrow">Your agent. Your ground rules.</p>
         <h1 id="page-title">Find the rules<br>that <span>fit your agent.</span></h1>
-        <p>Choose rules for your agent to review. Copy a prompt that asks it to compare them with your existing instructions or propose a starting set.</p>
+        <p>Choose what your agent will help you do. Get a prompt that asks it to review relevant rules against your existing instructions or propose a starting set.</p>
         <div class="intro-actions">
           <a class="button primary builder-link" href="#builder">Choose rules to review <span aria-hidden="true">↓</span></a>
           <a class="intro-guide" href="https://github.com/jitendravyas/agent-rulebook#how-to-use">How to use the rules</a>
@@ -129,7 +129,7 @@
     <div id="builder" class="builder" tabindex="-1" hidden>
       <section class="choices" aria-labelledby="choose-title">
         <div class="section-heading">
-          <h2 id="choose-title" tabindex="-1">1. Choose rules to review</h2>
+          <h2 id="choose-title" tabindex="-1">1. What will your agent help you do?</h2>
           <div class="selection-actions">
             <button class="text-button" id="clear-selection" type="button">Clear selection</button>
             <button id="preview-prompt-top" class="button primary desktop-preview" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt</button>
@@ -137,15 +137,20 @@
         </div>
         <div class="selection-guide">
           <p id="agent-fit">For agents that can read public rule files and your existing instruction files. Paste the prompt into agent chat, not a Custom Instructions box.</p>
-          <p id="selection-purpose"><strong>Start with General rules.</strong> They start selected but are optional. Add only the choices relevant to your work.</p>
-          <p id="non-coder-start"><strong>Not writing software?</strong> Start with General and your agent’s OS. Add Browser use or Computer use if your agent operates websites or desktop apps. Skip software-development and project rules.</p>
-          <p id="web-start"><strong>Building websites?</strong> Start with General, your agent’s OS, Software development, and Web development. Select Version control for Git; it may already be selected automatically. Add Software testing for writing or running tests.</p>
-          <p id="selection-next"><strong>Then preview and copy the prompt.</strong> Your agent proposes changes and a backup plan, then waits for your approval.</p>
-          <details><summary>Where do global and project rules go?</summary><p>General and operating-system rules are global defaults. Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Keep an activity globally if your agent does it regularly across projects; otherwise use project or task guidance.</p><p>Project-scoped rules are reusable across matching projects, but belong only in each project where they apply. The prompt asks your agent to review existing instructions and recommend the right location. This website does not replace your instructions. Return later for a fresh review when the rules change.</p></details>
+          <p id="selection-purpose">Choose a task to prepare and preview its prompt, or open <strong>Customize rules</strong> to make your own selection. Choose by the work, not your job title.</p>
+          <p id="selection-next">Your agent proposes changes and a backup plan, then waits for your approval.</p>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
         <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose selection-next">
-          <div id="rule-groups"></div>
+          <div id="task-presets" class="task-presets" role="group" aria-labelledby="choose-title" aria-describedby="preset-help"></div>
+          <p id="preset-help" class="section-description">Choosing a task replaces the selected rules but keeps your OS choice. Presets select rules, not tools or skills.</p>
+          <p id="chosen-rules" class="chosen-rules" role="status" aria-live="polite"></p>
+          <details id="customize-rules" class="customize-rules">
+            <summary>Customize rules</summary>
+            <p class="section-description">Add OS safety rules, Git, testing, or other guidance only if relevant. You can remove any selection, including General. For other tasks, start with Everyday tasks and adjust here.</p>
+            <details class="placement-help"><summary>Where do global and project rules go?</summary><p>General and operating-system rules are global defaults. Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Keep an activity globally if your agent does it regularly across projects; otherwise use project or task guidance.</p><p>Project-scoped rules are reusable across matching projects, but belong only in each project where they apply. The prompt asks your agent to review existing instructions and recommend the right location. This website does not replace your instructions. Return later for a fresh review when the rules change.</p></details>
+            <div id="rule-groups"></div>
+          </details>
           <button id="preview-prompt" class="button primary review-selection" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt <span aria-hidden="true">→</span></button>
           <p id="empty-selection-note" class="section-description" role="status" hidden>Select at least one rule set to preview a prompt.</p>
         </form>

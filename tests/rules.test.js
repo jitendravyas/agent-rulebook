@@ -90,26 +90,21 @@ test('selection guidance helps first-time and returning users without adding rul
   const selectionGuide = html.match(/<div class="selection-guide">([\s\S]*?)<\/div>/)?.[1];
   assert.match(selectionGuide, /can read public rule files and your existing instruction files/);
   assert.match(selectionGuide, /Paste the prompt into agent chat, not a Custom Instructions box/);
-  assert.match(selectionGuide, /Start with General rules/);
-  assert.match(selectionGuide, /They start selected but are optional/);
-  assert.match(selectionGuide, /General and operating-system rules are global defaults/);
-  assert.match(selectionGuide, /Keep an activity globally if your agent does it regularly across projects/);
-  assert.match(selectionGuide, /Then preview and copy the prompt/);
-  assert.match(selectionGuide, /Where do global and project rules go\?/);
-  assert.match(selectionGuide, /user-level <code>AGENTS\.md<\/code> or <code>CLAUDE\.md<\/code>/);
-  assert.match(selectionGuide, /Project-scoped rules are reusable across matching projects, but belong only in each project where they apply/);
+  assert.match(selectionGuide, /Choose a task to prepare and preview its prompt/);
+  assert.match(selectionGuide, /Customize rules/);
   assert.match(selectionGuide, /Your agent proposes changes and a backup plan, then waits for your approval/);
-  const placementHelp = selectionGuide.match(/<details><summary>Where do global and project rules go\?<\/summary>([\s\S]*?)<\/details>/)?.[1];
+  const placementHelp = html.match(/<details class="placement-help"><summary>Where do global and project rules go\?<\/summary>([\s\S]*?)<\/details>/)?.[1];
   assert.match(placementHelp, /General and operating-system rules are global defaults/);
   assert.match(placementHelp, /Keep an activity globally/);
-  assert.doesNotMatch(selectionGuide.split('<details>')[0], /Where to keep them|Global instructions apply/);
+  assert.match(placementHelp, /user-level <code>AGENTS\.md<\/code> or <code>CLAUDE\.md<\/code>/);
+  assert.match(placementHelp, /Project-scoped rules are reusable across matching projects, but belong only in each project where they apply/);
+  assert.doesNotMatch(selectionGuide, /Global instructions apply/);
   const webArea = RULE_GROUPS.find(group => group.id === 'project').areas.find(area => area.id === 'web');
   assert.match(webArea.description, /Software development covers coding across platforms/);
   assert.match(webArea.description, /Web development adds browser-specific guidance/);
   assert.match(webArea.description, /Selecting Web adds Software development; you can remove it/);
-  assert.match(selectionGuide, /Return later for a fresh review when the rules change/);
-  assert.match(selectionGuide, /This website does not replace your instructions/);
-  assert.ok(html.indexOf('Start with General') < html.indexOf('id="rule-form"'));
+  assert.match(placementHelp, /Return later for a fresh review when the rules change/);
+  assert.match(placementHelp, /This website does not replace your instructions/);
 });
 
 test('review prompt recommends relevant loading without making safety optional', () => {

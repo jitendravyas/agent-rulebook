@@ -145,7 +145,7 @@ function boot(address, { intersectionObserver = true, clipboard, version = '', f
   return { get, window, observers, document, ready, navigations, timers };
 }
 
-test('prompt stays hidden until Preview prompt and hides again when choices change', () => {
+test('prompt stays hidden on load until preview or a preset and hides when individual choices change', () => {
   assert.ok(html.indexOf('id="copy-prompt"') < html.indexOf('id="selection-summary"'), 'Copy is available before the long selection recap');
   assert.ok(html.indexOf('id="prompt-preview"') < html.indexOf('id="selection-summary"'), 'The prompt is visible before the long selection recap');
   assert.ok(html.indexOf('id="prompt-preview"') < html.indexOf('id="copy-prompt"'), 'Visitors can review the prompt before the Copy control');
@@ -175,6 +175,79 @@ test('prompt stays hidden until Preview prompt and hides again when choices chan
   assert.equal(page.get('your-file').hidden, true);
 });
 
+test('each task preset opens an exact minimal prompt and copy uses the complete selection', async () => {
+  const bundles = {
+    everyday: ['general'],
+    web: ['general', 'coding', 'web'],
+    apple: ['general', 'coding', 'apple-apps'],
+    android: ['general', 'coding', 'android-apps'],
+  };
+  assert.deepEqual(catalog.TASK_PRESETS.map(preset => preset.id), Object.keys(bundles));
+  for (const preset of catalog.TASK_PRESETS) {
+    let copied;
+    const page = boot('https://example.test/agent-rulebook/', { clipboard: { writeText: async text => { copied = text; } } });
+    assert.equal(page.get('customize-rules').open, false);
+    const button = page.get(`preset-${preset.id}`);
+    assert.equal(button.type, 'button');
+    assert.equal(button['aria-controls'], 'your-file');
+    assert.deepEqual(preset.rules, bundles[preset.id]);
+    for (const id of preset.rules) assert.ok(button.textContent.includes(catalog.RULES.find(rule => rule.id === id).label));
+    await button.click();
+    const expected = catalog.buildReviewPrompt(bundles[preset.id]);
+    assert.equal(page.get('your-file').hidden, false);
+    assert.equal(page.get('prompt-preview').value, expected);
+    assert.equal(button['aria-pressed'], 'true');
+    assert.deepEqual(catalog.RULES.filter(rule => page.get(`rule-${rule.id}`).checked).map(rule => rule.id), bundles[preset.id]);
+    await page.get('copy-prompt').click();
+    assert.equal(copied, expected);
+    assert.match(page.get('action-status').textContent, /Prompt copied/);
+    const restored = boot(page.get('setup-link').value);
+    assert.equal(restored.get('prompt-preview').value, expected);
+    assert.equal(restored.get('your-file').hidden, true);
+  }
+});
+
+test('switching presets replaces the bundle, keeps only the selected OS, and closes customization', () => {
+  for (const os of catalog.OS_RULES) {
+    const page = boot(`https://example.test/agent-rulebook/?rules=general,testing,i18n,version-control,${os.id}`);
+    for (const preset of catalog.TASK_PRESETS) {
+      page.get('customize-rules').open = true;
+      page.get(`preset-${preset.id}`).click();
+      assert.equal(page.get('customize-rules').open, false);
+      assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt([...preset.rules, os.id]));
+      assert.equal(page.get(`rule-${os.id}`).checked, true);
+      for (const id of ['testing', 'i18n', 'version-control', 'ui-animation', 'browser-operation', 'computer-use']) {
+        assert.equal(page.get(`rule-${id}`).checked, false);
+      }
+    }
+  }
+});
+
+test('preset choices remain customizable, including removing General and Coding or combining platforms', () => {
+  const page = boot('https://example.test/agent-rulebook/');
+  page.get('preset-web').click();
+  page.get('rule-general').click();
+  page.get('rule-coding').click();
+  assert.equal(page.get('preset-web')['aria-pressed'], 'false');
+  assert.equal(page.get('your-file').hidden, true);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web']));
+  page.get('rule-testing').click();
+  page.get('preview-prompt').click();
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web', 'testing']));
+  assert.match(page.get('chosen-rules').textContent, /Web development rules, Software testing rules/);
+  page.get('rule-android-apps').click();
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['coding', 'web', 'testing', 'android-apps']));
+  const restored = boot(page.get('setup-link').value);
+  assert.equal(restored.get('prompt-preview').value, page.get('prompt-preview').value);
+  assert.ok(catalog.TASK_PRESETS.every(preset => restored.get(`preset-${preset.id}`)['aria-pressed'] === 'false'));
+  page.get('clear-selection').click();
+  assert.equal(page.get('chosen-rules').textContent, 'No rules selected.');
+  assert.ok(catalog.TASK_PRESETS.every(preset => page.get(`preset-${preset.id}`)['aria-pressed'] === 'false'));
+  page.get('preset-everyday').click();
+  assert.equal(page.get('your-file').hidden, false);
+  assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['general']));
+});
+
 test('desktop header shortcut shares preview, selection, and disabled states', () => {
   const heading = html.split('<div class="section-heading">')[1].split('<div class="selection-guide">')[0];
   assert.ok(heading.includes('id="clear-selection"'));
@@ -202,7 +275,7 @@ test('desktop header shortcut shares preview, selection, and disabled states', (
   assert.ok(buttons.every(button => !button.disabled));
 });
 
-test('choices group global defaults, activities, and visible project guidance', () => {
+test('customization groups global defaults, activities, and project guidance', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.deepEqual(page.get('rule-groups').children.map(group => group.id), [
     'rule-group-global', 'rule-group-activities', 'rule-group-project',
@@ -491,7 +564,7 @@ test('choosing an OS replaces the previous OS without selecting app guidance', (
   }
 });
 
-test('global and project choices remain visible and independently selectable together', () => {
+test('global and project choices remain independently selectable within customization', () => {
   const page = boot('https://example.test/agent-rulebook/');
   assert.ok(!page.get('rule-group-project').hidden);
   assert.equal(page.get('rule-web').disabled, false);
@@ -510,8 +583,9 @@ test('global and project choices remain visible and independently selectable tog
   assert.match(page.get('prompt-preview').value, /Project sources/);
 });
 
-test('saved project choices retain independent selections in the visible group', () => {
+test('saved project choices retain independent selections without expanding customization', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,web,mac');
+  assert.equal(page.get('customize-rules').open, false);
   assert.equal(page.get('rule-group-project').tag, 'fieldset');
   assert.ok(!page.get('rule-group-project').hidden);
   assert.equal(page.get('rule-web').checked, true);
@@ -576,7 +650,7 @@ test('testing, localization, and animation do not select Coding', () => {
   }
 });
 
-test('software choices stay visible after unrelated changes and clearing selections', () => {
+test('software choices stay available in customization after unrelated changes and clearing selections', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,web');
   page.get('rule-mac').checked = true;
   page.get('rule-mac').dispatch('change');
