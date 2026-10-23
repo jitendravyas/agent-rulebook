@@ -182,10 +182,10 @@ test('prompt stays hidden until preview and hides when choices change', () => {
   assert.equal(page.get('your-file').hidden, true);
 });
 
-test('each task checkbox prepares an exact minimal prompt and waits for preview', async () => {
+test('each task checkbox prepares its exact rule bundle and waits for preview', async () => {
   const bundles = {
     everyday: ['general'],
-    web: ['general', 'coding', 'web'],
+    web: ['general', 'coding', 'web', 'testing', 'version-control'],
     apple: ['general', 'coding', 'apple-apps'],
     android: ['general', 'coding', 'android-apps'],
   };
@@ -216,10 +216,27 @@ test('each task checkbox prepares an exact minimal prompt and waits for preview'
   }
 });
 
+test('web preset testing and version control can each be removed without removing other rules', () => {
+  for (const removed of ['testing', 'version-control']) {
+    const page = boot('https://example.test/agent-rulebook/?rules=');
+    page.get('preset-web').click();
+    page.get('preview-prompt').click();
+    page.get(`rule-${removed}`).click();
+    const expected = ['general', 'coding', 'web', 'testing', 'version-control'].filter(id => id !== removed);
+    assert.equal(page.get(`rule-${removed}`).checked, false);
+    assert.equal(page.get('preset-web').checked, false);
+    assert.equal(page.get('your-file').hidden, true);
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(expected));
+    const restored = boot(page.get('setup-link').value);
+    assert.equal(restored.get(`rule-${removed}`).checked, false);
+    assert.equal(restored.get('prompt-preview').value, catalog.buildReviewPrompt(expected));
+  }
+});
+
 test('combining and removing tasks preserves shared rules, OS, and custom additions', () => {
   for (const os of catalog.OS_RULES) {
-    const page = boot(`https://example.test/agent-rulebook/?rules=general,testing,i18n,version-control,${os.id}`);
-    const expected = new Set(['general', 'testing', 'i18n', 'version-control', os.id]);
+    const page = boot(`https://example.test/agent-rulebook/?rules=general,i18n,browser-operation,${os.id}`);
+    const expected = new Set(['general', 'i18n', 'browser-operation', os.id]);
     for (const preset of catalog.TASK_PRESETS.filter(preset => preset.id !== 'everyday')) {
       page.get('customize-rules').open = true;
       page.get(`preset-${preset.id}`).click();
@@ -240,7 +257,7 @@ test('combining and removing tasks preserves shared rules, OS, and custom additi
     assert.equal(page.get('rule-apple-apps').checked, false);
     assert.equal(page.get('rule-coding').checked, true);
     page.get('preset-android').click();
-    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['testing', 'i18n', 'version-control', os.id]));
+    assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['i18n', 'browser-operation', os.id]));
   }
 });
 
@@ -275,6 +292,10 @@ test('preset choices remain customizable, including removing General and Coding 
   page.get('preset-web').click();
   page.get('rule-general').click();
   page.get('rule-coding').click();
+  page.get('rule-testing').click();
+  page.get('rule-version-control').click();
+  assert.equal(page.get('rule-testing').checked, false);
+  assert.equal(page.get('rule-version-control').checked, false);
   assert.equal(page.get('preset-web').checked, false);
   assert.equal(page.get('your-file').hidden, true);
   assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(['web']));

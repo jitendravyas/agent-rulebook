@@ -69,7 +69,7 @@ Start with the optional **Operating System** section. Select the operating syste
 | Task preset | Selected rules |
 | --- | --- |
 | Everyday tasks | General, for writing, research, documents, and general assistance. |
-| Build websites or web apps | General, Software development, Web development. |
+| Build websites or web apps | General, Software development, Web development, Software testing, Version control. |
 | Build Apple apps | General, Software development, Apple app development. |
 | Build Android apps | General, Software development, Android app development. |
 

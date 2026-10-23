@@ -196,7 +196,7 @@ export const DEFAULT_RULE_IDS = ['general'];
 
 export const TASK_PRESETS = [
   { id: 'everyday', label: 'Everyday tasks', description: 'Writing, research, documents, and general assistance.', rules: ['general'] },
-  { id: 'web', label: 'Build websites or web apps', description: 'Build, change, or check browser-rendered software.', rules: ['general', 'coding', 'web'] },
+  { id: 'web', label: 'Build websites or web apps', description: 'Build, change, or check browser-rendered software.', rules: ['general', 'coding', 'web', 'testing', 'version-control'] },
   { id: 'apple', label: 'Build Apple apps', description: 'Build or change apps for Apple platforms.', rules: ['general', 'coding', 'apple-apps'] },
   { id: 'android', label: 'Build Android apps', description: 'Build or change apps for Android devices.', rules: ['general', 'coding', 'android-apps'] },
 ];
