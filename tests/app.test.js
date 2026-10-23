@@ -673,11 +673,33 @@ test('project-only choices also explain the one-off task route', () => {
 test('project and activity choices describe both review scopes', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=coding,web');
   assert.match(page.get('output-scope').textContent, /one project or one-off task/);
-  assert.match(page.get('output-scope').textContent, /Your agent will recommend where the activity rules belong/);
+  assert.match(page.get('output-scope').textContent, /Your agent will recommend which instructions belong globally and which belong in this project\./);
   assert.match(page.get('selection-summary').textContent, /Global, project, or this conversation/);
   assert.equal(page.get('action-status').textContent, '');
   assert.match(page.get('prompt-preview').value, /Project sources/);
   assert.match(page.get('prompt-preview').value, /Activity sources/);
+});
+
+test('project handoff appears only with project rules and updates when selections change', () => {
+  for (const rules of ['', 'general', 'general,mac', 'coding', 'version-control', 'browser-operation,computer-use']) {
+    const page = boot(`https://example.test/agent-rulebook/?rules=${rules}`);
+    assert.equal(page.get('project-handoff').hidden, true, rules);
+  }
+  for (const rule of catalog.RULES.filter(rule => catalog.ruleReviewScope(rule) === 'project')) {
+    const page = boot(`https://example.test/agent-rulebook/?rules=${rule.id}`);
+    assert.equal(page.get('project-handoff').hidden, false, rule.id);
+    page.get(`rule-${rule.id}`).click();
+    assert.equal(page.get('project-handoff').hidden, true, rule.id);
+  }
+  const page = boot('https://example.test/agent-rulebook/');
+  page.get('preset-web').click();
+  assert.equal(page.get('project-handoff').hidden, false);
+  page.get('preset-everyday').click();
+  assert.equal(page.get('project-handoff').hidden, true);
+  page.get('preset-apple').click();
+  assert.equal(page.get('project-handoff').hidden, false);
+  page.get('clear-selection').click();
+  assert.equal(page.get('project-handoff').hidden, true);
 });
 
 test('mobile selection label names General only when it is the sole selection', () => {

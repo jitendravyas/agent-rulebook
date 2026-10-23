@@ -318,8 +318,9 @@ function updateSelection() {
     : globalRuleIds.length ? 'Review your global instructions.'
     : 'Review your selected activity rules.';
   element('output-scope').textContent = scopeText + (placementRuleIds.length
-    ? ' Your agent will recommend where the activity rules belong.'
+    ? ' Your agent will recommend which instructions belong globally and which belong in this project.'
     : '');
+  element('project-handoff').hidden = !projectRuleIds.length;
   currentPrompt = buildReviewPrompt(selected);
   hidePrompt();
   previewButtons.forEach(button => { button.disabled = !currentPrompt; });
