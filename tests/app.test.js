@@ -182,6 +182,23 @@ test('prompt stays hidden until preview and hides when choices change', () => {
   assert.equal(page.get('your-file').hidden, true);
 });
 
+test('customization opens independently of preview and preserves selections when closed', () => {
+  const page = boot('https://example.test/agent-rulebook/');
+  const toggle = page.get('customize-toggle');
+  assert.equal(page.get('customize-rules').hidden, true);
+  toggle.click();
+  assert.equal(toggle['aria-expanded'], 'true');
+  assert.equal(page.get('customize-rules').hidden, false);
+  assert.equal(page.get('your-file').hidden, true);
+  page.get('rule-testing').click();
+  toggle.click();
+  assert.equal(toggle['aria-expanded'], 'false');
+  assert.equal(page.get('customize-rules').hidden, true);
+  assert.equal(page.get('rule-testing').checked, true);
+  page.get('preview-prompt').click();
+  assert.equal(page.get('your-file').hidden, false);
+});
+
 test('each task checkbox prepares its exact rule bundle and waits for preview', async () => {
   const bundles = {
     everyday: ['general'],
@@ -193,7 +210,7 @@ test('each task checkbox prepares its exact rule bundle and waits for preview', 
   for (const preset of catalog.TASK_PRESETS) {
     let copied;
     const page = boot('https://example.test/agent-rulebook/?rules=', { clipboard: { writeText: async text => { copied = text; } } });
-    assert.equal(page.get('customize-rules').open, false);
+    assert.equal(page.get('customize-rules').hidden, true);
     const button = page.get(`preset-${preset.id}`);
     assert.equal(button.type, 'checkbox');
     assert.deepEqual(preset.rules, bundles[preset.id]);
@@ -238,10 +255,10 @@ test('combining and removing tasks preserves shared rules, OS, and custom additi
     const page = boot(`https://example.test/agent-rulebook/?rules=general,i18n,browser-operation,${os.id}`);
     const expected = new Set(['general', 'i18n', 'browser-operation', os.id]);
     for (const preset of catalog.TASK_PRESETS.filter(preset => preset.id !== 'everyday')) {
-      page.get('customize-rules').open = true;
+      if (page.get('customize-rules').hidden) page.get('customize-toggle').click();
       page.get(`preset-${preset.id}`).click();
       preset.rules.forEach(id => expected.add(id));
-      assert.equal(page.get('customize-rules').open, true);
+      assert.equal(page.get('customize-rules').hidden, false);
       assert.equal(page.get('your-file').hidden, true);
       assert.equal(page.get('prompt-preview').value, catalog.buildReviewPrompt(expected));
       assert.equal(page.get(`rule-${os.id}`).checked, true);
@@ -730,7 +747,7 @@ test('global and project choices remain independently selectable within customiz
 
 test('saved project choices retain independent selections without expanding customization', () => {
   const page = boot('https://example.test/agent-rulebook/?rules=general,web,mac');
-  assert.equal(page.get('customize-rules').open, false);
+  assert.equal(page.get('customize-rules').hidden, true);
   assert.equal(page.get('rule-group-project').tag, 'fieldset');
   assert.ok(!page.get('rule-group-project').hidden);
   assert.equal(page.get('rule-web').checked, true);

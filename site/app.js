@@ -443,6 +443,11 @@ function returnToSelection() {
 }
 
 previewButtons.forEach(button => button.addEventListener('click', showPrompt));
+element('customize-toggle').addEventListener('click', () => {
+  const panel = element('customize-rules');
+  panel.hidden = !panel.hidden;
+  element('customize-toggle').setAttribute('aria-expanded', String(!panel.hidden));
+});
 element('back-to-selection').addEventListener('click', event => {
   event.preventDefault();
   returnToSelection();

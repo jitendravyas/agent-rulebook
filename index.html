@@ -137,7 +137,7 @@
         </div>
         <div class="selection-guide">
           <p id="agent-fit">For agents that can read public rule files and your existing instruction files. Paste the prompt into agent chat, not a Custom Instructions box.</p>
-          <p id="selection-purpose">Select one or more tasks, then click <strong>Preview prompt</strong>. Open <strong>Customize rules</strong> to adjust individual rules.</p>
+          <p id="selection-purpose">Select one or more tasks, then click <strong>Preview prompt</strong>. Open <strong>Customize selected rules</strong> to adjust individual rules.</p>
           <p id="selection-next">Your agent proposes changes and a backup plan, then waits for your approval.</p>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
@@ -149,14 +149,17 @@
           <p id="chosen-rules" class="chosen-rules" role="status" aria-live="polite"></p>
           <p id="selection-size" class="section-description" role="status" aria-live="polite"></p>
           <p class="section-description">Size if the selected rule files are used as-is, counted once each. This is not the prompt size or token count. Your agent may shorten or merge the rules after review.</p>
-          <details id="customize-rules" class="customize-rules">
-            <summary>Customize rules</summary>
+          <p class="section-description">Use the selected rules to preview your prompt, or customize them to add or remove rules.</p>
+          <p id="project-selection-note" class="section-description" hidden>For project-specific rules, select what applies to one project. Repeat for other projects.</p>
+          <div class="rule-choice-actions">
+            <button id="customize-toggle" class="button" type="button" aria-controls="customize-rules" aria-expanded="false">Customize selected rules <span aria-hidden="true">▾</span></button>
+            <button id="preview-prompt" class="button primary review-selection" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt <span aria-hidden="true">→</span></button>
+          </div>
+          <div id="customize-rules" class="customize-rules" role="region" aria-labelledby="customize-toggle" hidden>
             <p class="section-description">Add Git, testing, or other guidance only if relevant. You can remove any selection, including General. For other tasks, start with Everyday tasks and adjust here.</p>
             <details class="placement-help"><summary>Where do global and project rules go?</summary><p>General and operating-system rules are global defaults. Global instructions apply across tasks and may live in a user-level <code>AGENTS.md</code> or <code>CLAUDE.md</code>. Keep an activity globally if your agent does it regularly across projects; otherwise use project or task guidance.</p><p>Project-scoped rules are reusable across matching projects, but belong only in each project where they apply. The prompt asks your agent to review existing instructions and recommend the right location. This website does not replace your instructions. Return later for a fresh review when the rules change.</p></details>
             <div id="rule-groups"></div>
-          </details>
-          <p id="project-selection-note" class="section-description" hidden>For project-specific rules, select what applies to one project. Repeat for other projects.</p>
-          <button id="preview-prompt" class="button primary review-selection" type="button" aria-controls="your-file" aria-expanded="false" disabled>Preview prompt <span aria-hidden="true">→</span></button>
+          </div>
           <p id="empty-selection-note" class="section-description" role="status" hidden>Select at least one rule set to preview a prompt.</p>
         </form>
         <p class="selection-footnote">Nothing is installed or activated here.</p>

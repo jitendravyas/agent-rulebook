@@ -148,10 +148,14 @@ h2 { font-size: 1.25rem; letter-spacing: -.025em; line-height: 1.3; margin: 0; f
 .preset-includes { display: block; color: #c9e8c2; margin-block-start: 12px; font-size: .75rem; line-height: 1.6; }
 .chosen-rules { font-size: .8125rem; line-height: 1.7; overflow-wrap: anywhere; }
 .customize-rules { margin-block-start: 16px; }
-.customize-rules > summary { min-block-size: 44px; padding-block: 12px; }
+.rule-choice-actions { display: flex; gap: 12px; align-items: stretch; margin-block-start: 20px; }
+#customize-toggle { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+#customize-toggle:hover { background: #24382a; }
+.rule-choice-actions > .button { flex: 1; min-block-size: 44px; margin: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .placement-help { margin-block-end: 20px; }
 @media (max-width: 720px) {
   .task-presets { grid-template-columns: minmax(0, 1fr); }
+  .rule-choice-actions { flex-direction: column; }
 }
 .review-selection { display: flex; justify-content: space-between; align-items: center; gap: 20px; min-height: 44px; margin-block-start: 20px; font-size: .875rem; font-weight: 600; }
 .selection-footnote { color: var(--muted); font-size: .75rem; line-height: 1.65; max-width: 65ch; }

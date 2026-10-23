@@ -274,9 +274,9 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.match(html, /The review scope for your selected rules appears here/);
   const defaults = html.match(/<p\b[^>]*id="selection-purpose"[^>]*>([\s\S]*?)<\/p>/)?.[1];
   assert.match(defaults, /Select one or more tasks, then click <strong>Preview prompt<\/strong>/);
-  assert.match(defaults, /Customize rules/);
+  assert.match(defaults, /Customize selected rules/);
   assert.match(defaults, /adjust individual rules/);
-  assert.match(html, /<details id="customize-rules" class="customize-rules">/);
+  assert.match(html, /<div id="customize-rules"[^>]*aria-labelledby="customize-toggle" hidden>/);
   assert.ok(html.indexOf('id="task-presets"') < html.indexOf('id="customize-rules"'));
   assert.ok(html.indexOf('id="customize-rules"') < html.indexOf('id="rule-groups"'));
   assert.match(html, /Task choices combine rules without duplicates/);

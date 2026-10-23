@@ -91,7 +91,7 @@ test('selection guidance helps first-time and returning users without adding rul
   assert.match(selectionGuide, /can read public rule files and your existing instruction files/);
   assert.match(selectionGuide, /Paste the prompt into agent chat, not a Custom Instructions box/);
   assert.match(selectionGuide, /Select one or more tasks, then click <strong>Preview prompt<\/strong>/);
-  assert.match(selectionGuide, /Customize rules/);
+  assert.match(selectionGuide, /Customize selected rules/);
   assert.match(selectionGuide, /Your agent proposes changes and a backup plan, then waits for your approval/);
   const placementHelp = html.match(/<details class="placement-help"><summary>Where do global and project rules go\?<\/summary>([\s\S]*?)<\/details>/)?.[1];
   assert.match(placementHelp, /General and operating-system rules are global defaults/);
