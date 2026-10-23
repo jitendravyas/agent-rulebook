@@ -235,6 +235,8 @@ code { font: .95em var(--mono); }
   .builder { grid-template-columns: 1fr; gap: 32px; padding-block-start: 22px; }
   .os-choices { grid-template-columns: minmax(0, 1fr); }
   .section-heading { align-items: center; }
+  .os-choices .rule-placement, .os-choices .rule-description { display: none; }
+  .os-choices .rule-card { margin-block-end: 0; }
   .section-heading h2 { font-size: 1.125rem; }
   .output { position: static; padding: 18px; }
   .output-heading { flex-wrap: wrap; }

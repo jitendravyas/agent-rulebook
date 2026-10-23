@@ -280,6 +280,8 @@ test('README and website distinguish relevant modules from loading the whole col
   assert.ok(html.indexOf('id="task-presets"') < html.indexOf('id="customize-rules"'));
   assert.ok(html.indexOf('id="customize-rules"') < html.indexOf('id="rule-groups"'));
   assert.match(html, /Task choices combine rules without duplicates/);
+  assert.match(html, /id="project-selection-note"[^>]*hidden>For project-specific rules, review one project at a time\./);
+  assert.ok(html.indexOf('id="project-selection-note"') < html.indexOf('id="preview-prompt"'));
   assert.match(html, /Presets select rules, not tools or skills/);
   assert.match(readme, /Individual rules remain independently selectable: OS rules above the task choices/);
   assert.match(readme, /Click \*\*Preview prompt\*\* when your selection is ready/);

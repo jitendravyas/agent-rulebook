@@ -808,12 +808,15 @@ test('project handoff appears only with project rules and updates when selection
   for (const rules of ['', 'general', 'general,mac', 'coding', 'version-control', 'browser-operation,computer-use']) {
     const page = boot(`https://example.test/agent-rulebook/?rules=${rules}`);
     assert.equal(page.get('project-handoff').hidden, true, rules);
+    assert.equal(page.get('project-selection-note').hidden, true, rules);
   }
   for (const rule of catalog.RULES.filter(rule => catalog.ruleReviewScope(rule) === 'project')) {
     const page = boot(`https://example.test/agent-rulebook/?rules=${rule.id}`);
     assert.equal(page.get('project-handoff').hidden, false, rule.id);
+    assert.equal(page.get('project-selection-note').hidden, false, rule.id);
     page.get(`rule-${rule.id}`).click();
     assert.equal(page.get('project-handoff').hidden, true, rule.id);
+    assert.equal(page.get('project-selection-note').hidden, true, rule.id);
   }
   const page = boot('https://example.test/agent-rulebook/');
   page.get('preset-web').click();
@@ -987,6 +990,11 @@ test('optional OS safety rules appear above tasks with conditional guidance and 
   assert.ok(!descendants(osGroup).some(node => node.tag === 'select' || node.id?.startsWith('role-')));
   assert.doesNotMatch(osGroup.textContent, /SSH|agent running remotely/i);
   for (const rule of catalog.OS_RULES) {
+    const panel = page.get(`details-${rule.id}`);
+    assert.equal(panel.hidden, true);
+    page.get(`details-button-${rule.id}`).click();
+    assert.equal(panel.hidden, false);
+    assert.ok(panel.textContent.includes(rule.description));
     const input = page.get(`rule-${rule.id}`);
     input.checked = true;
     input.dispatch('change');

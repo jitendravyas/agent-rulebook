@@ -339,6 +339,7 @@ function updateSelection() {
     ? ' Your agent will recommend which instructions belong globally and which belong in this project.'
     : '');
   element('project-handoff').hidden = !projectRuleIds.length;
+  element('project-selection-note').hidden = !projectRuleIds.length;
   currentPrompt = buildReviewPrompt(selected);
   hidePrompt();
   previewButtons.forEach(button => { button.disabled = !currentPrompt; });
