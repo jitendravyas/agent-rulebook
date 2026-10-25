@@ -93,6 +93,15 @@ test('General includes communication and tool guidance without duplicate bullets
   assert.equal(new Set(bullets).size, bullets.length, 'General contains each bullet once');
 });
 
+test('input validation preserves trust boundaries without requiring redundant internal checks', () => {
+  const coding = read('global/coding-rules.md');
+  assert.match(coding, /Validate untrusted input at each receiving trust boundary before use or storage: required fields, types, nulls, sizes, ranges, and business constraints/);
+  assert.match(coding, /Include files and external services; types alone do not establish that external data is valid/);
+  assert.match(coding, /Within a trusted internal flow, reuse established validation guarantees unless the data changes in a way that invalidates them/);
+  assert.match(coding, /bound accepted work and output with appropriate abuse controls, observable limits, and recoverable failures/);
+  assert.doesNotMatch(coding, /earlier validation is insufficient/);
+});
+
 test('tool and coding guidance respects assessment scope and supported project setups', () => {
   const general = read('global/general-rules.md');
   assert.match(general, /including output, distribution, and attribution/);

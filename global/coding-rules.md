@@ -20,7 +20,7 @@ Apply to software development, including temporary or standalone software.
 ## Application security
 
 * For protected operations, enforce authentication, authorization, object access, and allowed state changes at the trusted boundary. Derive critical values from trusted state; identifiers are not permission. Fail closed on security failures, prevent partial sensitive changes, and return safe errors with recovery without protected details.
-* Validate untrusted input at its receiving boundary before use or storage: required fields, types, nulls, sizes, ranges, and business constraints. Include files and external services; earlier validation is insufficient. For public or resource-intensive operations, bound accepted work and output with appropriate abuse controls, observable limits, and recoverable failures.
+* Validate untrusted input at each receiving trust boundary before use or storage: required fields, types, nulls, sizes, ranges, and business constraints. Include files and external services; types alone do not establish that external data is valid. Within a trusted internal flow, reuse established validation guarantees unless the data changes in a way that invalidates them. For public or resource-intensive operations, bound accepted work and output with appropriate abuse controls, observable limits, and recoverable failures.
 * Use parameterized queries, destination-appropriate output encoding, and maintained sanitizers for accepted rich markup. Validation, blacklists, and improvised escaping do not replace injection protections.
 
 ## Implementation and maintenance
