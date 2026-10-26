@@ -215,6 +215,8 @@ test('each task checkbox prepares its exact rule bundle and waits for preview', 
     assert.equal(button.type, 'checkbox');
     assert.deepEqual(preset.rules, bundles[preset.id]);
     const label = page.get('task-presets').children.find(node => node.contains(button));
+    assert.equal(button['aria-describedby'], `${preset.description ? `preset-description-${preset.id} ` : ''}preset-includes-${preset.id}`);
+    assert.equal(label.textContent.includes('undefined'), false);
     for (const id of preset.rules) assert.ok(label.textContent.includes(catalog.RULES.find(rule => rule.id === id).label));
     await button.click();
     const expected = catalog.buildReviewPrompt(bundles[preset.id]);
@@ -1015,11 +1017,10 @@ test('optional OS safety rules appear above tasks with conditional guidance and 
   assert.equal(legend.textContent, 'Operating System (optional)');
   assert.equal(clear.id, 'clear-os-selection');
   assert.equal(help.id, 'group-description-environment');
-  assert.match(help.textContent, /Which operating system will your agent run on\?/);
-  assert.match(help.textContent, /Select it if your agent manages files, apps, permissions, or system settings on that machine/);
-  assert.match(help.textContent, /system protection and safe file handling/);
+  assert.match(help.textContent, /Choose the OS your agent runs on/);
+  assert.match(help.textContent, /Optional safety rules for files, permissions, and system settings/);
   assert.doesNotMatch(help.textContent, /Selecting it is recommended/);
-  assert.match(help.textContent, /not the app platform you build for/);
+  assert.match(help.textContent, /not the platform you build for/);
   assert.ok(html.indexOf('id="operating-system"') < html.indexOf('id="task-presets"'));
   assert.ok(html.indexOf('id="task-presets"') < html.indexOf('id="customize-rules"'));
   assert.equal(osGroup['aria-describedby'], help.id);

@@ -136,20 +136,20 @@
           </div>
         </div>
         <div class="selection-guide">
-          <p id="agent-fit">For agents that can read public rule files and your existing instruction files. Paste the prompt into agent chat, not a Custom Instructions box.</p>
-          <p id="selection-purpose">Select one or more tasks, then click <strong>Preview prompt</strong>. Open <strong>Customize selected rules</strong> to adjust individual rules.</p>
-          <p id="selection-next">Your agent proposes changes and a backup plan, then waits for your approval.</p>
+          <p id="agent-fit">For agents that can read public rule files and your existing instruction files.</p>
+          <p id="selection-purpose">Choose your tasks, preview the prompt, and paste it into your agent’s chat.</p>
+          <p id="selection-next">Your agent reviews first, proposes changes and backups, and waits for your approval.</p>
         </div>
         <p id="link-warning" class="notice" role="status" hidden></p>
         <form id="rule-form" aria-label="Rule selection" aria-describedby="agent-fit selection-purpose selection-next">
           <div id="operating-system"></div>
           <h3 id="task-title">Tasks (select all that apply)</h3>
           <div id="task-presets" class="task-presets" role="group" aria-labelledby="task-title" aria-describedby="preset-help"></div>
-          <p id="preset-help" class="section-description">Task choices combine rules without duplicates. Unchecking a task keeps rules shared with other selected tasks. Presets select rules, not tools or skills.</p>
+          <p id="preset-help" class="section-description">Tasks select rules, not tools or skills. Shared rules are included once and kept while another selected task needs them.</p>
           <p id="chosen-rules" class="chosen-rules" role="status" aria-live="polite"></p>
           <p id="selection-size" class="section-description" role="status" aria-live="polite"></p>
-          <p class="section-description">Size if the selected rule files are used as-is, counted once each. This is not the prompt size or token count. Your agent may shorten or merge the rules after review.</p>
-          <p class="section-description">Use the selected rules to preview your prompt, or customize them to add or remove rules.</p>
+          <p class="section-description">Combined rule-file size before your agent reviews and merges them.</p>
+          <details class="placement-help"><summary>About this size</summary><p>Each source is counted once. This measures file bytes, not prompt size or tokens. Your final instructions may be shorter after review.</p></details>
           <p id="project-selection-note" class="section-description" hidden>For project-specific rules, select what applies to one project. Repeat for other projects.</p>
           <div class="rule-choice-actions">
             <button id="customize-toggle" class="button" type="button" aria-controls="customize-rules" aria-expanded="false">Customize selected rules <span aria-hidden="true">▾</span></button>

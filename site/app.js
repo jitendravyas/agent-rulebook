@@ -145,7 +145,7 @@ function renderPresets() {
     input.name = 'tasks';
     input.value = preset.id;
     input.setAttribute('aria-labelledby', `preset-name-${preset.id}`);
-    input.setAttribute('aria-describedby', `preset-description-${preset.id} preset-includes-${preset.id}`);
+    input.setAttribute('aria-describedby', `${preset.description ? `preset-description-${preset.id} ` : ''}preset-includes-${preset.id}`);
     const text = document.createElement('span');
     const name = textElement('strong', 'rule-name', preset.label);
     name.id = `preset-name-${preset.id}`;
@@ -153,7 +153,9 @@ function renderPresets() {
     description.id = `preset-description-${preset.id}`;
     const includes = textElement('span', 'preset-includes', `Includes: ${preset.rules.map(id => RULES.find(rule => rule.id === id).label).join(', ')}.`);
     includes.id = `preset-includes-${preset.id}`;
-    text.append(name, description, includes);
+    text.append(name);
+    if (preset.description) text.append(description);
+    text.append(includes);
     input.addEventListener('change', () => {
       clearLinkWarnings('rules', 'scope', 'legacy', 'os', 'merged', 'retired-verification', 'animation', 'browser-split', 'verification-merged');
       const owned = new Set(TASK_PRESETS.filter(item => selectedPresets.has(item.id)).flatMap(item => item.rules));
@@ -189,7 +191,7 @@ function renderChoices() {
       const osGroup = textElement('fieldset', 'os-group', '');
       osGroup.id = 'os-rules';
       const osTitle = textElement('legend', '', 'Operating System (optional)');
-      const osDescription = textElement('p', 'group-description', 'Which operating system will your agent run on? Select it if your agent manages files, apps, permissions, or system settings on that machine. These rules cover system protection and safe file handling, not the app platform you build for.');
+      const osDescription = textElement('p', 'group-description', 'Choose the OS your agent runs on, not the platform you build for. Optional safety rules for files, permissions, and system settings.');
       osDescription.id = 'group-description-environment';
       osGroup.setAttribute('aria-describedby', osDescription.id);
       const osChoices = textElement('div', 'os-choices', '');

@@ -89,10 +89,9 @@ test('selection guidance helps first-time and returning users without adding rul
   assert.ok(sourceHelp?.includes(coding.label), 'Software guidance names its selection card');
   const selectionGuide = html.match(/<div class="selection-guide">([\s\S]*?)<\/div>/)?.[1];
   assert.match(selectionGuide, /can read public rule files and your existing instruction files/);
-  assert.match(selectionGuide, /Paste the prompt into agent chat, not a Custom Instructions box/);
-  assert.match(selectionGuide, /Select one or more tasks, then click <strong>Preview prompt<\/strong>/);
-  assert.match(selectionGuide, /Customize selected rules/);
-  assert.match(selectionGuide, /Your agent proposes changes and a backup plan, then waits for your approval/);
+  assert.match(html, /Paste this into <strong>your agent’s chat<\/strong>, not a rules file or Custom Instructions box/);
+  assert.match(selectionGuide, /Choose your tasks, preview the prompt, and paste it into your agent’s chat/);
+  assert.match(selectionGuide, /Your agent reviews first, proposes changes and backups, and waits for your approval/);
   const placementHelp = html.match(/<details class="placement-help"><summary>Where do global and project rules go\?<\/summary>([\s\S]*?)<\/details>/)?.[1];
   assert.match(placementHelp, /General and operating-system rules are global defaults/);
   assert.match(placementHelp, /Keep an activity globally/);
