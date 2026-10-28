@@ -111,9 +111,13 @@ test('tool and coding guidance respects assessment scope and supported project s
   const coding = read('global/coding-rules.md');
   assert.doesNotMatch(general, /private dependencies/);
   assert.equal(coding.split('Never replace private dependencies with public ones silently.').length - 1, 1);
-  assert.match(coding, /For new choices, prefer maintained solutions compatible with supported versions/);
+  assert.match(coding, /check official maintainer notices for abandonment, deprecation, end of maintenance, or a move to another owner, repository, or name/);
+  assert.match(coding, /verify and use its official successor when suitable/);
+  assert.match(coding, /Choose the latest stable, maintained release compatible with project requirements/);
+  assert.match(coding, /checking compatibility and license terms/);
+  assert.match(coding, /without blocking authorized maintenance or migration work/);
   assert.match(coding, /For existing dependencies, report relevant maintenance or compatibility risks without expanding the task into an upgrade/);
-  assert.match(coding, /use new capabilities only after required upgrades are approved and installed/);
+  assert.match(coding, /Use new capabilities only after required upgrades are approved and installed/);
   assert.match(coding, /Make approved dependencies and versions reproducible through the project's supported setup/);
   assert.match(coding, /do not rely on undocumented machine-specific installations/);
   assert.doesNotMatch(coding, /instead of relying on global installations/);
